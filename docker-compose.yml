@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: database-mssql
+    environment:
+      - SA_PASSWORD=Password123
+      - ACCEPT_EULA=Y
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql-data:/var/opt/mssql
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: database-api-container
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mssql
+
+volumes:
+  mssql-data:
