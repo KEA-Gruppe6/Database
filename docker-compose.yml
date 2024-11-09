@@ -11,6 +11,7 @@ services:
       - "1433:1433"
     volumes:
       - mssql-data:/var/opt/mssql
+
   api:
     build:
       context: .
@@ -20,6 +21,25 @@ services:
       - "8080:8080"
     depends_on:
       - mssql
+      - neo4j
+
+  neo4j:
+    image: neo4j:latest
+    container_name: database-neo4j
+    environment:
+      - NEO4J_AUTH=neo4j/Password123
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - neo4j-data:/data
+      - neo4j-logs:/logs
+      - neo4j-import:/var/lib/neo4j/import
+      - neo4j-plugins:/plugins
 
 volumes:
   mssql-data:
+  neo4j-data:
+  neo4j-logs:
+  neo4j-import:
+  neo4j-plugins:
