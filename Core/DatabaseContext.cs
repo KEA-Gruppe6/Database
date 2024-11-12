@@ -5,6 +5,7 @@ namespace Database_project.Core;
 
 public class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbContext(options)
 {
+    public DbSet<Order> Orders { get; set; }
     public DbSet<Airline> Airlines { get; set; }
     public DbSet<Airport> Airports { get; set; }
     public DbSet<Customer> Customers { get; set; }
@@ -14,16 +15,16 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbCont
     public DbSet<Plane> Planes { get; set; }
     public DbSet<Ticket> Tickets { get; set; }
     public DbSet<TicketType> TicketTypes { get; set; }
-    
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseSqlServer("Data Source=host.docker.internal;Database=DineTime;User ID=sa;Password=Password123;Trusted_Connection=False;Encrypt=True;TrustServerCertificate=True;", 
+            optionsBuilder.UseSqlServer("Data Source=host.docker.internal;Database=DineTime;User ID=sa;Password=Password123;Trusted_Connection=False;Encrypt=True;TrustServerCertificate=True;",
                 options => options.MigrationsAssembly("AirTravel"));
         }
     }
-    
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Departure>(entity =>
