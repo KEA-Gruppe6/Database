@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Database_project.Core.Entities;
 
@@ -16,6 +17,6 @@ public class Ticket
 
     public long DepartureId { get; set; }
     public Departure Departure { get; set; }
-
+    public int OrderId { get; set; }
     public ICollection<Luggage> Luggage { get; set; }
 }
