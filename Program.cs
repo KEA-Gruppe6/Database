@@ -23,6 +23,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IAirlineService, AirlineService>();
 builder.Services.AddScoped<PlaneService>();
+builder.Services.AddScoped<OrderService>();
 
 var app = builder.Build();
 
