@@ -1,4 +1,5 @@
 ﻿using Database_project.Core.Entities;
+using Database_project.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Database_project.Controllers;
@@ -7,27 +8,69 @@ namespace Database_project.Controllers;
 [Route("[controller]")]
 public class PlaneController : ControllerBase
 {
-    [HttpGet(Name = "Plane")]
-    public string GetPlane(int id)
+    private PlaneService _planeService;
+
+    public PlaneController(PlaneService planeService)
     {
-        throw new NotImplementedException();
+        _planeService = planeService;
     }
 
-    [HttpPost(Name = "Plane")]
-    public string CreatePlane([FromBody] Plane plane)
+    [HttpGet("{id:long}")]
+    public async Task<ActionResult<Plane?>> GetPlane(long id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var plane = await _planeService.GetPlaneByIdAsync(id);  
+            return Ok(plane);
+        }
+        catch (Exception ex)
+        {
+            return NotFound($"Plane with ID {id} not found.");
+        }
     }
 
-    [HttpPatch(Name = "Plane")]
-    public string UpdatePlane([FromBody] Plane plane)
+    [HttpPost]
+    public async Task<ActionResult<Plane>> CreatePlane([FromBody] Plane plane)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var createdPlane = await _planeService.CreatePlaneAsync(plane);
+
+            return Created("api/Plane/" + createdPlane.PlaneId, createdPlane);
+
+        }
+        catch (Exception)
+        {
+            return BadRequest("Plane data is invalid.");
+        }
     }
 
-    [HttpDelete(Name = "Plane")]
-    public string DeletePlane(int id)
+    [HttpPatch]
+    public async Task<ActionResult<Plane?>> UpdatePlane([FromBody] Plane plane)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var updatedPlane = await _planeService.UpdatePlaneAsync(plane);
+            return Ok(updatedPlane);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest("Plane data is invalid.");
+        }
+    }
+
+    [HttpDelete("{id:long}")]
+    public async Task<ActionResult<bool>> DeletePlane(long id)
+    {
+        try
+        {
+            var isDeleted = await _planeService.DeletePlaneByIdAsync(id);
+
+            return Ok(isDeleted);
+        }
+        catch (Exception)
+        {
+            return BadRequest("Plane data is invalid.");
+        }
     }
 }

@@ -54,6 +54,7 @@ namespace Database_project.Core.Services
 
         public async Task<Plane> CreatePlaneAsync(Plane plane)
         {
+            plane.PlaneId = 0;
             await using var context = await _context.CreateDbContextAsync();
             var createdPlane = await context.Planes.AddAsync(plane);
             await context.SaveChangesAsync();
