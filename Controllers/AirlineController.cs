@@ -43,7 +43,7 @@ public class AirlineController : ControllerBase
 
 
     [HttpPatch("{id:long}")]
-    public async Task<IActionResult> UpdateAirline(int id, [FromBody] Airline updatedAirline)
+    public async Task<IActionResult> UpdateAirline(long id, [FromBody] Airline updatedAirline)
     {
         if (id != updatedAirline.AirlineId)
         {
