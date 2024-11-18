@@ -6,9 +6,10 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 //Add Database context
+var connectionString = builder.Configuration.GetConnectionString("MSSQL") ?? Environment.GetEnvironmentVariable("MSSQL");
 builder.Services.AddDbContextFactory<DatabaseContext>(options =>
 {
-    options.UseSqlServer("Data Source=127.0.0.1;Database=DineTime;User ID=sa;Password=Password123;Trusted_Connection=False;Encrypt=True;TrustServerCertificate=True;");
+    options.UseSqlServer(connectionString);
 });
 
 

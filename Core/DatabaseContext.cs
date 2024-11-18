@@ -20,7 +20,7 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbCont
     {
         if (!optionsBuilder.IsConfigured)
         {
-            optionsBuilder.UseSqlServer("Data Source=host.docker.internal;Database=DineTime;User ID=sa;Password=Password123;Trusted_Connection=False;Encrypt=True;TrustServerCertificate=True;",
+            optionsBuilder.UseSqlServer("Data Source=host.docker.internal;Database=AirportDB;User ID=sa;Password=Password123;Trusted_Connection=False;Encrypt=True;TrustServerCertificate=True;",
                 options => options.MigrationsAssembly("AirTravel"))
                 .UseLazyLoadingProxies();
         }
