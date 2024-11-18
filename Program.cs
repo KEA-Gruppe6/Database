@@ -1,4 +1,6 @@
 using Database_project.Core;
+using Database_project.Core.Interfaces;
+using Database_project.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,7 +19,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
+builder.Services.AddScoped<IAirlineService, AirlineService>();
 
 var app = builder.Build();
 

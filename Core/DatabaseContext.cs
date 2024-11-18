@@ -21,7 +21,8 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbCont
         if (!optionsBuilder.IsConfigured)
         {
             optionsBuilder.UseSqlServer("Data Source=host.docker.internal;Database=DineTime;User ID=sa;Password=Password123;Trusted_Connection=False;Encrypt=True;TrustServerCertificate=True;",
-                options => options.MigrationsAssembly("AirTravel"));
+                options => options.MigrationsAssembly("AirTravel"))
+                .UseLazyLoadingProxies();
         }
     }
 
@@ -39,6 +40,11 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbCont
                 .HasForeignKey(d => d.ArrivalAirportId)
                 .OnDelete(DeleteBehavior.NoAction);
         });
+        modelBuilder.Entity<Plane>()
+            .HasOne(p => p.Airline)
+            .WithMany(a => a.Planes)
+            .HasForeignKey(p => p.AirlineId);
+
         base.OnModelCreating(modelBuilder);
     }
 }

@@ -116,4 +116,11 @@ VALUES
     (210.00, 2, 10, 10);
 
 
-Select * From Planes
+Select * From Airlines
+
+SELECT * From Planes
+
+SELECT p.PlaneDisplayName, a.AirlineName
+FROM Planes p
+         JOIN Airlines a ON p.AirlineId = a.AirlineId
+WHERE a.AirlineName = 'Delta Airlines';

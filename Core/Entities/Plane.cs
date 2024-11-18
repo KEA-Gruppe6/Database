@@ -8,8 +8,9 @@ public class Plane
     public long PlaneId { get; set; }
     public string PlaneDisplayName { get; set; }
     
-    public long AirlineId { get; set; }
-    public Airline Airline { get; set; }
+    public long? AirlineId { get; set; }
+    
+    public Airline? Airline { get; set; }
     
     ICollection<Departure> Departures { get; set; }
     
