@@ -52,6 +52,15 @@ namespace Database_project.Core.Services
             }
         }
 
+        public async Task<Plane> CreatePlaneAsync(Plane plane)
+        {
+            await using var context = await _context.CreateDbContextAsync();
+            var createdPlane = await context.Planes.AddAsync(plane);
+            await context.SaveChangesAsync();
+
+            return createdPlane.Entity;
+        }
+
         public async Task<Plane?> UpdatePlaneAsync(Plane updatedPlane)
         {
             await using var context = await _context.CreateDbContextAsync();    
