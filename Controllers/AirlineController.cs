@@ -1,4 +1,5 @@
 ﻿using Database_project.Core.Entities;
+using Database_project.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Database_project.Controllers;
@@ -7,27 +8,67 @@ namespace Database_project.Controllers;
 [Route("[controller]")]
 public class AirlineController : ControllerBase
 {
-    [HttpGet(Name = "Airline")]
-    public string GetAirline(int id)
+    private readonly IAirlineService _airlineService;
+
+    public AirlineController(IAirlineService airlineService)
     {
-        throw new NotImplementedException();
+        _airlineService = airlineService;
+    }
+    
+    
+    [HttpGet("{id:long}",Name = "Airline")]
+    public async Task<IActionResult> GetAirline(long id)
+    {
+        var airline = await _airlineService.GetAirlineByIdAsync(id);
+        if (airline == null)
+        {
+            return NotFound($"Airline with ID {id} not found.");
+        }
+
+        return Ok(airline);
     }
 
-    [HttpPost(Name = "Airline")]
-    public string CreateAirline([FromBody] Airline airline)
+
+    [HttpPost]
+    public async Task<IActionResult> CreateAirline([FromBody] Airline airline)
     {
-        throw new NotImplementedException();
+        if (airline == null)
+        {
+            return BadRequest("Airline data is invalid.");
+        }
+
+        var createdAirline = await _airlineService.CreateAirlineAsync(airline);
+        return CreatedAtAction(nameof(GetAirline), new { id = createdAirline.AirlineId }, createdAirline);
     }
 
-    [HttpPatch(Name = "Airline")]
-    public string UpdateAirline([FromBody] Airline airline)
+
+    [HttpPatch("{id:long}")]
+    public async Task<IActionResult> UpdateAirline(int id, [FromBody] Airline updatedAirline)
     {
-        throw new NotImplementedException();
+        if (id != updatedAirline.AirlineId)
+        {
+            return BadRequest("Airline ID mismatch.");
+        }
+
+        var result = await _airlineService.UpdateAirlineAsync(updatedAirline);
+        if (!result)
+        {
+            return NotFound($"Airline with ID {id} not found.");
+        }
+
+        return Ok(updatedAirline);
     }
 
-    [HttpDelete(Name = "Airline")]
-    public string DeleteAirline(int id)
+    
+    [HttpDelete("{id:long}")]
+    public async Task<IActionResult> DeleteAirline(long id)
     {
-        throw new NotImplementedException();
+        var result = await _airlineService.DeleteAirlineAsync(id);
+        if (!result)
+        {
+            return NotFound($"Airline with ID {id} not found.");
+        }
+
+        return NoContent();
     }
 }
