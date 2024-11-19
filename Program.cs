@@ -2,6 +2,7 @@ using Database_project.Core;
 using Database_project.Core.Interfaces;
 using Database_project.Core.Services;
 using Database_project.Services;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,7 +31,22 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
-    dbContext.Database.Migrate();
+    var retryCount = 5;
+    var delay = TimeSpan.FromSeconds(10);
+
+    for (int i = 0; i < retryCount; i++)
+    {
+        try
+        {
+            dbContext.Database.Migrate();
+            break;
+        }
+        catch (SqlException)
+        {
+            if (i == retryCount - 1) throw;
+            Thread.Sleep(delay);
+        }
+    }
 }
 
 // Configure the HTTP request pipeline.
