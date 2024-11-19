@@ -47,6 +47,11 @@ using (var scope = app.Services.CreateScope())
             Thread.Sleep(delay);
         }
     }
+
+    // Run seed SQL query
+    var sqlFilePath = "populatedb.sql";
+    var sqlQuery = File.ReadAllText(sqlFilePath);
+    dbContext.Database.ExecuteSqlRaw(sqlQuery);
 }
 
 // Configure the HTTP request pipeline.
