@@ -10,7 +10,7 @@ RUN dotnet restore
 COPY . ./
 
 # Build the application
-RUN dotnet publish -c Release -o out
+RUN dotnet publish Database-project.csproj -c Release -o out
 
 # Use the official .NET 8 runtime image to run the application
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
