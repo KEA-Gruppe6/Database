@@ -1,14 +1,16 @@
 using Database_project.Core;
 using Database_project.Core.Interfaces;
+using Database_project.Core.Services;
 using Database_project.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 //Add Database context
+var connectionString = builder.Configuration.GetConnectionString("MSSQL") ?? Environment.GetEnvironmentVariable("MSSQL");
 builder.Services.AddDbContextFactory<DatabaseContext>(options =>
 {
-    options.UseSqlServer("Data Source=127.0.0.1;Database=DineTime;User ID=sa;Password=Password123;Trusted_Connection=False;Encrypt=True;TrustServerCertificate=True;");
+    options.UseSqlServer(connectionString);
 });
 
 
@@ -21,6 +23,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IAirlineService, AirlineService>();
 builder.Services.AddScoped<IAirportService, AirportService>();
+builder.Services.AddScoped<PlaneService>();
+builder.Services.AddScoped<OrderService>();
 
 var app = builder.Build();
 
