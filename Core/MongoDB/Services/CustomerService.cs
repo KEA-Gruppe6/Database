@@ -35,13 +35,13 @@ public class CustomerService
 
     public async Task UpdateCustomerAsync(string customerId, MongoDBCustomer updatedCustomer)
     {
-        // Build the update definition for the fields you want to update
+        
         var updateDefinition = Builders<MongoDBCustomer>.Update
             .Set(c => c.FirstName, updatedCustomer.FirstName)
             .Set(c => c.LastName, updatedCustomer.LastName)
             .Set(c => c.PassportNumber, updatedCustomer.PassportNumber);
 
-        // Perform the update using the customerId filter
+        
         var result = await _customersCollection.UpdateOneAsync(
             c => c.CustomerId == customerId, // Filter by customerId
             updateDefinition // Define the fields to update
@@ -49,7 +49,6 @@ public class CustomerService
 
         if (result.ModifiedCount == 0)
         {
-            // Optionally handle the case where no document was updated
             throw new Exception($"Customer with ID {customerId} not found or no changes were made.");
         }
     }

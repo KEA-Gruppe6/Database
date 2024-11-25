@@ -42,6 +42,7 @@ builder.Services.AddScoped<PlaneService>();
 builder.Services.AddScoped<OrderService>();
 builder.Services.AddSingleton<MongoDbService>();
 builder.Services.AddScoped<CustomerService>();
+builder.Services.AddScoped<Database_project.Core.MongoDB.Services.AirlineService>();
 
 var app = builder.Build();
 

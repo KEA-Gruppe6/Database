@@ -1,5 +1,4 @@
-﻿using Database_project.Core.Entities;
-using Database_project.Core.MongoDB.Services;
+﻿using Database_project.Core.MongoDB.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using Database_project.Core.MongoDB.DTO;
