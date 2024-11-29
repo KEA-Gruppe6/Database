@@ -39,62 +39,35 @@ public class AirlineService : IAirlineService
     {
         await using var context = await _context.CreateDbContextAsync();
 
-        await context.Airlines.AddAsync(airline);
-        await context.SaveChangesAsync();
+        // Ensure that the airline object does not include planes
+        airline.Planes = null;
 
+        // Add the airline to the database
+        context.Airlines.Add(airline);
+        await context.SaveChangesAsync();
         return airline;
     }
 
     public async Task<bool> UpdateAirlineAsync(Airline airline)
     {
         await using var context = await _context.CreateDbContextAsync();
-        try
+
+        // Retrieve the existing airline from the database
+        var existingAirline = await context.Airlines.FindAsync(airline.AirlineId);
+        if (existingAirline == null)
         {
-            var existingAirline = await context.Airlines
-                .Include(a => a.Planes)  // Include planes to handle updates
-                .FirstOrDefaultAsync(a => a.AirlineId == airline.AirlineId);
-
-            if (existingAirline == null)
-            {
-                return false;  // If the airline doesn't exist, return false
-            }
-            //change airline name 
-            existingAirline.AirlineName = airline.AirlineName;
-
-            //Remove Planes
-            var planeIdsToRemove = existingAirline.Planes
-                .Where(p => !airline.Planes.Any(updatedPlane => updatedPlane.PlaneId == p.PlaneId))
-                .Select(p => p.PlaneId)
-                .ToList();
-
-            foreach (var planeId in planeIdsToRemove)
-            {
-                var planeToRemove = existingAirline.Planes.First(p => p.PlaneId == planeId);
-                existingAirline.Planes.Remove(planeToRemove);
-            }
-
-            //Add planes
-            var planeIdsToAdd = airline.Planes
-                .Where(p => !existingAirline.Planes.Any(existingPlane => existingPlane.PlaneId == p.PlaneId))
-                .ToList();
-
-            foreach (var newPlane in planeIdsToAdd)
-            {
-                existingAirline.Planes.Add(new Plane
-                {
-                    PlaneId = newPlane.PlaneId,
-                    PlaneDisplayName = newPlane.PlaneDisplayName,
-                    AirlineId = airline.AirlineId // Ensure the new plane is associated with the updated airline
-                });
-            }
-
-            await context.SaveChangesAsync();
-            return true;
+            throw new KeyNotFoundException("Airline not found");
         }
-        catch (Exception ex)
-        {
-            throw new Exception();
-        }
+
+        // Update the properties of the existing airline
+        existingAirline.AirlineName = airline.AirlineName;
+        // Ensure that the planes collection is not updated
+        existingAirline.Planes = existingAirline.Planes;
+
+        // Save the changes to the database
+        context.Airlines.Update(existingAirline);
+        await context.SaveChangesAsync();
+        return true;
     }
 
     public async Task<bool> DeleteAirlineAsync(long id)
