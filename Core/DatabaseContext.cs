@@ -18,12 +18,6 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbCont
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        if (!optionsBuilder.IsConfigured)
-        {
-            optionsBuilder.UseSqlServer("Data Source=host.docker.internal;Database=AirportDB;User ID=sa;Password=Password123;Trusted_Connection=False;Encrypt=True;TrustServerCertificate=True;",
-                options => options.MigrationsAssembly("AirTravel"))
-                .UseLazyLoadingProxies();
-        }
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
