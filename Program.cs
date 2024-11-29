@@ -23,6 +23,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IAirlineService, AirlineService>();
+builder.Services.AddScoped<IAirportService, AirportService>();
 builder.Services.AddScoped<PlaneService>();
 builder.Services.AddScoped<OrderService>();
 
