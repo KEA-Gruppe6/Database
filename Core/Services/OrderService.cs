@@ -1,10 +1,11 @@
 ﻿using Database_project.Controllers.RequestDTOs;
 using Database_project.Core.Entities;
+using Database_project.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Database_project.Core.Services
 {
-    public class OrderService
+    public class OrderService : IOrderService
     {
         private readonly IDbContextFactory<DatabaseContext> _context;
 
@@ -12,7 +13,13 @@ namespace Database_project.Core.Services
         {
             _context = context;
         }
-        public async Task<Order> CreateOrder(OrderRequestDTO buyTicketsRequest)
+
+        public async Task<Order?> GetOrderByIdAsync(int id)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public async Task<Order> CreateOrderAsync(OrderRequestDTO buyTicketsRequest)
         {
             await using var context = await _context.CreateDbContextAsync();
             await using var transaction = context.Database.BeginTransaction();
@@ -85,5 +92,15 @@ namespace Database_project.Core.Services
                 throw new Exception();
             }
         }
+        public async Task<bool> UpdateOrderAsync(Order updatedOrder)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public async Task<bool> DeleteOrderAsync(int id)
+        {
+            throw new System.NotImplementedException();
+        }
     }
+
 }

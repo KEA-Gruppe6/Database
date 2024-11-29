@@ -1,6 +1,6 @@
 ﻿using Database_project.Controllers.RequestDTOs;
 using Database_project.Core.Entities;
-using Database_project.Core.Services;
+using Database_project.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Database_project.Controllers;
@@ -9,8 +9,8 @@ namespace Database_project.Controllers;
 [Route("[controller]")]
 public class OrderController : ControllerBase
 {
-    private OrderService _orderService;
-    public OrderController(OrderService orderService)
+    private IOrderService _orderService;
+    public OrderController(IOrderService orderService)
     {
         _orderService = orderService;
     }
@@ -26,7 +26,7 @@ public class OrderController : ControllerBase
     {
         try
         {
-            var createdTickets = await _orderService.CreateOrder(tickets);
+            var createdTickets = await _orderService.CreateOrderAsync(tickets);
 
             return Ok(createdTickets);
 
