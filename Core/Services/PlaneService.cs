@@ -1,10 +1,11 @@
 ﻿using Database_project.Core.DTOs;
 using Database_project.Core.Entities;
+using Database_project.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Database_project.Core.Services
 {
-    public class PlaneService
+    public class PlaneService : IPlaneService
     {
         private readonly IDbContextFactory<DatabaseContext> _context;
 
@@ -62,10 +63,10 @@ namespace Database_project.Core.Services
             return createdPlane.Entity;
         }
 
-        public async Task<Plane?> UpdatePlaneAsync(Plane updatedPlane)
+        public async Task<bool> UpdatePlaneAsync(Plane updatedPlane)
         {
-            await using var context = await _context.CreateDbContextAsync();    
-            var planeToBeUpdated =  await context.Planes.SingleOrDefaultAsync(p => p.PlaneId == updatedPlane.PlaneId);   
+            await using var context = await _context.CreateDbContextAsync();
+            var planeToBeUpdated = await context.Planes.SingleOrDefaultAsync(p => p.PlaneId == updatedPlane.PlaneId);
 
             if (planeToBeUpdated == null)
             {
@@ -76,14 +77,14 @@ namespace Database_project.Core.Services
             planeToBeUpdated.PlaneDisplayName = updatedPlane.PlaneDisplayName;
 
             await context.SaveChangesAsync();
-            return planeToBeUpdated;
+            return true;
         }
 
-        public async Task<bool> DeletePlaneByIdAsync(long planeId)
+        public async Task<bool> DeletePlaneAsync(long id)
         {
             await using var context = await _context.CreateDbContextAsync();
 
-            var planeToBeDeleted = await context.Planes.SingleOrDefaultAsync(p => p.PlaneId == planeId);
+            var planeToBeDeleted = await context.Planes.SingleOrDefaultAsync(p => p.PlaneId == id);
 
             if (planeToBeDeleted == null)
                 return true;

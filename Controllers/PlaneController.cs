@@ -1,5 +1,5 @@
 ﻿using Database_project.Core.Entities;
-using Database_project.Core.Services;
+using Database_project.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Database_project.Controllers;
@@ -8,9 +8,9 @@ namespace Database_project.Controllers;
 [Route("[controller]")]
 public class PlaneController : ControllerBase
 {
-    private PlaneService _planeService;
+    private IPlaneService _planeService;
 
-    public PlaneController(PlaneService planeService)
+    public PlaneController(IPlaneService planeService)
     {
         _planeService = planeService;
     }
@@ -20,7 +20,7 @@ public class PlaneController : ControllerBase
     {
         try
         {
-            var plane = await _planeService.GetPlaneByIdAsync(id);  
+            var plane = await _planeService.GetPlaneByIdAsync(id);
             return Ok(plane);
         }
         catch (Exception ex)
@@ -64,7 +64,7 @@ public class PlaneController : ControllerBase
     {
         try
         {
-            var isDeleted = await _planeService.DeletePlaneByIdAsync(id);
+            var isDeleted = await _planeService.DeletePlaneAsync(id);
 
             return Ok(isDeleted);
         }
