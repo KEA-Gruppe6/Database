@@ -1,4 +1,5 @@
 ﻿using Database_project.Core.Entities;
+using Database_project.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Database_project.Controllers;
@@ -7,27 +8,58 @@ namespace Database_project.Controllers;
 [Route("[controller]")]
 public class CustomerController : ControllerBase
 {
-    [HttpGet(Name = "Customer")]
-    public string GetCustomer(int id)
+    private readonly ICustomerService _customerService;
+
+    public CustomerController(ICustomerService customerService)
     {
-        throw new NotImplementedException();
+        _customerService = customerService;
     }
 
-    [HttpPost(Name = "Customer")]
-    public string CreateCustomer([FromBody] Customer customer)
+    [HttpGet("{id:long}", Name = "Customer")]
+    public async Task<IActionResult> GetCustomer(long id)
     {
-        throw new NotImplementedException();
+        var customer = await _customerService.GetCustomerByIdAsync(id);
+        if (customer == null)
+        {
+            return NotFound($"Customer with ID {id} not found.");
+        }
+
+        return Ok(customer);
     }
 
-    [HttpPatch(Name = "Customer")]
-    public string UpdateCustomer([FromBody] Customer customer)
+    [HttpPost]
+    public async Task<IActionResult> CreateCustomer([FromBody] Customer customer)
     {
-        throw new NotImplementedException();
+        var createdCustomer = await _customerService.CreateCustomerAsync(customer);
+        return CreatedAtAction(nameof(GetCustomer), new { id = createdCustomer.CustomerId }, createdCustomer);
     }
 
-    [HttpDelete(Name = "Customer")]
-    public string DeleteCustomer(int id)
+    [HttpPatch("{id:long}")]
+    public async Task<IActionResult> UpdateCustomer(long id, [FromBody] Customer updatedCustomer)
     {
-        throw new NotImplementedException();
+        if (id != updatedCustomer.CustomerId)
+        {
+            return BadRequest("Customer ID mismatch.");
+        }
+
+        var result = await _customerService.UpdateCustomerAsync(updatedCustomer);
+        if (!result)
+        {
+            return NotFound($"Customer with ID {id} not found.");
+        }
+
+        return Ok(updatedCustomer);
+    }
+
+    [HttpDelete("{id:long}")]
+    public async Task<IActionResult> DeleteCustomer(long id)
+    {
+        var result = await _customerService.DeleteCustomerAsync(id);
+        if (!result)
+        {
+            return NotFound($"Customer with ID {id} not found.");
+        }
+
+        return NoContent();
     }
 }
