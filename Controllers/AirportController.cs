@@ -14,7 +14,7 @@ public class AirportController : ControllerBase
     {
         _airportService = airportService;
     }
-    
+
     [HttpGet("{id:long}", Name = "Airport")]
     public async Task<IActionResult> GetAirport(int id)
     {
@@ -30,11 +30,6 @@ public class AirportController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateAirport([FromBody] Airport airport)
     {
-        if (airport == null)
-        {
-            return BadRequest("Airport data is invalid.");
-        }
-
         var createdAirport = await _airportService.CreateAirportAsync(airport);
         return CreatedAtAction(nameof(GetAirport), new { id = createdAirport.AirportId }, createdAirport);
     }

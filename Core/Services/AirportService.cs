@@ -8,7 +8,7 @@ namespace Database_project.Services;
 public class AirportService : IAirportService
 {
     private readonly IDbContextFactory<DatabaseContext> _context;
-    
+
     public AirportService(IDbContextFactory<DatabaseContext> context)
     {
         _context = context;
@@ -17,39 +17,19 @@ public class AirportService : IAirportService
     public async Task<Airport?> GetAirportByIdAsync(long id)
     {
         await using var context = await _context.CreateDbContextAsync();
-        try
-        {
-            var airport = await context.Airports.FirstOrDefaultAsync(a => a.AirportId == id);
-            
-            if (airport == null)
-            {
-                throw new Exception($"Could not find Airline with id: {id}");
-            }
+        var airport = await context.Airports.FirstOrDefaultAsync(a => a.AirportId == id);
 
-            return airport;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
+        return airport;
     }
 
     public async Task<Airport> CreateAirportAsync(Airport airport)
     {
         await using var context = await _context.CreateDbContextAsync();
-        try
-        {
-            await context.Airports.AddAsync(airport);
-            await context.SaveChangesAsync();
-            
-            return airport;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
+
+        await context.Airports.AddAsync(airport);
+        await context.SaveChangesAsync();
+
+        return airport;
     }
 
     public async Task<bool> UpdateAirportAsync(long id, Airport airport)
@@ -59,17 +39,17 @@ public class AirportService : IAirportService
         {
             var existingAirport = await context.Airports
                 .FirstOrDefaultAsync(a => a.AirportId == id);
-    
+
             if (existingAirport == null)
             {
                 return false;  // If the airline doesn't exist, return false
             }
-            
+
             existingAirport.AirportName = airport.AirportName;
             existingAirport.AirportCity = airport.AirportCity;
             existingAirport.Municipality = airport.Municipality;
             existingAirport.AirportAbbreviation = airport.AirportAbbreviation;
-            
+
             await context.SaveChangesAsync();
             return true;
         }
@@ -93,7 +73,7 @@ public class AirportService : IAirportService
 
             context.Airports.Remove(airport);
             await context.SaveChangesAsync();
-            
+
             return true;
         }
         catch (Exception e)
@@ -102,5 +82,5 @@ public class AirportService : IAirportService
             throw;
         }
     }
-    
+
 }

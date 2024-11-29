@@ -14,9 +14,9 @@ public class AirlineController : ControllerBase
     {
         _airlineService = airlineService;
     }
-    
-    
-    [HttpGet("{id:long}",Name = "Airline")]
+
+
+    [HttpGet("{id:long}", Name = "Airline")]
     public async Task<IActionResult> GetAirline(long id)
     {
         var airline = await _airlineService.GetAirlineByIdAsync(id);
@@ -32,11 +32,6 @@ public class AirlineController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateAirline([FromBody] Airline airline)
     {
-        if (airline == null)
-        {
-            return BadRequest("Airline data is invalid.");
-        }
-
         var createdAirline = await _airlineService.CreateAirlineAsync(airline);
         return CreatedAtAction(nameof(GetAirline), new { id = createdAirline.AirlineId }, createdAirline);
     }
@@ -59,7 +54,7 @@ public class AirlineController : ControllerBase
         return Ok(updatedAirline);
     }
 
-    
+
     [HttpDelete("{id:long}")]
     public async Task<IActionResult> DeleteAirline(long id)
     {
