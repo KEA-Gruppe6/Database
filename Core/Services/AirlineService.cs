@@ -102,20 +102,25 @@ public class AirlineService : IAirlineService
         await using var context = await _context.CreateDbContextAsync();
         try
         {
-            var airline = await context.Airlines.FindAsync(id);
+            var airline = await context.Airlines.Include(a => a.Planes).FirstOrDefaultAsync(a => a.AirlineId == id);
             if (airline == null)
             {
                 return false;
             }
 
+            // Remove related planes
+            context.Planes.RemoveRange(airline.Planes);
+
+            // Remove the airline
             context.Airlines.Remove(airline);
+
             await context.SaveChangesAsync();
 
             return true;
         }
         catch (Exception ex)
         {
-            throw new Exception();
+            throw new Exception("An error occurred while deleting the airline.", ex);
         }
     }
 }
