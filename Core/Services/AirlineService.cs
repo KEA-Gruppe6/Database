@@ -43,7 +43,7 @@ public class AirlineService : IAirlineService
         airline.Planes = null;
 
         // Add the airline to the database
-        context.Airlines.Add(airline);
+        context.Airlines.AddAsync(airline);
         await context.SaveChangesAsync();
         return airline;
     }

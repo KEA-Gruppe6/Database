@@ -15,27 +15,59 @@ public class FlightrouteController : ControllerBase
         _flightrouteService = flightrouteService;
     }
 
-    [HttpGet]
-    public string GetFlightroute(int id)
+    [HttpGet("{id:long}", Name = "Flightroute")]
+    public async Task<IActionResult> GetFlightroute(long id)
     {
-        throw new NotImplementedException();
+        var flightroute = await _flightrouteService.GetFlightrouteByIdAsync(id);
+        if (flightroute == null)
+        {
+            return NotFound($"Flightroute with ID {id} not found.");
+        }
+
+        return Ok(flightroute);
     }
 
     [HttpPost]
-    public string CreateFlightroute([FromBody] Flightroute flightroute)
+    public async Task<IActionResult> CreateFlightroute([FromBody] Flightroute flightroute)
     {
-        throw new NotImplementedException();
+        Flightroute createdFlightroute;
+        try
+        {
+            createdFlightroute = await _flightrouteService.CreateFlightrouteAsync(flightroute);
+        }
+        catch (KeyNotFoundException e)
+        {
+            return BadRequest(e.Message);
+        }
+        return CreatedAtAction(nameof(GetFlightroute), new { id = createdFlightroute.FlightrouteId }, createdFlightroute);
     }
 
     [HttpPatch]
-    public string UpdateFlightroute([FromBody] Flightroute flightroute)
+    public async Task<IActionResult> UpdateFlightroute(long id, [FromBody] Flightroute updatedFlightroute)
     {
-        throw new NotImplementedException();
+        if (id != updatedFlightroute.FlightrouteId)
+        {
+            return BadRequest("Flightroute ID mismatch.");
+        }
+
+        var result = await _flightrouteService.UpdateFlightrouteAsync(updatedFlightroute);
+        if (!result)
+        {
+            return NotFound($"Flightroute with ID {id} not found.");
+        }
+
+        return Ok(updatedFlightroute);
     }
 
     [HttpDelete]
-    public string DeleteFlightroute(int id)
+    public async Task<IActionResult> DeleteFlightroute(int id)
     {
-        throw new NotImplementedException();
+        var result = await _flightrouteService.DeleteFlightrouteAsync(id);
+        if (!result)
+        {
+            return NotFound($"Flightroute with ID {id} not found.");
+        }
+
+        return NoContent();
     }
 }
