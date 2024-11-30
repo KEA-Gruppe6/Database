@@ -42,7 +42,7 @@ public class FlightrouteController : ControllerBase
         return CreatedAtAction(nameof(GetFlightroute), new { id = createdFlightroute.FlightrouteId }, createdFlightroute);
     }
 
-    [HttpPatch]
+    [HttpPatch("{id:long}")]
     public async Task<IActionResult> UpdateFlightroute(long id, [FromBody] Flightroute updatedFlightroute)
     {
         if (id != updatedFlightroute.FlightrouteId)
@@ -59,8 +59,8 @@ public class FlightrouteController : ControllerBase
         return Ok(updatedFlightroute);
     }
 
-    [HttpDelete]
-    public async Task<IActionResult> DeleteFlightroute(int id)
+    [HttpDelete("{id:long}")]
+    public async Task<IActionResult> DeleteFlightroute(long id)
     {
         var result = await _flightrouteService.DeleteFlightrouteAsync(id);
         if (!result)
