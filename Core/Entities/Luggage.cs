@@ -8,5 +8,6 @@ public class Luggage
     public long LuggageId { get; set; }
     public double MaxWeight { get; set; }
     public bool IsCarryOn { get; set; }
-    
+    public long TicketId { get; set; }
+
 }

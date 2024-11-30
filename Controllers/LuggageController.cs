@@ -1,4 +1,5 @@
 ﻿using Database_project.Core.Entities;
+using Database_project.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Database_project.Controllers;
@@ -7,27 +8,72 @@ namespace Database_project.Controllers;
 [Route("[controller]")]
 public class LuggageController : ControllerBase
 {
-    [HttpGet(Name = "Luggage")]
-    public string GetLuggage(int id)
+    private readonly ILuggageService _luggageService;
+
+    public LuggageController(ILuggageService luggageService)
     {
-        throw new NotImplementedException();
+        _luggageService = luggageService;
     }
 
-    [HttpPost(Name = "Luggage")]
-    public string CreateLuggage([FromBody] Luggage luggage)
+    [HttpGet("{id:long}", Name = "Luggage")]
+    public async Task<IActionResult> GetLuggage(long id)
     {
-        throw new NotImplementedException();
+        var luggage = await _luggageService.GetLuggageByIdAsync(id);
+        if (luggage == null)
+        {
+            return NotFound($"Luggage with ID {id} not found.");
+        }
+
+        return Ok(luggage);
     }
 
-    [HttpPatch(Name = "Luggage")]
-    public string UpdateLuggage([FromBody] Luggage luggage)
+    [HttpPost]
+    public async Task<IActionResult> CreateLuggage([FromBody] Luggage luggage)
     {
-        throw new NotImplementedException();
+        Luggage createdLuggage;
+        try
+        {
+            createdLuggage = await _luggageService.CreateLuggageAsync(luggage);
+        }
+        catch (KeyNotFoundException e)
+        {
+            return BadRequest(e.Message);
+        }
+        return CreatedAtAction(nameof(GetLuggage), new { id = createdLuggage.LuggageId }, createdLuggage);
     }
 
-    [HttpDelete(Name = "Luggage")]
-    public string DeleteLuggage(int id)
+    [HttpPatch("{id:long}")]
+    public async Task<IActionResult> UpdateLuggage(long id, [FromBody] Luggage luggage)
     {
-        throw new NotImplementedException();
+        if (id != luggage.LuggageId)
+        {
+            return BadRequest("Luggage ID mismatch.");
+        }
+        try
+        {
+            bool result = await _luggageService.UpdateLuggageAsync(luggage);
+            if (!result)
+            {
+                return NotFound($"Luggage with ID {id} not found.");
+            }
+        }
+        catch (KeyNotFoundException e)
+        {
+            return BadRequest(e.Message);
+        }
+
+        return Ok(luggage);
+    }
+
+    [HttpDelete("{id:long}")]
+    public async Task<IActionResult> DeleteLuggage(long id)
+    {
+        var result = await _luggageService.DeleteLuggageAsync(id);
+        if (!result)
+        {
+            return NotFound($"Luggage with ID {id} not found.");
+        }
+
+        return NoContent();
     }
 }
