@@ -26,12 +26,12 @@ namespace Database_project.Core.Services
 
             try
             {
-                var departure = await context.Departures
-                    .FirstOrDefaultAsync(d => d.DepartureId == buyTicketsRequest.DepartureId);
+                var flightroute = await context.Flightroutes
+                    .FirstOrDefaultAsync(d => d.FlightrouteId == buyTicketsRequest.FlightrouteId);
 
-                if (departure == null)
+                if (flightroute == null)
                 {
-                    throw new Exception($"Could not find Departure with id: {buyTicketsRequest.DepartureId}");
+                    throw new Exception($"Could not find Flightroute with id: {buyTicketsRequest.FlightrouteId}");
                 }
 
                 if (buyTicketsRequest.Tickets == null || buyTicketsRequest.Tickets.Count == 0)
@@ -53,7 +53,7 @@ namespace Database_project.Core.Services
                 {
                     var newTicket = new Ticket()
                     {
-                        Departure = departure,
+                        Flightroute = flightroute,
                         Price = 100,
                         TicketTypeId = ticket.TicketTypeId,
                         OrderId = order.OrderId

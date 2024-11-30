@@ -9,7 +9,7 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbCont
     public DbSet<Airline> Airlines { get; set; }
     public DbSet<Airport> Airports { get; set; }
     public DbSet<Customer> Customers { get; set; }
-    public DbSet<Departure> Departures { get; set; }
+    public DbSet<Flightroute> Flightroutes { get; set; }
     public DbSet<Luggage> Luggage { get; set; }
     public DbSet<Maintenance> Maintenances { get; set; }
     public DbSet<Plane> Planes { get; set; }
@@ -22,9 +22,9 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbCont
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Departure>(entity =>
+        modelBuilder.Entity<Flightroute>(entity =>
         {
-            entity.HasKey(e => e.DepartureId);
+            entity.HasKey(e => e.FlightrouteId);
             entity.HasOne(d => d.DepartureAirport)
                 .WithMany()
                 .HasForeignKey(d => d.DepartureAirportId)

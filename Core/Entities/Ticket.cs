@@ -15,8 +15,8 @@ public class Ticket
     public long CustomerId { get; set; }
     public Customer Customer { get; set; }
 
-    public long DepartureId { get; set; }
-    public Departure Departure { get; set; }
+    public long FlightrouteId { get; set; }
+    public Flightroute Flightroute { get; set; }
     public int OrderId { get; set; }
     public ICollection<Luggage> Luggage { get; set; }
 }

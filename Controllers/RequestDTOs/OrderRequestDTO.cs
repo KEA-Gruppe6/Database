@@ -4,7 +4,7 @@ namespace Database_project.Controllers.RequestDTOs
 {
     public class OrderRequestDTO
     {
-        public long DepartureId { get; set; }
+        public long FlightrouteId { get; set; }
         public List<SingleTicketDTO>? Tickets { get; set; }
     }
 }
