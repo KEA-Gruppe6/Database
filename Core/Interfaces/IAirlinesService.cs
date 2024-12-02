@@ -7,6 +7,6 @@ public interface IAirlineService
 {
     Task<AirlineDTO?> GetAirlineByIdAsync(long id);
     Task<Airline> CreateAirlineAsync(Airline airline);
-    Task<bool> UpdateAirlineAsync(Airline airline);
+    Task<AirlineDTO> UpdateAirlineAsync(Airline airline);
     Task<bool> DeleteAirlineAsync(long id);
 }

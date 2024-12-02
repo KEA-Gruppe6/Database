@@ -48,7 +48,7 @@ public class AirlineService : IAirlineService
         return airline;
     }
 
-    public async Task<bool> UpdateAirlineAsync(Airline airline)
+    public async Task<AirlineDTO> UpdateAirlineAsync(Airline airline)
     {
         await using var context = await _context.CreateDbContextAsync();
 
@@ -56,7 +56,7 @@ public class AirlineService : IAirlineService
         var existingAirline = await context.Airlines.FindAsync(airline.AirlineId);
         if (existingAirline == null)
         {
-            throw new KeyNotFoundException("Airline not found");
+            throw new KeyNotFoundException($"Airline with ID {airline.AirlineId} not found.");
         }
 
         // Update the properties of the existing airline
@@ -67,7 +67,9 @@ public class AirlineService : IAirlineService
         // Save the changes to the database
         context.Airlines.Update(existingAirline);
         await context.SaveChangesAsync();
-        return true;
+
+        var returnAirline = GetAirlineByIdAsync(existingAirline.AirlineId).Result;
+        return returnAirline;
     }
 
     public async Task<bool> DeleteAirlineAsync(long id)
