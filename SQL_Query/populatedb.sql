@@ -176,18 +176,18 @@ WHEN NOT MATCHED BY TARGET THEN
 
 MERGE INTO Maintenances AS target
 USING (VALUES
-    (1,1),
-    (2,2),
-    (3,3),
-    (4,4),
-    (5,5),
-    (6,6),
-    (7,7),
-    (8,8),
-    (9,9),
-    (10,10)
-) AS source (AirportId, PlaneId)
-ON target.AirportId = source.AirportId AND target.PlaneId = source.PlaneId
+    (1,1, '2024-11-15 08:00:00', '2024-11-15 10:30:00'),
+    (2,2, '2024-11-15 09:30:00', '2024-11-15 12:00:00'),
+    (3,3, '2024-11-15 10:00:00', '2024-11-15 13:00:00'),
+    (4,4, '2024-11-15 11:00:00', '2024-11-15 13:30:00'),
+    (5,5, '2024-11-15 12:00:00', '2024-11-15 14:30:00'),
+    (6,6, '2024-11-15 13:00:00', '2024-11-15 15:30:00'),
+    (7,7, '2024-11-15 14:00:00', '2024-11-15 16:30:00'),
+    (8,8, '2024-11-15 15:00:00', '2024-11-15 17:30:00'),
+    (9,9, '2024-11-15 16:00:00', '2024-11-15 18:30:00'),
+    (10,10, '2024-11-15 17:00:00', '2024-11-15 19:30:00')
+) AS source (AirportId, PlaneId, StartDate, EndDate)
+ON target.AirportId = source.AirportId AND target.PlaneId = source.PlaneId AND target.StartDate = source.StartDate AND target.EndDate = source.EndDate
 WHEN NOT MATCHED BY TARGET THEN
-    INSERT (AirportId, PlaneId)
-    VALUES (source.AirportId, source.PlaneId);
+    INSERT (AirportId, PlaneId, StartDate, EndDate)
+    VALUES (source.AirportId, source.PlaneId, SOURCE.StartDate, SOURCE.EndDate);
