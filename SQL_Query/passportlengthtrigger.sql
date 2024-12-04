@@ -4,12 +4,11 @@ INSTEAD OF INSERT
 AS
 BEGIN
     DECLARE @PassportNumberLength INT;
-    DECLARE @CustomerId BIGINT;
     DECLARE @FirstName NVARCHAR(50);
     DECLARE @LastName NVARCHAR(50);
     DECLARE @PassportNumber INT;
 
-    SELECT @CustomerId = CustomerId, @FirstName = FirstName, @LastName = LastName, @PassportNumber = PassportNumber
+    SELECT @FirstName = FirstName, @LastName = LastName, @PassportNumber = PassportNumber
     FROM inserted;
 
     SET @PassportNumberLength = LEN(CAST(@PassportNumber AS NVARCHAR(50)));
@@ -21,7 +20,7 @@ BEGIN
     END
     ELSE
     BEGIN
-        INSERT INTO Customers (CustomerId, FirstName, LastName, PassportNumber)
-        VALUES (@CustomerId, @FirstName, @LastName, @PassportNumber);
+        INSERT INTO Customers (FirstName, LastName, PassportNumber)
+        VALUES (@FirstName, @LastName, @PassportNumber);
     END
 END;
