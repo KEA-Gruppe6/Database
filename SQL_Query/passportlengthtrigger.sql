@@ -1,11 +1,7 @@
-IF OBJECT_ID('trg_ValidatePassportNumber', 'TR') IS NOT NULL
-    DROP TRIGGER trg_ValidatePassportNumber;
-GO
-
 CREATE TRIGGER trg_ValidatePassportNumber
-    ON Customers
-    INSTEAD OF INSERT
-    AS
+ON Customers
+INSTEAD OF INSERT
+AS
 BEGIN
     DECLARE @PassportNumberLength INT;
     DECLARE @FirstName NVARCHAR(50);
@@ -18,13 +14,13 @@ BEGIN
     SET @PassportNumberLength = LEN(CAST(@PassportNumber AS NVARCHAR(50)));
 
     IF @PassportNumberLength != 9
-        BEGIN
-            RAISERROR ('Passport number must be exactly 9 characters long.', 16, 1);
-            ROLLBACK TRANSACTION;
-        END
+    BEGIN
+        RAISERROR ('Passport number must be exactly 9 characters long.', 16, 1);
+        ROLLBACK TRANSACTION;
+    END
     ELSE
-        BEGIN
-            INSERT INTO Customers (FirstName, LastName, PassportNumber)
-            VALUES (@FirstName, @LastName, @PassportNumber);
-        END
+    BEGIN
+        INSERT INTO Customers (FirstName, LastName, PassportNumber)
+        VALUES (@FirstName, @LastName, @PassportNumber);
+    END
 END;
