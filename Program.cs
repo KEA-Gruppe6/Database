@@ -29,6 +29,7 @@ builder.Services.AddScoped<IPlaneService, PlaneService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IFlightrouteService, FlightrouteService>();
 builder.Services.AddScoped<ILuggageService, LuggageService>();
+builder.Services.AddScoped<IMaintenanceService, MaintenanceService>();
 
 var app = builder.Build();
 
