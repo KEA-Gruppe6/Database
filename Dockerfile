@@ -17,6 +17,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/out .
 COPY SQL_Query/populatedb.sql .
+COPY SQL_Query/passportlengthtrigger.sql .
 
 ENV ASPNETCORE_URLS=http://*:8080
 

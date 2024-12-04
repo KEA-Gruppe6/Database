@@ -49,9 +49,14 @@ using (var scope = app.Services.CreateScope())
         }
     }
 
-    // Run seed SQL query
-    var sqlFilePath = "populatedb.sql";
+    // Add passport length trigger
+    var sqlFilePath = "passportlengthtrigger.sql";
     var sqlQuery = File.ReadAllText(sqlFilePath);
+    dbContext.Database.ExecuteSqlRaw(sqlQuery);
+    
+    // Run seed SQL query
+    sqlFilePath = "populatedb.sql";
+    sqlQuery = File.ReadAllText(sqlFilePath);
     dbContext.Database.ExecuteSqlRaw(sqlQuery);
 }
 
