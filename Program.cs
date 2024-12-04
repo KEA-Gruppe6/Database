@@ -49,9 +49,15 @@ using (var scope = app.Services.CreateScope())
         }
     }
 
-    // Run seed SQL query
-    var sqlFilePath = "populatedb.sql";
+    // Add passport length trigger
+    var sqlFilePath = "passportlengthtrigger.sql";
     var sqlQuery = File.ReadAllText(sqlFilePath);
+    dbContext.Database.ExecuteSqlRaw("IF OBJECT_ID('trg_ValidatePassportNumber', 'TR') IS NOT NULL DROP TRIGGER trg_ValidatePassportNumber;");
+    dbContext.Database.ExecuteSqlRaw(sqlQuery);
+
+    // Run seed SQL query
+    sqlFilePath = "populatedb.sql";
+    sqlQuery = File.ReadAllText(sqlFilePath);
     dbContext.Database.ExecuteSqlRaw(sqlQuery);
 }
 

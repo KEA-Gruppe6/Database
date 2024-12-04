@@ -33,8 +33,10 @@ WHEN NOT MATCHED BY TARGET THEN
     INSERT (AirportName, AirportCity, Municipality, AirportAbbreviation)
     VALUES (source.AirportName, source.AirportCity, source.Municipality, source.AirportAbbreviation);
 
-MERGE INTO Customers AS target
-USING (VALUES
+DECLARE @Customers TABLE (FirstName NVARCHAR(50), LastName NVARCHAR(50), PassportNumber INT);
+
+INSERT INTO @Customers (FirstName, LastName, PassportNumber)
+VALUES
     ('John', 'Doe', 123456789),
     ('Jane', 'Smith', 987654321),
     ('Michael', 'Johnson', 112233445),
@@ -54,12 +56,37 @@ USING (VALUES
     ('Alexander', 'Martin', 229988445),
     ('Evelyn', 'Garcia', 887766554),
     ('Jackson', 'Rodriguez', 223344888),
-    ('Charlotte', 'Martinez', 998877224)
-) AS source (FirstName, LastName, PassportNumber)
-ON target.PassportNumber = source.PassportNumber
-WHEN NOT MATCHED BY TARGET THEN
-    INSERT (FirstName, LastName, PassportNumber)
-    VALUES (source.FirstName, source.LastName, source.PassportNumber);
+    ('Charlotte', 'Martinez', 998877224);
+
+DECLARE @FirstName NVARCHAR(50);
+DECLARE @LastName NVARCHAR(50);
+DECLARE @PassportNumber INT;
+
+DECLARE customer_cursor CURSOR FOR
+    SELECT FirstName, LastName, PassportNumber
+    FROM @Customers;
+
+OPEN customer_cursor;
+
+FETCH NEXT FROM customer_cursor INTO @FirstName, @LastName, @PassportNumber;
+
+WHILE @@FETCH_STATUS = 0
+    BEGIN
+        IF NOT EXISTS (
+            SELECT 1
+            FROM Customers
+            WHERE PassportNumber = @PassportNumber
+        )
+            BEGIN
+                INSERT INTO Customers (FirstName, LastName, PassportNumber)
+                VALUES (@FirstName, @LastName, @PassportNumber);
+            END
+
+        FETCH NEXT FROM customer_cursor INTO @FirstName, @LastName, @PassportNumber;
+    END
+
+CLOSE customer_cursor;
+DEALLOCATE customer_cursor;
 
 MERGE INTO Orders AS target
 USING (VALUES
