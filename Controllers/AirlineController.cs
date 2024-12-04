@@ -45,12 +45,12 @@ public class AirlineController : ControllerBase
     }
 
 
-    [HttpPatch("{id:long}")]
-    public async Task<IActionResult> UpdateAirline(long id, [FromBody] AirlineRequestDTO updatedAirlineDTO)
+    [HttpPatch()]
+    public async Task<IActionResult> UpdateAirline([FromBody] AirlineRequestDTO updatedAirlineDTO)
     {
         Airline updatedAirline = new Airline
         {
-            AirlineId = id,
+            AirlineId = updatedAirlineDTO.AirlineId,
             AirlineName = updatedAirlineDTO.AirlineName,
         };
 
