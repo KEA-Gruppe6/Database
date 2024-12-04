@@ -168,11 +168,11 @@ USING (VALUES
     (20.5, 0, 9),
     (29.0, 1, 10),
     (27.0, 0, 10)
-) AS source (MaxWeight, IsCarryOn, TicketId)
-ON target.MaxWeight = source.MaxWeight AND target.IsCarryOn = source.IsCarryOn AND target.TicketId = source.TicketId
+) AS source (Weight, IsCarryOn, TicketId)
+ON target.Weight = source.Weight AND target.IsCarryOn = source.IsCarryOn AND target.TicketId = source.TicketId
 WHEN NOT MATCHED BY TARGET THEN
-    INSERT (MaxWeight, IsCarryOn, TicketId)
-    VALUES (source.MaxWeight, source.IsCarryOn, source.TicketId);
+    INSERT (Weight, IsCarryOn, TicketId)
+    VALUES (source.Weight, source.IsCarryOn, source.TicketId);
 
 MERGE INTO Maintenances AS target
 USING (VALUES

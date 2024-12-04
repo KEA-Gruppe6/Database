@@ -1,11 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
-namespace Database_project.Core.Entities;
-
-public class Airport
+namespace Database_project.Controllers.RequestDTOs;
+public class AirportRequestDTO
 {
-    [Key]
-    public long AirportId { get; set; }
     public string AirportName { get; set; }
     public string AirportCity { get; set; }
     public string Municipality { get; set; }

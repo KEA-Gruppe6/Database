@@ -7,6 +7,6 @@ public interface ICustomerService
 {
     Task<Customer?> GetCustomerByIdAsync(long id);
     Task<Customer> CreateCustomerAsync(Customer customer);
-    Task<bool> UpdateCustomerAsync(Customer customer);
-    Task<bool> DeleteCustomerAsync(long id);
+    Task<Customer> UpdateCustomerAsync(Customer customer);
+    Task<Customer> DeleteCustomerAsync(long id);
 }

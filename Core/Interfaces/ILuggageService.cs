@@ -7,6 +7,6 @@ public interface ILuggageService
 {
     Task<Luggage?> GetLuggageByIdAsync(long id);
     Task<Luggage> CreateLuggageAsync(Luggage luggage);
-    Task<bool> UpdateLuggageAsync(Luggage updatedLuggage);
-    Task<bool> DeleteLuggageAsync(long id);
+    Task<Luggage> UpdateLuggageAsync(Luggage luggage);
+    Task<Luggage> DeleteLuggageAsync(long id);
 }

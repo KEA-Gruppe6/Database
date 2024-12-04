@@ -7,7 +7,7 @@ public class Plane
 {
     [Key]
     public long PlaneId { get; set; }
-    public string PlaneDisplayName { get; set; } = string.Empty;
+    public string PlaneDisplayName { get; set; }
 
     public long? AirlineId { get; set; }
     [JsonIgnore]

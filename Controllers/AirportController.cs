@@ -1,4 +1,5 @@
-﻿using Database_project.Core.Entities;
+﻿using Database_project.Controllers.RequestDTOs;
+using Database_project.Core.Entities;
 using Database_project.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,8 +16,8 @@ public class AirportController : ControllerBase
         _airportService = airportService;
     }
 
-    [HttpGet("{id:long}", Name = "Airport")]
-    public async Task<IActionResult> GetAirport(int id)
+    [HttpGet("{id:long}")]
+    public async Task<ActionResult<Airport?>> GetAirport(int id)
     {
         var airport = await _airportService.GetAirportByIdAsync(id);
         if (airport == null)
@@ -28,35 +29,55 @@ public class AirportController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateAirport([FromBody] Airport airport)
+    public async Task<ActionResult<Airport>> CreateAirport([FromBody] AirportRequestDTO airportDTO)
     {
+        Airport airport = new Airport
+        {
+            AirportId = 0,
+            AirportName = airportDTO.AirportName,
+            AirportCity = airportDTO.AirportCity,
+            Municipality = airportDTO.Municipality,
+            AirportAbbreviation = airportDTO.AirportAbbreviation
+        };
+
         var createdAirport = await _airportService.CreateAirportAsync(airport);
         return CreatedAtAction(nameof(GetAirport), new { id = createdAirport.AirportId }, createdAirport);
     }
 
     [HttpPatch("{id:long}")]
-    public async Task<IActionResult> UpdateAirport(long id, [FromBody] Airport updatedAirport)
+    public async Task<ActionResult<Airport>> UpdateAirport(long id, [FromBody] AirportRequestDTO updatedAirportDTO)
     {
-
-        var result = await _airportService.UpdateAirportAsync(id, updatedAirport);
-        if (!result)
+        Airport updatedAirport = new Airport
         {
-            return NotFound($"Airport with ID {id} not found.");
-        }
+            AirportId = id,
+            AirportName = updatedAirportDTO.AirportName,
+            AirportCity = updatedAirportDTO.AirportCity,
+            Municipality = updatedAirportDTO.Municipality,
+            AirportAbbreviation = updatedAirportDTO.AirportAbbreviation
+        };
 
-        updatedAirport.AirportId = id;
-        return Ok(updatedAirport);
+        try
+        {
+            var result = await _airportService.UpdateAirportAsync(updatedAirport);
+            return Ok(result);
+        }
+        catch (KeyNotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
     }
 
     [HttpDelete("{id:long}")]
-    public async Task<IActionResult> DeleteAirport(int id)
+    public async Task<ActionResult<Airport>> DeleteAirport(int id)
     {
-        var result = await _airportService.DeleteAirportAsync(id);
-        if (!result)
+        try
         {
-            return NotFound($"Airport with ID {id} not found.");
+            var result = await _airportService.DeleteAirportAsync(id);
+            return Ok(result);
         }
-
-        return NoContent();
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 }

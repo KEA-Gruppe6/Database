@@ -1,4 +1,6 @@
-﻿using Database_project.Core.Entities;
+﻿using Database_project.Controllers.RequestDTOs;
+using Database_project.Core.DTOs;
+using Database_project.Core.Entities;
 using Database_project.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,8 +17,8 @@ public class FlightrouteController : ControllerBase
         _flightrouteService = flightrouteService;
     }
 
-    [HttpGet("{id:long}", Name = "Flightroute")]
-    public async Task<IActionResult> GetFlightroute(long id)
+    [HttpGet("{id:long}")]
+    public async Task<ActionResult<FlightrouteDTO?>> GetFlightroute(long id)
     {
         var flightroute = await _flightrouteService.GetFlightrouteByIdAsync(id);
         if (flightroute == null)
@@ -28,46 +30,62 @@ public class FlightrouteController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateFlightroute([FromBody] Flightroute flightroute)
+    public async Task<ActionResult<FlightrouteDTO>> CreateFlightroute([FromBody] FlightrouteRequestDTO flightrouteDTO)
     {
-        Flightroute createdFlightroute;
+        Flightroute flightroute = new Flightroute
+        {
+            FlightrouteId = 0,
+            DepartureAirportId = flightrouteDTO.DepartureAirportId,
+            ArrivalAirportId = flightrouteDTO.ArrivalAirportId,
+            ArrivalTime = flightrouteDTO.ArrivalTime,
+            DepartureTime = flightrouteDTO.DepartureTime,
+        };
+
         try
         {
-            createdFlightroute = await _flightrouteService.CreateFlightrouteAsync(flightroute);
+            var createdFlightroute = await _flightrouteService.CreateFlightrouteAsync(flightroute);
+            return CreatedAtAction(nameof(GetFlightroute), new { id = createdFlightroute.FlightrouteId }, createdFlightroute);
         }
-        catch (KeyNotFoundException e)
+        catch (Exception e)
         {
             return BadRequest(e.Message);
         }
-        return CreatedAtAction(nameof(GetFlightroute), new { id = createdFlightroute.FlightrouteId }, createdFlightroute);
     }
 
     [HttpPatch("{id:long}")]
-    public async Task<IActionResult> UpdateFlightroute(long id, [FromBody] Flightroute updatedFlightroute)
+    public async Task<ActionResult<FlightrouteDTO>> UpdateFlightroute(long id, [FromBody] FlightrouteRequestDTO updatedFlightrouteDTO)
     {
-        if (id != updatedFlightroute.FlightrouteId)
+        Flightroute updatedFlightroute = new Flightroute
         {
-            return BadRequest("Flightroute ID mismatch.");
-        }
+            FlightrouteId = id,
+            DepartureAirportId = updatedFlightrouteDTO.DepartureAirportId,
+            ArrivalAirportId = updatedFlightrouteDTO.ArrivalAirportId,
+            ArrivalTime = updatedFlightrouteDTO.ArrivalTime,
+            DepartureTime = updatedFlightrouteDTO.DepartureTime,
+        };
 
-        var result = await _flightrouteService.UpdateFlightrouteAsync(updatedFlightroute);
-        if (!result)
+        try
         {
-            return NotFound($"Flightroute with ID {id} not found.");
+            var result = await _flightrouteService.UpdateFlightrouteAsync(updatedFlightroute);
+            return Ok(result);
         }
-
-        return Ok(updatedFlightroute);
+        catch (KeyNotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
     }
 
     [HttpDelete("{id:long}")]
-    public async Task<IActionResult> DeleteFlightroute(long id)
+    public async Task<ActionResult<Flightroute>> DeleteFlightroute(long id)
     {
-        var result = await _flightrouteService.DeleteFlightrouteAsync(id);
-        if (!result)
+        try
         {
-            return NotFound($"Flightroute with ID {id} not found.");
+            var result = await _flightrouteService.DeleteFlightrouteAsync(id);
+            return Ok(result);
         }
-
-        return NoContent();
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 }

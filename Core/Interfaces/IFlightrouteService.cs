@@ -5,8 +5,8 @@ namespace Database_project.Core.Interfaces;
 
 public interface IFlightrouteService
 {
-    Task<Flightroute?> GetFlightrouteByIdAsync(long id);
-    Task<Flightroute> CreateFlightrouteAsync(Flightroute flightroute);
-    Task<bool> UpdateFlightrouteAsync(Flightroute updatedFlightroute);
-    Task<bool> DeleteFlightrouteAsync(long id);
+    Task<FlightrouteDTO?> GetFlightrouteByIdAsync(long id);
+    Task<FlightrouteDTO> CreateFlightrouteAsync(Flightroute flightroute);
+    Task<FlightrouteDTO> UpdateFlightrouteAsync(Flightroute flightroute);
+    Task<Flightroute> DeleteFlightrouteAsync(long id);
 }

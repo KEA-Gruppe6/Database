@@ -1,4 +1,5 @@
-﻿using Database_project.Core.Entities;
+﻿using Database_project.Controllers.RequestDTOs;
+using Database_project.Core.Entities;
 using Database_project.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,8 +16,8 @@ public class LuggageController : ControllerBase
         _luggageService = luggageService;
     }
 
-    [HttpGet("{id:long}", Name = "Luggage")]
-    public async Task<IActionResult> GetLuggage(long id)
+    [HttpGet("{id:long}")]
+    public async Task<ActionResult<Luggage?>> GetLuggage(long id)
     {
         var luggage = await _luggageService.GetLuggageByIdAsync(id);
         if (luggage == null)
@@ -28,52 +29,53 @@ public class LuggageController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateLuggage([FromBody] Luggage luggage)
+    public async Task<ActionResult<Luggage>> CreateLuggage([FromBody] LuggageRequestDTO luggageDTO)
     {
-        Luggage createdLuggage;
-        try
+        Luggage luggage = new Luggage
         {
-            createdLuggage = await _luggageService.CreateLuggageAsync(luggage);
-        }
-        catch (KeyNotFoundException e)
-        {
-            return BadRequest(e.Message);
-        }
+            LuggageId = 0,
+            Weight = luggageDTO.MaxWeight,
+            IsCarryOn = luggageDTO.IsCarryOn,
+            TicketId = luggageDTO.TicketId
+        };
+
+        var createdLuggage = await _luggageService.CreateLuggageAsync(luggage);
         return CreatedAtAction(nameof(GetLuggage), new { id = createdLuggage.LuggageId }, createdLuggage);
     }
 
     [HttpPatch("{id:long}")]
-    public async Task<IActionResult> UpdateLuggage(long id, [FromBody] Luggage luggage)
+    public async Task<ActionResult<Luggage>> UpdateLuggage(long id, [FromBody] LuggageRequestDTO updatedLuggageDTO)
     {
-        if (id != luggage.LuggageId)
+        Luggage updatedLuggage = new Luggage
         {
-            return BadRequest("Luggage ID mismatch.");
-        }
+            LuggageId = id,
+            Weight = updatedLuggageDTO.MaxWeight,
+            IsCarryOn = updatedLuggageDTO.IsCarryOn,
+            TicketId = updatedLuggageDTO.TicketId
+        };
+
         try
         {
-            bool result = await _luggageService.UpdateLuggageAsync(luggage);
-            if (!result)
-            {
-                return NotFound($"Luggage with ID {id} not found.");
-            }
+            var result = await _luggageService.UpdateLuggageAsync(updatedLuggage);
+            return Ok(result);
         }
         catch (KeyNotFoundException e)
         {
-            return BadRequest(e.Message);
+            return NotFound(e.Message);
         }
-
-        return Ok(luggage);
     }
 
     [HttpDelete("{id:long}")]
-    public async Task<IActionResult> DeleteLuggage(long id)
+    public async Task<ActionResult<Luggage>> DeleteLuggage(long id)
     {
-        var result = await _luggageService.DeleteLuggageAsync(id);
-        if (!result)
+        try
         {
-            return NotFound($"Luggage with ID {id} not found.");
+            var result = await _luggageService.DeleteLuggageAsync(id);
+            return Ok(result);
         }
-
-        return NoContent();
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 }

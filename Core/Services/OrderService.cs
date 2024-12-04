@@ -14,92 +14,59 @@ namespace Database_project.Core.Services
             _context = context;
         }
 
-        public async Task<Order?> GetOrderByIdAsync(int id)
+        public async Task<Order?> GetOrderByIdAsync(int id) //TODO: Make long
         {
-            throw new System.NotImplementedException();
+            //TODO: remove orderId variable from nested object
+            await using var context = await _context.CreateDbContextAsync();
+            var order = await context.Orders
+                .Include(m => m.Tickets)
+                .FirstOrDefaultAsync(a => a.OrderId == id);
+
+            return order;
         }
 
-        public async Task<Order> CreateOrderAsync(OrderRequestDTO buyTicketsRequest)
+        public async Task<Order> CreateOrderAsync(Order order)
         {
             await using var context = await _context.CreateDbContextAsync();
-            await using var transaction = context.Database.BeginTransaction();
 
-            try
-            {
-                var flightroute = await context.Flightroutes
-                    .FirstOrDefaultAsync(d => d.FlightrouteId == buyTicketsRequest.FlightrouteId);
+            await context.Orders.AddAsync(order);
+            await context.SaveChangesAsync();
 
-                if (flightroute == null)
-                {
-                    throw new Exception($"Could not find Flightroute with id: {buyTicketsRequest.FlightrouteId}");
-                }
-
-                if (buyTicketsRequest.Tickets == null || buyTicketsRequest.Tickets.Count == 0)
-                {
-                    throw new Exception("Can't buy zero tickets");
-                }
-
-                if (buyTicketsRequest.Tickets.Any(t => t.Customer == null))
-                {
-                    throw new Exception("Ticket must have a customer");
-                }
-
-                Order order = new();
-                context.Add(order);
-
-                var tickets = new List<Ticket>();
-
-                foreach (var ticket in buyTicketsRequest.Tickets)
-                {
-                    var newTicket = new Ticket()
-                    {
-                        Flightroute = flightroute,
-                        Price = 100,
-                        TicketTypeId = ticket.TicketTypeId,
-                        OrderId = order.OrderId
-                    };
-
-                    var customer = await context.Customers
-                        .FirstOrDefaultAsync(c => ticket.Customer != null && c.PassportNumber == ticket.Customer.PassportNumber);
-
-                    if (customer == null)
-                    {
-                        customer = new();
-                        customer.PassportNumber = ticket.Customer!.PassportNumber;
-                        customer.FirstName = ticket.Customer.FirstName;
-                        customer.LastName = ticket.Customer.LastName;
-                    }
-
-                    newTicket.CustomerId = customer.CustomerId;
-                    newTicket.Customer = customer;
-
-                    tickets.Add(newTicket);
-                }
-
-                order.AirlineConfirmationNumber = Guid.NewGuid().ToString();
-                order.Tickets = tickets;
-
-                await context.Tickets.AddRangeAsync(tickets);
-                await context.SaveChangesAsync();
-                transaction.Commit();
-
-                return order;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                transaction.Rollback();
-                throw new Exception();
-            }
+            return GetOrderByIdAsync(order.OrderId).Result;
         }
-        public async Task<bool> UpdateOrderAsync(Order updatedOrder)
+        public async Task<Order> UpdateOrderAsync(Order order)
         {
-            throw new System.NotImplementedException();
+            await using var context = await _context.CreateDbContextAsync();
+
+            // Retrieve the existing order from the database
+            var existingOrder = await context.Orders.FindAsync(order.OrderId);
+            if (existingOrder == null)
+            {
+                throw new KeyNotFoundException($"Order with ID {order.OrderId} not found.");
+            }
+
+            existingOrder.OrderId = order.OrderId;
+            existingOrder.AirlineConfirmationNumber = order.AirlineConfirmationNumber;
+
+            context.Orders.Update(existingOrder);
+            await context.SaveChangesAsync();
+
+            return GetOrderByIdAsync(order.OrderId).Result;
         }
 
-        public async Task<bool> DeleteOrderAsync(int id)
+        public async Task<Order> DeleteOrderAsync(int id) //TODO: Make long
         {
-            throw new System.NotImplementedException();
+            await using var context = await _context.CreateDbContextAsync();
+
+            var order = await context.Orders.FindAsync(id);
+            if (order == null)
+            {
+                throw new KeyNotFoundException($"Order with ID {id} not found.");
+            }
+            var returnEntityEntry = context.Orders.Remove(order);
+            await context.SaveChangesAsync();
+
+            return returnEntityEntry.Entity;
         }
     }
 

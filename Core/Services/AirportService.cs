@@ -32,55 +32,40 @@ public class AirportService : IAirportService
         return airport;
     }
 
-    public async Task<bool> UpdateAirportAsync(long id, Airport airport)
+    public async Task<Airport> UpdateAirportAsync(Airport airport)
     {
         await using var context = await _context.CreateDbContextAsync();
-        try
+
+        // Retrieve the existing airport from the database
+        var existingAirport = await context.Airports.FindAsync(airport.AirportId);
+        if (existingAirport == null)
         {
-            var existingAirport = await context.Airports
-                .FirstOrDefaultAsync(a => a.AirportId == id);
-
-            if (existingAirport == null)
-            {
-                return false;  // If the airline doesn't exist, return false
-            }
-
-            existingAirport.AirportName = airport.AirportName;
-            existingAirport.AirportCity = airport.AirportCity;
-            existingAirport.Municipality = airport.Municipality;
-            existingAirport.AirportAbbreviation = airport.AirportAbbreviation;
-
-            await context.SaveChangesAsync();
-            return true;
+            throw new KeyNotFoundException($"Airport with ID {airport.AirportId} not found.");
         }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
+
+        existingAirport.AirportName = airport.AirportName;
+        existingAirport.AirportCity = airport.AirportCity;
+        existingAirport.Municipality = airport.Municipality;
+        existingAirport.AirportAbbreviation = airport.AirportAbbreviation;
+
+        var returnEntityEntry = context.Airports.Update(existingAirport);
+        await context.SaveChangesAsync();
+
+        return returnEntityEntry.Entity;
     }
 
-    public async Task<bool> DeleteAirportAsync(long id)
+    public async Task<Airport> DeleteAirportAsync(long id)
     {
         await using var context = await _context.CreateDbContextAsync();
-        try
-        {
-            var airport = await context.Airports.FindAsync(id);
-            if (airport == null)
-            {
-                return false;
-            }
 
-            context.Airports.Remove(airport);
-            await context.SaveChangesAsync();
-
-            return true;
-        }
-        catch (Exception e)
+        var airport = await context.Airports.FindAsync(id);
+        if (airport == null)
         {
-            Console.WriteLine(e);
-            throw;
+            throw new KeyNotFoundException($"Airport with ID {id} not found.");
         }
+        var returnEntityEntry = context.Airports.Remove(airport);
+        await context.SaveChangesAsync();
+
+        return returnEntityEntry.Entity;
     }
-
 }

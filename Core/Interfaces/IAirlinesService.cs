@@ -6,7 +6,7 @@ namespace Database_project.Core.Interfaces;
 public interface IAirlineService
 {
     Task<AirlineDTO?> GetAirlineByIdAsync(long id);
-    Task<Airline> CreateAirlineAsync(Airline airline);
+    Task<AirlineDTO> CreateAirlineAsync(Airline airline);
     Task<AirlineDTO> UpdateAirlineAsync(Airline airline);
-    Task<bool> DeleteAirlineAsync(long id);
+    Task<Airline> DeleteAirlineAsync(long id);
 }

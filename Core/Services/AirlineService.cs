@@ -19,23 +19,31 @@ public class AirlineService : IAirlineService
     {
         await using var context = await _context.CreateDbContextAsync();
 
+        //Get Airline object with nested objects Planes
         var airline = await context.Airlines
-            .Select(a => new AirlineDTO()
-            {
-                AirlineId = a.AirlineId,
-                AirlineName = a.AirlineName,
-                Planes = a.Planes.Select(p => new PlaneDTO()
-                {
-                    PlaneId = p.PlaneId,
-                    PlaneDisplayName = p.PlaneDisplayName
-                }).ToList()
-            })
+            .Include(a => a.Planes)
             .FirstOrDefaultAsync(a => a.AirlineId == id);
 
-        return airline;
+        if (airline == null)
+        {
+            throw new KeyNotFoundException($"Airline with ID {id} not found.");
+        }
+
+        //Map Airline object to AirlineDTO object
+        var airlineDTO = new AirlineDTO()
+        {
+            AirlineId = airline.AirlineId,
+            AirlineName = airline.AirlineName,
+            Planes = airline.Planes.Select(p => new PlaneDTO_Airline()
+            {
+                PlaneId = p.PlaneId,
+                PlaneDisplayName = p.PlaneDisplayName
+            }).ToList()
+        };
+        return airlineDTO;
     }
 
-    public async Task<Airline> CreateAirlineAsync(Airline airline)
+    public async Task<AirlineDTO> CreateAirlineAsync(Airline airline)
     {
         await using var context = await _context.CreateDbContextAsync();
 
@@ -45,7 +53,8 @@ public class AirlineService : IAirlineService
         // Add the airline to the database
         context.Airlines.AddAsync(airline);
         await context.SaveChangesAsync();
-        return airline;
+
+        return GetAirlineByIdAsync(airline.AirlineId).Result;
     }
 
     public async Task<AirlineDTO> UpdateAirlineAsync(Airline airline)
@@ -53,7 +62,10 @@ public class AirlineService : IAirlineService
         await using var context = await _context.CreateDbContextAsync();
 
         // Retrieve the existing airline from the database
-        var existingAirline = await context.Airlines.FindAsync(airline.AirlineId);
+        var existingAirline = await context.Airlines
+            .Include(a => a.Planes)
+            .FirstOrDefaultAsync(a => a.AirlineId == airline.AirlineId);
+
         if (existingAirline == null)
         {
             throw new KeyNotFoundException($"Airline with ID {airline.AirlineId} not found.");
@@ -68,34 +80,21 @@ public class AirlineService : IAirlineService
         context.Airlines.Update(existingAirline);
         await context.SaveChangesAsync();
 
-        var returnAirline = GetAirlineByIdAsync(existingAirline.AirlineId).Result;
-        return returnAirline;
+        return GetAirlineByIdAsync(airline.AirlineId).Result;
     }
 
-    public async Task<bool> DeleteAirlineAsync(long id)
+    public async Task<Airline> DeleteAirlineAsync(long id)
     {
         await using var context = await _context.CreateDbContextAsync();
-        try
+
+        var airline = await context.Airlines.FindAsync(id);
+        if (airline == null)
         {
-            var airline = await context.Airlines.Include(a => a.Planes).FirstOrDefaultAsync(a => a.AirlineId == id);
-            if (airline == null)
-            {
-                return false;
-            }
-
-            // Remove related planes
-            context.Planes.RemoveRange(airline.Planes);
-
-            // Remove the airline
-            context.Airlines.Remove(airline);
-
-            await context.SaveChangesAsync();
-
-            return true;
+            throw new KeyNotFoundException($"Airline with ID {id} not found.");
         }
-        catch (Exception ex)
-        {
-            throw new Exception("An error occurred while deleting the airline.", ex);
-        }
+        var returnEntityEntry = context.Airlines.Remove(airline);
+        await context.SaveChangesAsync();
+
+        return returnEntityEntry.Entity;
     }
 }

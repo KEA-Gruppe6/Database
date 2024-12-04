@@ -1,4 +1,5 @@
 ﻿using Database_project.Controllers.RequestDTOs;
+using Database_project.Core.DTOs;
 using Database_project.Core.Entities;
 using Database_project.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,7 @@ public class MaintenanceController : ControllerBase
     }
 
     [HttpGet("{id:long}", Name = "Maintenance")]
-    public async Task<IActionResult> GetMaintenance(long id)
+    public async Task<ActionResult<MaintenanceDTO?>> GetMaintenance(long id)
     {
         try
         {
@@ -31,7 +32,7 @@ public class MaintenanceController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateMaintenance([FromBody] MaintenanceRequestDTO maintenanceDTO)
+    public async Task<ActionResult<MaintenanceDTO>> CreateMaintenance([FromBody] MaintenanceRequestDTO maintenanceDTO)
     {
         Maintenance maintenance = new Maintenance
         {
@@ -53,7 +54,7 @@ public class MaintenanceController : ControllerBase
     }
 
     [HttpPatch]
-    public async Task<IActionResult> UpdateMaintenance([FromBody] MaintenanceRequestDTO updatedMaintenanceDTO)
+    public async Task<ActionResult<MaintenanceDTO>> UpdateMaintenance([FromBody] MaintenanceRequestDTO updatedMaintenanceDTO)
     {
         Maintenance updatedMaintenance = new Maintenance
         {
@@ -76,14 +77,16 @@ public class MaintenanceController : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<IActionResult> DeleteMaintenance(int id)
+    public async Task<ActionResult<Maintenance>> DeleteMaintenance(int id)
     {
-        var result = await _maintenanceService.DeleteMaintenanceAsync(id);
-        if (!result)
+        try
         {
-            return NotFound($"Maintenance with ID {id} not found.");
+            var result = await _maintenanceService.DeleteMaintenanceAsync(id);
+            return Ok(result);
         }
-
-        return NoContent();
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 }

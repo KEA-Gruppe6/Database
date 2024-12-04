@@ -8,5 +8,5 @@ public interface IMaintenanceService
     Task<MaintenanceDTO?> GetMaintenanceByIdAsync(long id);
     Task<MaintenanceDTO> CreateMaintenanceAsync(Maintenance maintenance);
     Task<MaintenanceDTO> UpdateMaintenanceAsync(Maintenance maintenance);
-    Task<bool> DeleteMaintenanceAsync(long id);
+    Task<Maintenance> DeleteMaintenanceAsync(long id);
 }

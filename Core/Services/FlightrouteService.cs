@@ -1,4 +1,5 @@
 using Database_project.Core;
+using Database_project.Core.DTOs;
 using Database_project.Core.Entities;
 using Database_project.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -14,15 +15,48 @@ namespace Database_project.Core.Services
             _context = context;
         }
 
-        public async Task<Flightroute?> GetFlightrouteByIdAsync(long id)
+        public async Task<FlightrouteDTO?> GetFlightrouteByIdAsync(long id)
         {
             await using var context = await _context.CreateDbContextAsync();
-            var flightroute = await context.Flightroutes.FirstOrDefaultAsync(a => a.FlightrouteId == id);
 
-            return flightroute;
+            //Get Flightroute object with nested objects DepartureAirport and ArrivalAirport
+            var flightroute = await context.Flightroutes
+                .Include(m => m.ArrivalAirport)
+                .Include(m => m.DepartureAirport)
+                .FirstOrDefaultAsync(a => a.FlightrouteId == id);
+
+            if (flightroute == null)
+            {
+                throw new KeyNotFoundException($"Flightroute with ID {id} not found.");
+            }
+
+            //Map flightroute object to FlightrouteDTO object
+            var flightrouteDTO = new FlightrouteDTO()
+            {
+                FlightrouteId = flightroute.FlightrouteId,
+                DepartureTime = flightroute.DepartureTime,
+                ArrivalTime = flightroute.ArrivalTime,
+                ArrivalAirport = new Airport()
+                {
+                    AirportId = flightroute.ArrivalAirport.AirportId,
+                    AirportName = flightroute.ArrivalAirport.AirportName,
+                    AirportCity = flightroute.ArrivalAirport.AirportCity,
+                    Municipality = flightroute.ArrivalAirport.Municipality,
+                    AirportAbbreviation = flightroute.ArrivalAirport.AirportAbbreviation
+                },
+                DepartureAirport = new Airport()
+                {
+                    AirportId = flightroute.DepartureAirport.AirportId,
+                    AirportName = flightroute.DepartureAirport.AirportName,
+                    AirportCity = flightroute.DepartureAirport.AirportCity,
+                    Municipality = flightroute.DepartureAirport.Municipality,
+                    AirportAbbreviation = flightroute.DepartureAirport.AirportAbbreviation
+                }
+            };
+            return flightrouteDTO;
         }
 
-        public async Task<Flightroute> CreateFlightrouteAsync(Flightroute flightroute)
+        public async Task<FlightrouteDTO> CreateFlightrouteAsync(Flightroute flightroute)
         {
             await using var context = await _context.CreateDbContextAsync();
 
@@ -37,58 +71,54 @@ namespace Database_project.Core.Services
             await context.Flightroutes.AddAsync(flightroute);
             await context.SaveChangesAsync();
 
-            return flightroute;
+            return GetFlightrouteByIdAsync(flightroute.FlightrouteId).Result;
         }
 
-        public async Task<bool> UpdateFlightrouteAsync(Flightroute updatedFlightroute)
+        public async Task<FlightrouteDTO> UpdateFlightrouteAsync(Flightroute flightroute)
         {
             await using var context = await _context.CreateDbContextAsync();
-            try
+
+            // Retrieve the existing flightroute from the database
+            var existingFlightroute = await context.Flightroutes.FindAsync(flightroute.FlightrouteId);
+            if (existingFlightroute == null)
             {
-                var existingFlightroute = await context.Flightroutes
-                    .FirstOrDefaultAsync(a => a.FlightrouteId == updatedFlightroute.FlightrouteId);
-
-                if (existingFlightroute == null)
-                {
-                    return false;  // If the updatedFlightroute doesn't exist, return false
-                }
-
-                existingFlightroute.DepartureTime = updatedFlightroute.DepartureTime;
-                existingFlightroute.ArrivalTime = updatedFlightroute.ArrivalTime;
-                existingFlightroute.DepartureAirportId = updatedFlightroute.DepartureAirportId;
-                existingFlightroute.ArrivalAirportId = updatedFlightroute.ArrivalAirportId;
-
-                await context.SaveChangesAsync();
-                return true;
+                throw new KeyNotFoundException($"Flightroute with ID {flightroute.FlightrouteId} not found.");
             }
-            catch (Exception e)
+
+            // Check if the airports exist
+            flightroute.DepartureAirport = await context.Airports.FindAsync(flightroute.DepartureAirportId);
+            flightroute.ArrivalAirport = await context.Airports.FindAsync(flightroute.ArrivalAirportId);
+            if (flightroute.DepartureAirport == null || flightroute.ArrivalAirport == null)
             {
-                Console.WriteLine(e);
-                throw;
+                throw new KeyNotFoundException("One or both airports not found");
             }
+
+
+            existingFlightroute.DepartureTime = flightroute.DepartureTime;
+            existingFlightroute.ArrivalTime = flightroute.ArrivalTime;
+            existingFlightroute.DepartureAirportId = flightroute.DepartureAirportId;
+            existingFlightroute.ArrivalAirportId = flightroute.ArrivalAirportId;
+
+            context.Flightroutes.Update(existingFlightroute);
+            await context.SaveChangesAsync();
+
+            return GetFlightrouteByIdAsync(flightroute.FlightrouteId).Result;
+
         }
 
-        public async Task<bool> DeleteFlightrouteAsync(long id)
+        public async Task<Flightroute> DeleteFlightrouteAsync(long id)
         {
             await using var context = await _context.CreateDbContextAsync();
-            try
-            {
-                var flightroute = await context.Flightroutes.FindAsync(id);
-                if (flightroute == null)
-                {
-                    return false;
-                }
 
-                context.Flightroutes.Remove(flightroute);
-                await context.SaveChangesAsync();
-
-                return true;
-            }
-            catch (Exception e)
+            var flightroute = await context.Flightroutes.FindAsync(id);
+            if (flightroute == null)
             {
-                Console.WriteLine(e);
-                throw;
+                throw new KeyNotFoundException($"Flightroute with ID {id} not found.");
             }
+            var returnEntityEntry = context.Flightroutes.Remove(flightroute);
+            await context.SaveChangesAsync();
+
+            return returnEntityEntry.Entity;
         }
     }
 }

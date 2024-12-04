@@ -15,37 +15,69 @@ public class OrderController : ControllerBase
         _orderService = orderService;
     }
 
-    [HttpGet(Name = "Order")]
-    public string GetOrder(int id)
+    [HttpGet("{id:int}")] //TODO: Make long
+    public async Task<ActionResult<Order?>> GetOrder(int id) //TODO: Make long
     {
-        throw new NotImplementedException();
+        var order = await _orderService.GetOrderByIdAsync(id);
+        if (order == null)
+        {
+            return NotFound($"Order with ID {id} not found.");
+        }
+
+        return Ok(order);
     }
 
-    [HttpPost("/BuyTickets")]
-    public async Task<ActionResult<Order>> BuyTickets([FromBody] OrderRequestDTO tickets)
+    [HttpPost]
+    public async Task<ActionResult<Order>> CreateOrder([FromBody] OrderRequestDTO orderDTO)
+    {
+        Order order = new Order
+        {
+            OrderId = 0,
+            AirlineConfirmationNumber = orderDTO.AirlineConfirmationNumber,
+        };
+
+        try
+        {
+            var createdOrder = await _orderService.CreateOrderAsync(order);
+            return CreatedAtAction(nameof(GetOrder), new { id = createdOrder.OrderId }, createdOrder);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpPatch("{id:int}")] //TODO: Make long
+    public async Task<ActionResult<Order>> UpdateOrder(int id, [FromBody] OrderRequestDTO updatedOrderDTO) //TODO: Make long
+    {
+        Order updatedOrder = new Order
+        {
+            OrderId = id,
+            AirlineConfirmationNumber = updatedOrderDTO.AirlineConfirmationNumber,
+        };
+
+        try
+        {
+            var result = await _orderService.UpdateOrderAsync(updatedOrder);
+            return Ok(result);
+        }
+        catch (KeyNotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+    }
+
+    [HttpDelete("{id:int}")] //TODO: Make long
+    public async Task<ActionResult<Order>> DeleteOrder(int id) //TODO: Make long
     {
         try
         {
-            var createdTickets = await _orderService.CreateOrderAsync(tickets);
-
-            return Ok(createdTickets);
-
+            var result = await _orderService.DeleteOrderAsync(id);
+            return Ok(result);
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            return BadRequest("Tickets data is invalid.");
+            return BadRequest(e.Message);
         }
-    }
-
-    [HttpPatch(Name = "Order")]
-    public string UpdateOrder([FromBody] Order order)
-    {
-        throw new NotImplementedException();
-    }
-
-    [HttpDelete(Name = "Order")]
-    public string DeleteOrder(int id)
-    {
-        throw new NotImplementedException();
     }
 }

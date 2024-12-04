@@ -6,6 +6,6 @@ public interface IAirportService
 {
     Task<Airport?> GetAirportByIdAsync(long id);
     Task<Airport> CreateAirportAsync(Airport airport);
-    Task<bool> UpdateAirportAsync(long id, Airport airport);
-    Task<bool> DeleteAirportAsync(long id);
+    Task<Airport> UpdateAirportAsync(Airport airport);
+    Task<Airport> DeleteAirportAsync(long id);
 }

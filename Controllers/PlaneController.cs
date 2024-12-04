@@ -1,4 +1,6 @@
-﻿using Database_project.Core.Entities;
+﻿using Database_project.Controllers.RequestDTOs;
+using Database_project.Core.DTOs;
+using Database_project.Core.Entities;
 using Database_project.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,62 +17,80 @@ public class PlaneController : ControllerBase
         _planeService = planeService;
     }
 
-    [HttpGet("{id:long}")]
-    public async Task<ActionResult<Plane?>> GetPlane(long id)
+    [HttpGet()]
+    public async Task<ActionResult<List<PlaneDTO>>> GetPlanes()
     {
-        try
-        {
-            var plane = await _planeService.GetPlaneByIdAsync(id);
-            return Ok(plane);
-        }
-        catch (Exception ex)
+        //TODO: pagination support, add GetAll call to other services
+        var planes = await _planeService.GetPlanesAsync();
+
+        return Ok(planes);
+    }
+
+    [HttpGet("{id:long}")]
+    public async Task<ActionResult<PlaneDTO?>> GetPlane(long id)
+    {
+        var plane = await _planeService.GetPlaneByIdAsync(id);
+        if (plane == null)
         {
             return NotFound($"Plane with ID {id} not found.");
         }
+
+        return Ok(plane);
     }
 
     [HttpPost]
-    public async Task<ActionResult<Plane>> CreatePlane([FromBody] Plane plane)
+    public async Task<ActionResult<PlaneDTO>> CreatePlane([FromBody] PlaneRequestDTO planeDTO)
     {
+        Plane plane = new Plane
+        {
+            PlaneId = 0,
+            PlaneDisplayName = planeDTO.PlaneDisplayName,
+            AirlineId = planeDTO.AirlineId,
+        };
+
         try
         {
             var createdPlane = await _planeService.CreatePlaneAsync(plane);
-
-            return Created("api/Plane/" + createdPlane.PlaneId, createdPlane);
-
+            return CreatedAtAction(nameof(GetPlane), new { id = createdPlane.PlaneId }, createdPlane);
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            return BadRequest("Plane data is invalid.");
+            return BadRequest(e.Message);
         }
     }
 
-    [HttpPatch]
-    public async Task<ActionResult<Plane?>> UpdatePlane([FromBody] Plane plane)
+    [HttpPatch("{id:long}")]
+    public async Task<ActionResult<PlaneDTO>> UpdatePlane(long id, [FromBody] PlaneRequestDTO updatedPlaneDTO)
     {
+        Plane updatedPlane = new Plane
+        {
+            PlaneId = id,
+            PlaneDisplayName = updatedPlaneDTO.PlaneDisplayName,
+            AirlineId = updatedPlaneDTO.AirlineId,
+        };
+
         try
         {
-            var updatedPlane = await _planeService.UpdatePlaneAsync(plane);
-            return Ok(updatedPlane);
+            var result = await _planeService.UpdatePlaneAsync(updatedPlane);
+            return Ok(result);
         }
-        catch (Exception ex)
+        catch (KeyNotFoundException e)
         {
-            return BadRequest("Plane data is invalid.");
+            return NotFound(e.Message);
         }
     }
 
     [HttpDelete("{id:long}")]
-    public async Task<ActionResult<bool>> DeletePlane(long id)
+    public async Task<ActionResult<Plane>> DeletePlane(long id)
     {
         try
         {
-            var isDeleted = await _planeService.DeletePlaneAsync(id);
-
-            return Ok(isDeleted);
+            var result = await _planeService.DeletePlaneAsync(id);
+            return Ok(result);
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            return BadRequest("Plane data is invalid.");
+            return BadRequest(e.Message);
         }
     }
 }

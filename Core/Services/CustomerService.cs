@@ -32,54 +32,40 @@ public class CustomerService : ICustomerService
         return customer;
     }
 
-    public async Task<bool> UpdateCustomerAsync(Customer customer)
+    public async Task<Customer> UpdateCustomerAsync(Customer customer)
     {
         await using var context = await _context.CreateDbContextAsync();
-        try
+
+        // Retrieve the existing customer from the database
+        var existingCustomer = await context.Customers.FindAsync(customer.CustomerId);
+        if (existingCustomer == null)
         {
-            var existingCustomer = await context.Customers
-                .FirstOrDefaultAsync(a => a.CustomerId == customer.CustomerId);
-
-            if (existingCustomer == null)
-            {
-                return false;  // If the customer doesn't exist, return false
-            }
-
-            existingCustomer.FirstName = customer.FirstName;
-            existingCustomer.LastName = customer.LastName;
-            existingCustomer.PassportNumber = customer.PassportNumber;
-
-            await context.SaveChangesAsync();
-            return true;
+            throw new KeyNotFoundException($"Customer with ID {customer.CustomerId} not found.");
         }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
+
+        existingCustomer.FirstName = customer.FirstName;
+        existingCustomer.LastName = customer.LastName;
+        existingCustomer.PassportNumber = customer.PassportNumber;
+
+        var returnEntityEntry = context.Customers.Update(existingCustomer);
+        await context.SaveChangesAsync();
+
+        return returnEntityEntry.Entity;
     }
 
-    public async Task<bool> DeleteCustomerAsync(long id)
+    public async Task<Customer> DeleteCustomerAsync(long id)
     {
         await using var context = await _context.CreateDbContextAsync();
-        try
-        {
-            var customer = await context.Customers.FindAsync(id);
-            if (customer == null)
-            {
-                return false;
-            }
 
-            context.Customers.Remove(customer);
-            await context.SaveChangesAsync();
-
-            return true;
-        }
-        catch (Exception e)
+        var customer = await context.Customers.FindAsync(id);
+        if (customer == null)
         {
-            Console.WriteLine(e);
-            throw;
+            throw new KeyNotFoundException($"Customer with ID {id} not found.");
         }
+        var returnEntityEntry = context.Customers.Remove(customer);
+        await context.SaveChangesAsync();
+
+        return returnEntityEntry.Entity;
     }
 
 }

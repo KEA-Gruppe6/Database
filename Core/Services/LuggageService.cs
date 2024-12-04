@@ -27,13 +27,10 @@ namespace Database_project.Core.Services
             await using var context = await _context.CreateDbContextAsync();
 
             // Check if the ticket exists
-            if (luggage.TicketId != null)
+            Ticket ticket = await context.Tickets.FindAsync(luggage.TicketId);
+            if (ticket == null)
             {
-                Ticket ticket = await context.Tickets.FindAsync(luggage.TicketId);
-                if (ticket == null)
-                {
-                    throw new KeyNotFoundException("Ticket not found");
-                }
+                throw new KeyNotFoundException($"Ticket for Luggage with ID {luggage.LuggageId} found");
             }
 
             await context.Luggage.AddAsync(luggage);
@@ -42,66 +39,47 @@ namespace Database_project.Core.Services
             return luggage;
         }
 
-        public async Task<bool> UpdateLuggageAsync(Luggage updatedLuggage)
+        public async Task<Luggage> UpdateLuggageAsync(Luggage Luggage)
         {
             await using var context = await _context.CreateDbContextAsync();
 
-            // Check if the ticket exists
-            if (updatedLuggage.TicketId != null)
+            var existingLuggage = await context.Luggage.FindAsync(Luggage.LuggageId);
+            if (existingLuggage == null)
             {
-                Ticket ticket = await context.Tickets.FindAsync(updatedLuggage.TicketId);
-                if (ticket == null)
-                {
-                    throw new KeyNotFoundException("Ticket not found");
-                }
+                throw new KeyNotFoundException($"Customer with ID {Luggage.LuggageId} not found.");
+            }
+
+            // Check if the ticket exists
+            Ticket ticket = await context.Tickets.FindAsync(Luggage.TicketId);
+            if (ticket == null)
+            {
+                throw new KeyNotFoundException($"Ticket for Luggage with ID {Luggage.LuggageId} found");
             }
 
             // Retrieve and update the existing luggage from the database
-            try
-            {
-                var existingLuggage = await context.Luggage
-                    .FirstOrDefaultAsync(a => a.LuggageId == updatedLuggage.LuggageId);
+            existingLuggage.Weight = Luggage.Weight;
+            existingLuggage.IsCarryOn = Luggage.IsCarryOn;
+            existingLuggage.TicketId = Luggage.TicketId;
 
-                if (existingLuggage == null)
-                {
-                    return false;  // If the updatedLuggage doesn't exist, return false
-                }
+            var returnEntityEntry = context.Luggage.Update(existingLuggage);
+            await context.SaveChangesAsync();
 
-                existingLuggage.MaxWeight = updatedLuggage.MaxWeight;
-                existingLuggage.IsCarryOn = updatedLuggage.IsCarryOn;
-                existingLuggage.TicketId = updatedLuggage.TicketId;
-
-                await context.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+            return returnEntityEntry.Entity;
         }
 
-        public async Task<bool> DeleteLuggageAsync(long id)
+        public async Task<Luggage> DeleteLuggageAsync(long id)
         {
             await using var context = await _context.CreateDbContextAsync();
-            try
-            {
-                var luggage = await context.Luggage.FindAsync(id);
-                if (luggage == null)
-                {
-                    return false;
-                }
 
-                context.Luggage.Remove(luggage);
-                await context.SaveChangesAsync();
-
-                return true;
-            }
-            catch (Exception e)
+            var luggage = await context.Luggage.FindAsync(id);
+            if (luggage == null)
             {
-                Console.WriteLine(e);
-                throw;
+                throw new KeyNotFoundException($"Luggage with ID {id} not found.");
             }
+            var returnEntityEntry = context.Luggage.Remove(luggage);
+            await context.SaveChangesAsync();
+
+            return returnEntityEntry.Entity;
         }
     }
 }

@@ -35,10 +35,10 @@ public class MaintenanceService : IMaintenanceService
         await using var context = await _context.CreateDbContextAsync();
 
         //Get Maintenance object with nested objects Plane and Airport
-        Maintenance maintenance = await context.Maintenances
-        .Include(m => m.Plane)
-        .Include(m => m.Airport)
-        .FirstOrDefaultAsync(a => a.MaintenanceId == id);
+        var maintenance = await context.Maintenances
+            .Include(m => m.Plane)
+            .Include(m => m.Airport)
+            .FirstOrDefaultAsync(a => a.MaintenanceId == id);
 
         if (maintenance == null)
         {
@@ -70,8 +70,7 @@ public class MaintenanceService : IMaintenanceService
         context.Maintenances.AddAsync(maintenance);
         await context.SaveChangesAsync();
 
-        var returnMaintenance = GetMaintenanceByIdAsync(maintenance.MaintenanceId).Result;
-        return returnMaintenance;
+        return GetMaintenanceByIdAsync(maintenance.MaintenanceId).Result;
     }
 
     public async Task<MaintenanceDTO> UpdateMaintenanceAsync(Maintenance maintenance)
@@ -97,30 +96,23 @@ public class MaintenanceService : IMaintenanceService
         context.Maintenances.Update(existingMaintenance);
         await context.SaveChangesAsync();
 
-        var returnMaintenance = GetMaintenanceByIdAsync(existingMaintenance.MaintenanceId).Result;
-        return returnMaintenance;
+        return GetMaintenanceByIdAsync(maintenance.MaintenanceId).Result;
     }
 
-    public async Task<bool> DeleteMaintenanceAsync(long id)
+    public async Task<Maintenance> DeleteMaintenanceAsync(long id)
     {
-        await using var context = await _context.CreateDbContextAsync();
-        try
         {
+            await using var context = await _context.CreateDbContextAsync();
+
             var maintenance = await context.Maintenances.FindAsync(id);
             if (maintenance == null)
             {
-                return false;
+                throw new KeyNotFoundException($"Maintenancee with ID {id} not found.");
             }
-
-            context.Maintenances.Remove(maintenance);
+            var returnEntityEntry = context.Maintenances.Remove(maintenance);
             await context.SaveChangesAsync();
 
-            return true;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
+            return returnEntityEntry.Entity;
         }
     }
 }

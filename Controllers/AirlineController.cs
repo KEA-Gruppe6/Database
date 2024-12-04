@@ -2,6 +2,7 @@
 using Database_project.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Database_project.Controllers.RequestDTOs;
+using Database_project.Core.DTOs;
 
 namespace Database_project.Controllers;
 
@@ -17,8 +18,8 @@ public class AirlineController : ControllerBase
     }
 
 
-    [HttpGet("{id:long}", Name = "Airline")]
-    public async Task<IActionResult> GetAirline(long id)
+    [HttpGet("{id:long}")]
+    public async Task<ActionResult<AirlineDTO?>> GetAirline(long id)
     {
         var airline = await _airlineService.GetAirlineByIdAsync(id);
         if (airline == null)
@@ -30,8 +31,8 @@ public class AirlineController : ControllerBase
     }
 
 
-    [HttpPost]
-    public async Task<IActionResult> CreateAirline([FromBody] AirlineRequestDTO airlineDTO)
+    [HttpPost()]
+    public async Task<ActionResult<AirlineDTO>> CreateAirline([FromBody] AirlineRequestDTO airlineDTO)
     {
         Airline airline = new Airline
         {
@@ -45,12 +46,12 @@ public class AirlineController : ControllerBase
     }
 
 
-    [HttpPatch()]
-    public async Task<IActionResult> UpdateAirline([FromBody] AirlineRequestDTO updatedAirlineDTO)
+    [HttpPatch("{id:long}")]
+    public async Task<ActionResult<AirlineDTO>> UpdateAirline(long id, [FromBody] AirlineRequestDTO updatedAirlineDTO)
     {
         Airline updatedAirline = new Airline
         {
-            AirlineId = updatedAirlineDTO.AirlineId,
+            AirlineId = id,
             AirlineName = updatedAirlineDTO.AirlineName,
         };
 
@@ -67,14 +68,16 @@ public class AirlineController : ControllerBase
 
 
     [HttpDelete("{id:long}")]
-    public async Task<IActionResult> DeleteAirline(long id)
+    public async Task<ActionResult<Airline>> DeleteAirline(long id)
     {
-        var result = await _airlineService.DeleteAirlineAsync(id);
-        if (!result)
+        try
         {
-            return NotFound($"Airline with ID {id} not found.");
+            var result = await _airlineService.DeleteAirlineAsync(id);
+            return Ok(result);
         }
-
-        return NoContent();
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 }

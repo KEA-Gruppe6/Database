@@ -14,6 +14,7 @@ builder.Services.AddDbContextFactory<DatabaseContext>(options =>
     options.UseSqlServer(connectionString);
 });
 
+//TODO: Authentication of API calls
 
 // Add services to the container.
 
