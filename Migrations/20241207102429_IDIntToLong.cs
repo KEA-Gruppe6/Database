@@ -7,9 +7,29 @@ namespace Database_project.Migrations
     /// <inheritdoc />
     public partial class IDIntToLong : Migration
     {
-        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Tickets_Orders_OrderId",
+                table: "Tickets");
+
+            migrationBuilder.DropPrimaryKey(
+                name: "PK_Orders",
+                table: "Orders");
+
+            migrationBuilder.AlterColumn<long>(
+                name: "OrderId",
+                table: "Orders",
+                type: "bigint",
+                nullable: false,
+                oldClrType: typeof(int),
+                oldType: "int");
+
+            migrationBuilder.AddPrimaryKey(
+                name: "PK_Orders",
+                table: "Orders",
+                column: "OrderId");
+
             migrationBuilder.AlterColumn<long>(
                 name: "OrderId",
                 table: "Tickets",
@@ -18,20 +38,38 @@ namespace Database_project.Migrations
                 oldClrType: typeof(int),
                 oldType: "int");
 
-            migrationBuilder.AlterColumn<long>(
-                name: "OrderId",
-                table: "Orders",
-                type: "bigint",
-                nullable: false,
-                oldClrType: typeof(int),
-                oldType: "int")
-                .Annotation("SqlServer:Identity", "1, 1")
-                .OldAnnotation("SqlServer:Identity", "1, 1");
+            migrationBuilder.AddForeignKey(
+                name: "FK_Tickets_Orders_OrderId",
+                table: "Tickets",
+                column: "OrderId",
+                principalTable: "Orders",
+                principalColumn: "OrderId",
+                onDelete: ReferentialAction.Cascade);
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Tickets_Orders_OrderId",
+                table: "Tickets");
+
+            migrationBuilder.DropPrimaryKey(
+                name: "PK_Orders",
+                table: "Orders");
+
+            migrationBuilder.AlterColumn<int>(
+                name: "OrderId",
+                table: "Orders",
+                type: "int",
+                nullable: false,
+                oldClrType: typeof(long),
+                oldType: "bigint");
+
+            migrationBuilder.AddPrimaryKey(
+                name: "PK_Orders",
+                table: "Orders",
+                column: "OrderId");
+
             migrationBuilder.AlterColumn<int>(
                 name: "OrderId",
                 table: "Tickets",
@@ -40,15 +78,13 @@ namespace Database_project.Migrations
                 oldClrType: typeof(long),
                 oldType: "bigint");
 
-            migrationBuilder.AlterColumn<int>(
-                name: "OrderId",
-                table: "Orders",
-                type: "int",
-                nullable: false,
-                oldClrType: typeof(long),
-                oldType: "bigint")
-                .Annotation("SqlServer:Identity", "1, 1")
-                .OldAnnotation("SqlServer:Identity", "1, 1");
+            migrationBuilder.AddForeignKey(
+                name: "FK_Tickets_Orders_OrderId",
+                table: "Tickets",
+                column: "OrderId",
+                principalTable: "Orders",
+                principalColumn: "OrderId",
+                onDelete: ReferentialAction.Cascade);
         }
     }
 }
