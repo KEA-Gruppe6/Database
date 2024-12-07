@@ -42,11 +42,26 @@ namespace Database_project.MongoDB_Query
                     new BsonDocument { { "role", "read" }, { "db", "AirportDB" } }
                 });
             }
-
+/*
+ * run this code for the role to be created
+  db.createRole({
+  role: "readInCustomers",  
+  privileges: [
+    {
+      resource: { db: "AirportDB", collection: "Customers" },  
+      actions: ["find"]
+    }
+  ],
+  roles: []  
+  });
+ */
             if (!UserExists(database, "restrictedUser"))
             {
                 CreateUser(database, "restrictedUser", "restrictedPassword", new[] {
-                    new BsonDocument { { "role", "read" }, { "db", "AirportDB" } }
+                    new BsonDocument { 
+                        { "role", "readInCustomers" },  
+                        { "db", "AirportDB" }
+                    }
                 });
             }
 
@@ -66,12 +81,11 @@ namespace Database_project.MongoDB_Query
             {
                 { "createUser", userName },
                 { "pwd", password },
-                { "roles", new BsonArray(roles) } // Ensure roles contain both "role" and "db" fields
+                { "roles", new BsonArray(roles) }
             };
 
             try
             {
-                // Run the command to create the user
                 database.RunCommand<BsonDocument>(userCommand);
                 Console.WriteLine($"User '{userName}' created successfully.");
             }

@@ -30,11 +30,14 @@ public class CustomerService
 
     public async Task InsertCustomerAsync(MongoDBCustomer customer)
     {
+        ValidatePassportNumber(customer.PassportNumber);
+        
         await _customersCollection.InsertOneAsync(customer);
     }
 
     public async Task UpdateCustomerAsync(string customerId, MongoDBCustomer updatedCustomer)
     {
+        ValidatePassportNumber(updatedCustomer.PassportNumber);
         
         var updateDefinition = Builders<MongoDBCustomer>.Update
             .Set(c => c.FirstName, updatedCustomer.FirstName)
@@ -65,5 +68,14 @@ public class CustomerService
                 _customersCollection.DeleteOne(c => c.CustomerId == customerId);
             }
         });
+    }
+    
+    public void ValidatePassportNumber(int passportNumber)
+    {
+        string passportString = passportNumber.ToString();
+        if (passportString.Length != 9)
+        {
+            throw new InvalidOperationException("Passport number must be exactly 9 characters long.");
+        }
     }
 }
