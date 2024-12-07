@@ -8,7 +8,7 @@ public class Flightroute
     public long FlightrouteId { get; set; }
     public DateTime DepartureTime { get; set; }
     public DateTime ArrivalTime { get; set; }
-    //public long PlaneId { get; set; }
+    //public long PlaneId { get; set; } //TODO: Add PlaneId
 
     public long DepartureAirportId { get; set; }
     public Airport DepartureAirport { get; set; }

@@ -45,23 +45,6 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbCont
             .HasForeignKey(p => p.AirlineId)
             .OnDelete(DeleteBehavior.SetNull);
 
-        // modelBuilder.Entity<Ticket>(entity =>
-        // {
-        //     entity.HasOne(d => d.TicketType)
-        //         .WithMany()
-        //         .HasForeignKey(d => d.TicketTypeId)
-        //         .OnDelete(DeleteBehavior.NoAction);
-        //     entity.HasOne(d => d.Customer)
-        //         .WithMany()
-        //         .HasForeignKey(d => d.CustomerId)
-        //         .OnDelete(DeleteBehavior.NoAction);
-        //     entity.HasOne(d => d.Flightroute)
-        //         .WithMany()
-        //         .HasForeignKey(d => d.FlightrouteId)
-        //         .OnDelete(DeleteBehavior.NoAction);
-        // });
-
-
         base.OnModelCreating(modelBuilder);
     }
 }

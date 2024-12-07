@@ -18,7 +18,8 @@ public class Ticket
     public long FlightrouteId { get; set; }
     public Flightroute Flightroute { get; set; }
 
-    public int OrderId { get; set; } //TODO: Make long
+    public long OrderId { get; set; }
+    public Order Order { get; set; }
 
     public ICollection<Luggage> Luggage { get; set; }
 }

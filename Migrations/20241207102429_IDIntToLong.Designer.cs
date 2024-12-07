@@ -4,6 +4,7 @@ using Database_project.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Database_project.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    partial class DatabaseContextModelSnapshot : ModelSnapshot
+    [Migration("20241207102429_IDIntToLong")]
+    partial class IDIntToLong
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,7 +39,7 @@ namespace Database_project.Migrations
 
                     b.HasKey("AirlineId");
 
-                    b.ToTable("Airlines", (string)null);
+                    b.ToTable("Airlines");
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.Airport", b =>
@@ -65,7 +68,7 @@ namespace Database_project.Migrations
 
                     b.HasKey("AirportId");
 
-                    b.ToTable("Airports", (string)null);
+                    b.ToTable("Airports");
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.Customer", b =>
@@ -89,7 +92,7 @@ namespace Database_project.Migrations
 
                     b.HasKey("CustomerId");
 
-                    b.ToTable("Customers", (string)null);
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.Flightroute", b =>
@@ -118,7 +121,7 @@ namespace Database_project.Migrations
 
                     b.HasIndex("DepartureAirportId");
 
-                    b.ToTable("Flightroutes", (string)null);
+                    b.ToTable("Flightroutes");
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.Luggage", b =>
@@ -142,7 +145,7 @@ namespace Database_project.Migrations
 
                     b.HasIndex("TicketId");
 
-                    b.ToTable("Luggage", (string)null);
+                    b.ToTable("Luggage");
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.Maintenance", b =>
@@ -171,7 +174,7 @@ namespace Database_project.Migrations
 
                     b.HasIndex("PlaneId");
 
-                    b.ToTable("Maintenances", (string)null);
+                    b.ToTable("Maintenances");
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.Order", b =>
@@ -188,7 +191,7 @@ namespace Database_project.Migrations
 
                     b.HasKey("OrderId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.Plane", b =>
@@ -210,7 +213,7 @@ namespace Database_project.Migrations
 
                     b.HasIndex("AirlineId");
 
-                    b.ToTable("Planes", (string)null);
+                    b.ToTable("Planes");
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.Ticket", b =>
@@ -246,7 +249,7 @@ namespace Database_project.Migrations
 
                     b.HasIndex("TicketTypeId");
 
-                    b.ToTable("Tickets", (string)null);
+                    b.ToTable("Tickets");
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.TicketType", b =>
@@ -263,7 +266,7 @@ namespace Database_project.Migrations
 
                     b.HasKey("TicketTypeId");
 
-                    b.ToTable("TicketTypes", (string)null);
+                    b.ToTable("TicketTypes");
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.Flightroute", b =>

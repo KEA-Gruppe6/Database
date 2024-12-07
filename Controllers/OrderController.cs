@@ -15,8 +15,8 @@ public class OrderController : ControllerBase
         _orderService = orderService;
     }
 
-    [HttpGet("{id:int}")] //TODO: Make long
-    public async Task<ActionResult<Order?>> GetOrder(int id) //TODO: Make long
+    [HttpGet("{id:long}")]
+    public async Task<ActionResult<Order?>> GetOrder(long id)
     {
         var order = await _orderService.GetOrderByIdAsync(id);
         if (order == null)
@@ -47,8 +47,8 @@ public class OrderController : ControllerBase
         }
     }
 
-    [HttpPatch("{id:int}")] //TODO: Make long
-    public async Task<ActionResult<Order>> UpdateOrder(int id, [FromBody] OrderRequestDTO updatedOrderDTO) //TODO: Make long
+    [HttpPatch("{id:long}")]
+    public async Task<ActionResult<Order>> UpdateOrder(long id, [FromBody] OrderRequestDTO updatedOrderDTO)
     {
         Order updatedOrder = new Order
         {
@@ -67,8 +67,8 @@ public class OrderController : ControllerBase
         }
     }
 
-    [HttpDelete("{id:int}")] //TODO: Make long
-    public async Task<ActionResult<Order>> DeleteOrder(int id) //TODO: Make long
+    [HttpDelete("{id:long}")]
+    public async Task<ActionResult<Order>> DeleteOrder(long id)
     {
         try
         {

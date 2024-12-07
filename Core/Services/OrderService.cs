@@ -14,7 +14,7 @@ namespace Database_project.Core.Services
             _context = context;
         }
 
-        public async Task<Order?> GetOrderByIdAsync(int id) //TODO: Make long
+        public async Task<Order?> GetOrderByIdAsync(long id)
         {
             //TODO: remove orderId variable from nested object
             await using var context = await _context.CreateDbContextAsync();
@@ -54,7 +54,7 @@ namespace Database_project.Core.Services
             return GetOrderByIdAsync(order.OrderId).Result;
         }
 
-        public async Task<Order> DeleteOrderAsync(int id) //TODO: Make long
+        public async Task<Order> DeleteOrderAsync(long id)
         {
             await using var context = await _context.CreateDbContextAsync();
 
