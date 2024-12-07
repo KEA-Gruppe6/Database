@@ -15,7 +15,7 @@ namespace Database_project.Migrations
                 table: "Flightroutes",
                 type: "bigint",
                 nullable: false,
-                defaultValue: 0L);
+                defaultValue: 1);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Flightroutes_PlaneId",
