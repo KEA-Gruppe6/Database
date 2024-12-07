@@ -6,8 +6,8 @@ namespace Database_project.Core.Interfaces;
 
 public interface IOrderService
 {
-    Task<Order?> GetOrderByIdAsync(long id);
-    Task<Order> CreateOrderAsync(Order order);
-    Task<Order> UpdateOrderAsync(Order order);
+    Task<OrderDTO?> GetOrderByIdAsync(long id);
+    Task<OrderDTO> CreateOrderAsync(Order order);
+    Task<OrderDTO> UpdateOrderAsync(Order order);
     Task<Order> DeleteOrderAsync(long id);
 }

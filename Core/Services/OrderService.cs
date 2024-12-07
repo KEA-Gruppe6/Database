@@ -1,4 +1,5 @@
 ﻿using Database_project.Controllers.RequestDTOs;
+using Database_project.Core.DTOs;
 using Database_project.Core.Entities;
 using Database_project.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -8,13 +9,15 @@ namespace Database_project.Core.Services
     public class OrderService : IOrderService
     {
         private readonly IDbContextFactory<DatabaseContext> _context;
+        private readonly IFlightrouteService _flightrouteService;
 
-        public OrderService(IDbContextFactory<DatabaseContext> context)
+        public OrderService(IDbContextFactory<DatabaseContext> context, IFlightrouteService flightrouteService)
         {
             _context = context;
+            _flightrouteService = flightrouteService;
         }
 
-        public async Task<Order?> GetOrderByIdAsync(long id)
+        public async Task<OrderDTO?> GetOrderByIdAsync(long id)
         {
             //TODO: remove orderId variable from nested object
             await using var context = await _context.CreateDbContextAsync();
@@ -39,10 +42,38 @@ namespace Database_project.Core.Services
                     .ThenInclude(l => l.Luggage)
                 .FirstOrDefaultAsync(a => a.OrderId == id);
 
-            return order;
+            var orderDTO = new OrderDTO()
+            {
+                OrderId = order.OrderId,
+                AirlineConfirmationNumber = order.AirlineConfirmationNumber,
+                Tickets = order.Tickets.Select(t => new TicketDTO()
+                {
+                    TicketId = t.TicketId,
+                    TicketType = new TicketType()
+                    {
+                        TicketTypeId = t.TicketType.TicketTypeId,
+                        TicketTypeName = t.TicketType.TicketTypeName
+                    },
+                    Customer = new Customer()
+                    {
+                        CustomerId = t.Customer.CustomerId,
+                        FirstName = t.Customer.FirstName,
+                        LastName = t.Customer.LastName,
+                        PassportNumber = t.Customer.PassportNumber
+                    },
+                    Flightroute = _flightrouteService.GetFlightrouteByIdAsync(t.Flightroute.FlightrouteId).Result,
+                    Luggage = t.Luggage.Select(l => new LuggageDTO()
+                    {
+                        IsCarryOn = l.IsCarryOn,
+                        Weight = l.Weight
+                    }).ToList()
+                }).ToList()
+            };
+
+            return orderDTO;
         }
 
-        public async Task<Order> CreateOrderAsync(Order order)
+        public async Task<OrderDTO> CreateOrderAsync(Order order)
         {
             await using var context = await _context.CreateDbContextAsync();
 
@@ -51,7 +82,7 @@ namespace Database_project.Core.Services
 
             return GetOrderByIdAsync(order.OrderId).Result;
         }
-        public async Task<Order> UpdateOrderAsync(Order order)
+        public async Task<OrderDTO> UpdateOrderAsync(Order order)
         {
             await using var context = await _context.CreateDbContextAsync();
 
