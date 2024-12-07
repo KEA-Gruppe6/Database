@@ -11,7 +11,7 @@ public class TicketTypeService(IDbContextFactory<DatabaseContext> context) : ITi
         await using var context1 = await context.CreateDbContextAsync();
         return await context1.TicketTypes.ToListAsync();
     }
-    
+
     public async Task<TicketType> GetTicketTypeByIdAsync(long id)
     {
         await using var context1 = await context.CreateDbContextAsync();
