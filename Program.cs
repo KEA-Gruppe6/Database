@@ -4,6 +4,7 @@ using Database_project.Core.Services;
 using Database_project.Services;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Neo4j.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +28,15 @@ builder.Services.AddScoped<IAirportService, AirportService>();
 builder.Services.AddScoped<PlaneService>();
 builder.Services.AddScoped<OrderService>();
 
+builder.Services.AddSingleton(GraphDatabase.Driver(
+            "bolt://localhost:7687",
+            AuthTokens.Basic(
+                "neo4j",
+                "Password123"
+            )
+        ));
+builder.Services.AddScoped<Database_project.Neo4j.Services.AirlineService>();
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -49,17 +59,19 @@ using (var scope = app.Services.CreateScope())
         }
     }
 
-    // Add passport length trigger
-    var sqlFilePath = "passportlengthtrigger.sql";
-    var sqlQuery = File.ReadAllText(sqlFilePath);
-    dbContext.Database.ExecuteSqlRaw("IF OBJECT_ID('trg_ValidatePassportNumber', 'TR') IS NOT NULL DROP TRIGGER trg_ValidatePassportNumber;");
-    dbContext.Database.ExecuteSqlRaw(sqlQuery);
+    //// Add passport length trigger
+    //var sqlFilePath = "passportlengthtrigger.sql";
+    //var sqlQuery = File.ReadAllText(sqlFilePath);
+    //dbContext.Database.ExecuteSqlRaw("IF OBJECT_ID('trg_ValidatePassportNumber', 'TR') IS NOT NULL DROP TRIGGER trg_ValidatePassportNumber;");
+    //dbContext.Database.ExecuteSqlRaw(sqlQuery);
 
-    // Run seed SQL query
-    sqlFilePath = "populatedb.sql";
-    sqlQuery = File.ReadAllText(sqlFilePath);
-    dbContext.Database.ExecuteSqlRaw(sqlQuery);
+    //// Run seed SQL query
+    //sqlFilePath = "populatedb.sql";
+    //sqlQuery = File.ReadAllText(sqlFilePath);
+    //dbContext.Database.ExecuteSqlRaw(sqlQuery);
 }
+
+
 
 // Configure the HTTP request pipeline.
 app.UseSwagger();
