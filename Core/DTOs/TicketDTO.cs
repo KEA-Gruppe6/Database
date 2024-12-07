@@ -16,5 +16,5 @@ public class TicketDTO
 
     public FlightrouteDTO Flightroute { get; set; }
 
-    public ICollection<LuggageDTO> Luggage { get; set; }
+    public ICollection<LuggageDTO_Nested> Luggage { get; set; }
 }

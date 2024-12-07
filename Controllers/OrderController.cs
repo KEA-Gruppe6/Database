@@ -16,7 +16,7 @@ public class OrderController : ControllerBase
     }
 
     [HttpGet("{id:long}")]
-    public async Task<ActionResult<Order?>> GetOrder(long id)
+    public async Task<ActionResult<OrderDTO?>> GetOrder(long id)
     {
         var order = await _orderService.GetOrderByIdAsync(id);
         if (order == null)
@@ -28,7 +28,7 @@ public class OrderController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Order>> CreateOrder([FromBody] OrderRequestDTO orderDTO)
+    public async Task<ActionResult<OrderDTO>> CreateOrder([FromBody] OrderRequestDTO orderDTO)
     {
         Order order = new Order
         {
@@ -48,7 +48,7 @@ public class OrderController : ControllerBase
     }
 
     [HttpPatch("{id:long}")]
-    public async Task<ActionResult<Order>> UpdateOrder(long id, [FromBody] OrderRequestDTO updatedOrderDTO)
+    public async Task<ActionResult<OrderDTO>> UpdateOrder(long id, [FromBody] OrderRequestDTO updatedOrderDTO)
     {
         Order updatedOrder = new Order
         {

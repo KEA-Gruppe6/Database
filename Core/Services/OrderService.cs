@@ -19,7 +19,6 @@ namespace Database_project.Core.Services
 
         public async Task<OrderDTO?> GetOrderByIdAsync(long id)
         {
-            //TODO: remove orderId variable from nested object
             await using var context = await _context.CreateDbContextAsync();
             var order = await context.Orders
                 .Include(m => m.Tickets)
@@ -62,7 +61,7 @@ namespace Database_project.Core.Services
                         PassportNumber = t.Customer.PassportNumber
                     },
                     Flightroute = _flightrouteService.GetFlightrouteByIdAsync(t.Flightroute.FlightrouteId).Result,
-                    Luggage = t.Luggage.Select(l => new LuggageDTO()
+                    Luggage = t.Luggage.Select(l => new LuggageDTO_Nested()
                     {
                         IsCarryOn = l.IsCarryOn,
                         Weight = l.Weight
