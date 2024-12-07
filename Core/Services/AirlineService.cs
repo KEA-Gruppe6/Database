@@ -15,7 +15,7 @@ public class AirlineService : IAirlineService
         _context = context;
     }
 
-    public async Task<AirlineDTO?> GetAirlineByIdAsync(long id)
+    public async Task<AirlineDTO_Planes?> GetAirlineByIdAsync(long id)
     {
         await using var context = await _context.CreateDbContextAsync();
 
@@ -30,11 +30,11 @@ public class AirlineService : IAirlineService
         }
 
         //Map Airline object to AirlineDTO object
-        var airlineDTO = new AirlineDTO()
+        var airlineDTO = new AirlineDTO_Planes()
         {
             AirlineId = airline.AirlineId,
             AirlineName = airline.AirlineName,
-            Planes = airline.Planes.Select(p => new PlaneDTO_Airline()
+            Planes = airline.Planes.Select(p => new PlaneDTO()
             {
                 PlaneId = p.PlaneId,
                 PlaneDisplayName = p.PlaneDisplayName
@@ -43,7 +43,7 @@ public class AirlineService : IAirlineService
         return airlineDTO;
     }
 
-    public async Task<AirlineDTO> CreateAirlineAsync(Airline airline)
+    public async Task<AirlineDTO_Planes> CreateAirlineAsync(Airline airline)
     {
         await using var context = await _context.CreateDbContextAsync();
 
@@ -57,7 +57,7 @@ public class AirlineService : IAirlineService
         return GetAirlineByIdAsync(airline.AirlineId).Result;
     }
 
-    public async Task<AirlineDTO> UpdateAirlineAsync(Airline airline)
+    public async Task<AirlineDTO_Planes> UpdateAirlineAsync(Airline airline)
     {
         await using var context = await _context.CreateDbContextAsync();
 

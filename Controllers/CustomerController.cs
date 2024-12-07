@@ -36,10 +36,22 @@ public class CustomerController : ControllerBase
             CustomerId = 0,
             FirstName = customerDTO.FirstName,
             LastName = customerDTO.LastName,
+            PassportNumber = customerDTO.PassportNumber,
         };
 
-        var createdCustomer = await _customerService.CreateCustomerAsync(customer);
-        return CreatedAtAction(nameof(GetCustomer), new { id = createdCustomer.CustomerId }, createdCustomer);
+        try
+        {
+            var createdCustomer = await _customerService.CreateCustomerAsync(customer);
+            return CreatedAtAction(nameof(GetCustomer), new { id = createdCustomer.CustomerId }, createdCustomer);
+        }
+        catch (Exception e)
+        {
+            if (e is ArgumentException)
+            {
+                return BadRequest(e.Message);
+            }
+            return StatusCode(500, e.Message);
+        }
     }
 
     [HttpPatch("{id:long}")]

@@ -1,6 +1,7 @@
 using Database_project.Core;
 using Database_project.Core.Entities;
 using Database_project.Core.Interfaces;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace Database_project.Services;
@@ -26,10 +27,22 @@ public class CustomerService : ICustomerService
     {
         await using var context = await _context.CreateDbContextAsync();
 
-        await context.Customers.AddAsync(customer);
-        await context.SaveChangesAsync();
+        var existingCustomer = await context.Customers.FindAsync(customer.CustomerId);
+        if (existingCustomer != null)
+        {
+            throw new ArgumentException($"Customer with ID {customer.CustomerId} already exists.");
+        }
 
-        return customer;
+        var sql = "INSERT INTO Customers (FirstName, LastName, PassportNumber) VALUES (@FirstName, @LastName, @PassportNumber)";
+        var parameters = new[]
+        {
+                new SqlParameter("@FirstName", customer.FirstName),
+                new SqlParameter("@LastName", customer.LastName),
+                new SqlParameter("@PassportNumber", customer.PassportNumber),
+            };
+        await context.Database.ExecuteSqlRawAsync(sql, parameters);
+
+        return context.Customers.OrderByDescending(c => c.CustomerId).FirstOrDefault();
     }
 
     public async Task<Customer> UpdateCustomerAsync(Customer customer)

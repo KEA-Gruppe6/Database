@@ -19,7 +19,7 @@ public class AirlineController : ControllerBase
 
 
     [HttpGet("{id:long}")]
-    public async Task<ActionResult<AirlineDTO?>> GetAirline(long id)
+    public async Task<ActionResult<AirlineDTO_Planes?>> GetAirline(long id)
     {
         var airline = await _airlineService.GetAirlineByIdAsync(id);
         if (airline == null)
@@ -32,7 +32,7 @@ public class AirlineController : ControllerBase
 
 
     [HttpPost()]
-    public async Task<ActionResult<AirlineDTO>> CreateAirline([FromBody] AirlineRequestDTO airlineDTO)
+    public async Task<ActionResult<AirlineDTO_Planes>> CreateAirline([FromBody] AirlineRequestDTO airlineDTO)
     {
         Airline airline = new Airline
         {
@@ -47,7 +47,7 @@ public class AirlineController : ControllerBase
 
 
     [HttpPatch("{id:long}")]
-    public async Task<ActionResult<AirlineDTO>> UpdateAirline(long id, [FromBody] AirlineRequestDTO updatedAirlineDTO)
+    public async Task<ActionResult<AirlineDTO_Planes>> UpdateAirline(long id, [FromBody] AirlineRequestDTO updatedAirlineDTO)
     {
         Airline updatedAirline = new Airline
         {

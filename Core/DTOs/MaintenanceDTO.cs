@@ -9,5 +9,5 @@ public class MaintenanceDTO
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public Airport Airport { get; set; }
-    public PlaneDTO Plane { get; set; }
+    public PlaneDTO_Airline Plane { get; set; }
 }

@@ -18,7 +18,7 @@ public class PlaneController : ControllerBase
     }
 
     [HttpGet()]
-    public async Task<ActionResult<List<PlaneDTO>>> GetPlanes()
+    public async Task<ActionResult<List<PlaneDTO_Airline>>> GetPlanes()
     {
         //TODO: pagination support, add GetAll call to other services
         var planes = await _planeService.GetPlanesAsync();
@@ -27,7 +27,7 @@ public class PlaneController : ControllerBase
     }
 
     [HttpGet("{id:long}")]
-    public async Task<ActionResult<PlaneDTO?>> GetPlane(long id)
+    public async Task<ActionResult<PlaneDTO_Airline?>> GetPlane(long id)
     {
         var plane = await _planeService.GetPlaneByIdAsync(id);
         if (plane == null)
@@ -39,7 +39,7 @@ public class PlaneController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<PlaneDTO>> CreatePlane([FromBody] PlaneRequestDTO planeDTO)
+    public async Task<ActionResult<PlaneDTO_Airline>> CreatePlane([FromBody] PlaneRequestDTO planeDTO)
     {
         Plane plane = new Plane
         {
@@ -60,7 +60,7 @@ public class PlaneController : ControllerBase
     }
 
     [HttpPatch("{id:long}")]
-    public async Task<ActionResult<PlaneDTO>> UpdatePlane(long id, [FromBody] PlaneRequestDTO updatedPlaneDTO)
+    public async Task<ActionResult<PlaneDTO_Airline>> UpdatePlane(long id, [FromBody] PlaneRequestDTO updatedPlaneDTO)
     {
         Plane updatedPlane = new Plane
         {

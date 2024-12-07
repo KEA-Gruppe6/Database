@@ -14,7 +14,7 @@ public class PlaneService : IPlaneService
         _context = context;
     }
 
-    public async Task<IEnumerable<PlaneDTO>> GetPlanesAsync()
+    public async Task<IEnumerable<PlaneDTO_Airline>> GetPlanesAsync()
     {
         await using var context = await _context.CreateDbContextAsync();
 
@@ -23,11 +23,11 @@ public class PlaneService : IPlaneService
                .AsNoTracking()
                .ToListAsync();
 
-        var planeDTOs = planes.Select(plane => new PlaneDTO
+        var planeDTOs = planes.Select(plane => new PlaneDTO_Airline
         {
             PlaneId = plane.PlaneId,
             PlaneDisplayName = plane.PlaneDisplayName,
-            Airline = plane.Airline != null ? new AirlineDTO_Plane
+            Airline = plane.Airline != null ? new AirlineDTO
             {
                 AirlineId = plane.Airline.AirlineId,
                 AirlineName = plane.Airline.AirlineName
@@ -37,7 +37,7 @@ public class PlaneService : IPlaneService
         return planeDTOs;
     }
 
-    public async Task<PlaneDTO?> GetPlaneByIdAsync(long id)
+    public async Task<PlaneDTO_Airline?> GetPlaneByIdAsync(long id)
     {
         await using var context = await _context.CreateDbContextAsync();
 
@@ -52,11 +52,11 @@ public class PlaneService : IPlaneService
         }
 
         //Map Plane object to PlaneDTO object
-        var planeDTO = new PlaneDTO()
+        var planeDTO = new PlaneDTO_Airline()
         {
             PlaneId = plane.PlaneId,
             PlaneDisplayName = plane.PlaneDisplayName,
-            Airline = new AirlineDTO_Plane()
+            Airline = new AirlineDTO()
             {
                 AirlineId = plane.Airline.AirlineId,
                 AirlineName = plane.Airline.AirlineName
@@ -65,7 +65,7 @@ public class PlaneService : IPlaneService
         return planeDTO;
     }
 
-    public async Task<PlaneDTO> CreatePlaneAsync(Plane plane)
+    public async Task<PlaneDTO_Airline> CreatePlaneAsync(Plane plane)
     {
         await using var context = await _context.CreateDbContextAsync();
 
@@ -82,7 +82,7 @@ public class PlaneService : IPlaneService
         return GetPlaneByIdAsync(plane.PlaneId).Result;
     }
 
-    public async Task<PlaneDTO> UpdatePlaneAsync(Plane plane)
+    public async Task<PlaneDTO_Airline> UpdatePlaneAsync(Plane plane)
     {
         await using var context = await _context.CreateDbContextAsync();
 

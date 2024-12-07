@@ -8,4 +8,5 @@ public class FlightrouteDTO
     public DateTime ArrivalTime { get; set; }
     public Airport DepartureAirport { get; set; }
     public Airport ArrivalAirport { get; set; }
+    public PlaneDTO Plane { get; set; }
 }

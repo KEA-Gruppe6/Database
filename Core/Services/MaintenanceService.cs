@@ -51,7 +51,7 @@ public class MaintenanceService : IMaintenanceService
             MaintenanceId = maintenance.MaintenanceId,
             StartDate = maintenance.StartDate,
             EndDate = maintenance.EndDate,
-            Plane = new PlaneDTO()
+            Plane = new PlaneDTO_Airline()
             {
                 PlaneId = maintenance.Plane.PlaneId,
                 PlaneDisplayName = maintenance.Plane.PlaneDisplayName
