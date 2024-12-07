@@ -131,7 +131,6 @@ namespace Database_project.Core.Services
             }
             var returnEntityEntry = context.Tickets.Remove(ticket);
             await context.SaveChangesAsync();
-            await context.DisposeAsync();
 
             return returnEntityEntry.Entity;
         }

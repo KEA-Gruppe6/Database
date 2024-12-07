@@ -104,7 +104,6 @@ namespace Database_project.Core.Services
             }
             var returnEntityEntry = context.Orders.Remove(order);
             await context.SaveChangesAsync();
-            await context.DisposeAsync();
 
             return returnEntityEntry.Entity;
         }

@@ -78,6 +78,7 @@ public class PlaneService : IPlaneService
 
         await context.Planes.AddAsync(plane);
         await context.SaveChangesAsync();
+        await context.DisposeAsync();
 
         return GetPlaneByIdAsync(plane.PlaneId).Result;
     }
@@ -105,6 +106,7 @@ public class PlaneService : IPlaneService
 
         context.Planes.Update(existingPlane);
         await context.SaveChangesAsync();
+        await context.DisposeAsync();
 
         return GetPlaneByIdAsync(plane.PlaneId).Result;
     }

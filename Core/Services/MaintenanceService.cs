@@ -9,10 +9,12 @@ namespace Database_project.Services;
 public class MaintenanceService : IMaintenanceService
 {
     private readonly IDbContextFactory<DatabaseContext> _context;
+    private readonly IPlaneService _planeService;
 
-    public MaintenanceService(IDbContextFactory<DatabaseContext> context)
+    public MaintenanceService(IDbContextFactory<DatabaseContext> context, IPlaneService planeService)
     {
         _context = context;
+        _planeService = planeService;
     }
 
     private async Task ValidateEntitiesExistenceAsync(Maintenance maintenance, DatabaseContext context)
@@ -51,11 +53,7 @@ public class MaintenanceService : IMaintenanceService
             MaintenanceId = maintenance.MaintenanceId,
             StartDate = maintenance.StartDate,
             EndDate = maintenance.EndDate,
-            Plane = new PlaneDTO_Airline()
-            {
-                PlaneId = maintenance.Plane.PlaneId,
-                PlaneDisplayName = maintenance.Plane.PlaneDisplayName
-            },
+            Plane = _planeService.GetPlaneByIdAsync(maintenance.PlaneId).Result,
             Airport = maintenance.Airport
         };
         return maintenanceDTO;
@@ -69,6 +67,7 @@ public class MaintenanceService : IMaintenanceService
 
         context.Maintenances.AddAsync(maintenance);
         await context.SaveChangesAsync();
+        await context.DisposeAsync();
 
         return GetMaintenanceByIdAsync(maintenance.MaintenanceId).Result;
     }
@@ -95,6 +94,7 @@ public class MaintenanceService : IMaintenanceService
         // Save the changes to the database
         context.Maintenances.Update(existingMaintenance);
         await context.SaveChangesAsync();
+        await context.DisposeAsync();
 
         return GetMaintenanceByIdAsync(maintenance.MaintenanceId).Result;
     }
