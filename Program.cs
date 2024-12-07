@@ -4,6 +4,7 @@ using Database_project.Core.MongoDB.Services;
 using Database_project.Core.Services;
 using Database_project.MongoDB_Query;
 using Database_project.Services;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
@@ -65,10 +66,44 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
+builder.Services.AddScoped<IAirportService, AirportService>();
+builder.Services.AddScoped<PlaneService>();
+builder.Services.AddScoped<OrderService>();
+
+var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    var dbContext = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+    var retryCount = 5;
+    var delay = TimeSpan.FromSeconds(10);
+
+    for (int i = 0; i < retryCount; i++)
+    {
+        try
+        {
+            dbContext.Database.Migrate();
+            break;
+        }
+        catch (SqlException)
+        {
+            if (i == retryCount - 1) throw;
+            Thread.Sleep(delay);
+        }
+    }
+
+    // Add passport length trigger
+    var sqlFilePath = "passportlengthtrigger.sql";
+    var sqlQuery = File.ReadAllText(sqlFilePath);
+    dbContext.Database.ExecuteSqlRaw("IF OBJECT_ID('trg_ValidatePassportNumber', 'TR') IS NOT NULL DROP TRIGGER trg_ValidatePassportNumber;");
+    dbContext.Database.ExecuteSqlRaw(sqlQuery);
+
+    // Run seed SQL query
+    sqlFilePath = "populatedb.sql";
+    sqlQuery = File.ReadAllText(sqlFilePath);
+    dbContext.Database.ExecuteSqlRaw(sqlQuery);
 }
+
 
 // Create a scope to resolve AddUsers (because it's a scoped service)
 using (var scope = app.Services.CreateScope())
@@ -76,6 +111,11 @@ using (var scope = app.Services.CreateScope())
     var addUsersService = scope.ServiceProvider.GetRequiredService<AddUsers>();
     addUsersService.CreateMongoUsers();  // Run the user creation script
 }
+
+// Configure the HTTP request pipeline.
+app.UseSwagger();
+app.UseSwaggerUI();
+
 
 app.UseHttpsRedirection();
 

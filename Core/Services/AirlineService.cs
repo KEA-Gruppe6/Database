@@ -18,50 +18,31 @@ public class AirlineService : IAirlineService
     public async Task<AirlineDTO?> GetAirlineByIdAsync(long id)
     {
         await using var context = await _context.CreateDbContextAsync();
-        try
-        {
-            var airline = await context.Airlines
-                .Select(a => new AirlineDTO()
-                    {
-                        AirlineId = a.AirlineId,
-                        AirlineName = a.AirlineName,
-                        Planes = a.Planes.Select(p => new PlaneDTO()
-                        {
-                            PlaneId = p.PlaneId,
-                            PlaneDisplayName = p.PlaneDisplayName
-                        }).ToList()
-                    })
-                .FirstOrDefaultAsync(a => a.AirlineId == id);
-            
-            if (airline == null)
-            {
-                throw new Exception($"Could not find Airline with id: {id}");
-            }
 
-            return airline;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
-            throw new Exception();
-        }
+        var airline = await context.Airlines
+            .Select(a => new AirlineDTO()
+            {
+                AirlineId = a.AirlineId,
+                AirlineName = a.AirlineName,
+                Planes = a.Planes.Select(p => new PlaneDTO()
+                {
+                    PlaneId = p.PlaneId,
+                    PlaneDisplayName = p.PlaneDisplayName
+                }).ToList()
+            })
+            .FirstOrDefaultAsync(a => a.AirlineId == id);
+
+        return airline;
     }
 
     public async Task<Airline> CreateAirlineAsync(Airline airline)
     {
         await using var context = await _context.CreateDbContextAsync();
-        Console.WriteLine(airline);
-        try
-        {
-            await context.Airlines.AddAsync(airline);
-            await context.SaveChangesAsync();
-            
-            return airline;
-        }
-        catch (Exception ex)
-        {
-            throw new Exception();
-        }
+
+        await context.Airlines.AddAsync(airline);
+        await context.SaveChangesAsync();
+
+        return airline;
     }
 
     public async Task<bool> UpdateAirlineAsync(Airline airline)
@@ -79,24 +60,24 @@ public class AirlineService : IAirlineService
             }
             //change airline name 
             existingAirline.AirlineName = airline.AirlineName;
-            
+
             //Remove Planes
             var planeIdsToRemove = existingAirline.Planes
                 .Where(p => !airline.Planes.Any(updatedPlane => updatedPlane.PlaneId == p.PlaneId))
                 .Select(p => p.PlaneId)
                 .ToList();
-            
+
             foreach (var planeId in planeIdsToRemove)
             {
                 var planeToRemove = existingAirline.Planes.First(p => p.PlaneId == planeId);
                 existingAirline.Planes.Remove(planeToRemove);
             }
-            
+
             //Add planes
             var planeIdsToAdd = airline.Planes
                 .Where(p => !existingAirline.Planes.Any(existingPlane => existingPlane.PlaneId == p.PlaneId))
                 .ToList();
-            
+
             foreach (var newPlane in planeIdsToAdd)
             {
                 existingAirline.Planes.Add(new Plane
@@ -106,7 +87,7 @@ public class AirlineService : IAirlineService
                     AirlineId = airline.AirlineId // Ensure the new plane is associated with the updated airline
                 });
             }
-            
+
             await context.SaveChangesAsync();
             return true;
         }
@@ -129,7 +110,7 @@ public class AirlineService : IAirlineService
 
             context.Airlines.Remove(airline);
             await context.SaveChangesAsync();
-            
+
             return true;
         }
         catch (Exception ex)
