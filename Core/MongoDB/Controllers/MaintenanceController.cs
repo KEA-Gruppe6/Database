@@ -7,7 +7,7 @@ using Database_project.Core.MongoDB.Entities;
 namespace Database_project.Core.MongoDB.Controllers;
 
 [ApiController]
-[Route("MongoDB/[controller]")]
+[Route("api/MongoDB/[controller]")]
 public class MaintenanceController : ControllerBase
 {
     private readonly MaintenanceService _maintenanceService;

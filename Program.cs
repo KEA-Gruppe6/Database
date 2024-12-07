@@ -1,14 +1,10 @@
 using Database_project.Core;
 using Database_project.Core.Interfaces;
-using Database_project.Core.MongoDB.Services;
-using Database_project.Core.Services;
 using Database_project.MongoDB_Query;
-using Database_project.Services;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
-using AirlineService = Database_project.Services.AirlineService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +14,7 @@ builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("Mo
 // Add Database context
 var connectionString = builder.Configuration.GetConnectionString("MSSQL") ?? Environment.GetEnvironmentVariable("MSSQL");
 var mongoDbConnectionString = builder.Configuration.GetConnectionString("MongoDB") ?? Environment.GetEnvironmentVariable("MongoDB");
-
+var mongoDbDatabaseName = builder.Configuration.GetConnectionString("DatabaseName");
 builder.Services.AddDbContextFactory<DatabaseContext>(options =>
 {
     options.UseSqlServer(connectionString);
@@ -29,7 +25,7 @@ builder.Services.AddDbContextFactory<DatabaseContext>(options =>
 builder.Services.Configure<MongoDbSettings>(options =>
 {
     options.ConnectionString = mongoDbConnectionString;
-    options.DatabaseName = "AirportDB";
+    options.DatabaseName = mongoDbDatabaseName;
 });
 
 // Singleton pattern implementation for connection
@@ -44,16 +40,16 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<ICustomerService, CustomerService>();
-builder.Services.AddScoped<IAirlineService, AirlineService>();
-builder.Services.AddScoped<IAirportService, AirportService>();
-builder.Services.AddScoped<ITicketTypeService, TicketTypeService>();
-builder.Services.AddScoped<IPlaneService, PlaneService>();
-builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<IFlightrouteService, FlightrouteService>();
-builder.Services.AddScoped<ILuggageService, LuggageService>();
-builder.Services.AddScoped<IMaintenanceService, MaintenanceService>();
-builder.Services.AddScoped<ITicketService, TicketService>();
+builder.Services.AddScoped<ICustomerService, Database_project.Core.Services.CustomerService>();
+builder.Services.AddScoped<IAirlineService, Database_project.Core.Services.AirlineService>();
+builder.Services.AddScoped<IAirportService, Database_project.Core.Services.AirportService>();
+builder.Services.AddScoped<ITicketTypeService, Database_project.Core.Services.TicketTypeService>();
+builder.Services.AddScoped<IPlaneService, Database_project.Core.Services.PlaneService>();
+builder.Services.AddScoped<IOrderService, Database_project.Core.Services.OrderService>();
+builder.Services.AddScoped<IFlightrouteService, Database_project.Core.Services.FlightrouteService>();
+builder.Services.AddScoped<ILuggageService, Database_project.Core.Services.LuggageService>();
+builder.Services.AddScoped<IMaintenanceService, Database_project.Core.Services.MaintenanceService>();
+builder.Services.AddScoped<ITicketService, Database_project.Core.Services.TicketService>();
 
 // Register MongoDB services
 builder.Services.AddScoped<Database_project.Core.MongoDB.Services.CustomerService>();

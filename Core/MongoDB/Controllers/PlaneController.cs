@@ -8,7 +8,7 @@ namespace Database_project.Core.MongoDB.Controllers;
 
 
 [ApiController]
-[Route("MongoDB/[controller]")]
+[Route("api/MongoDB/[controller]")]
 public class PlaneController : ControllerBase
 {
     private readonly PlaneService _planeService;

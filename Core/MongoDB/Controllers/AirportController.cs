@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Database_project.Core.MongoDB.Controllers;
 
 [ApiController]
-[Route("MongoDB/[controller]")]
+[Route("api/MongoDB/[controller]")]
 public class AirportController : ControllerBase
 {
     private readonly AirportService _airportService;

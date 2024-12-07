@@ -4,7 +4,7 @@ using Database_project.Core.Interfaces;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
-namespace Database_project.Services;
+namespace Database_project.Core.Services;
 
 public class CustomerService : ICustomerService
 {

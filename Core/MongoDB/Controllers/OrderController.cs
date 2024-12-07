@@ -7,10 +7,32 @@ using Microsoft.AspNetCore.Mvc;
 namespace Database_project.Core.MongoDB.Controllers;
 
 [ApiController]
-[Route("MongoDB/[controller]")]
+[Route("api/MongoDB/[controller]")]
 public class OrderController : ControllerBase
 {
-    //not sure if this one is needed, mabey just to see all orders.
-    //but orders are created with ticket,
-    //with each new ticket a new order is created and any tickets after that added to that order.
+    private readonly OrderService _orderService;
+
+    public OrderController(OrderService orderService)
+    {
+        _orderService = orderService;
+    }
+
+    [HttpGet("{id}", Name = "GetOrderById")]
+    public async Task<IActionResult> GetOrder(string id)
+    {
+        var order = await _orderService.GetOrderByIdAsync(id);
+        if (order == null)
+        {
+            return NotFound(new { message = $"Order with ID {id} not found." });
+        }
+
+        return Ok(order);
+    }
+
+    [HttpGet(Name = "GetAllOrders")]
+    public async Task<IActionResult> GetAllOrders()
+    {
+        var orders = await _orderService.GetOrdersAsync();
+        return Ok(orders);
+    }
 }
