@@ -33,7 +33,12 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbCont
                 .WithMany()
                 .HasForeignKey(d => d.ArrivalAirportId)
                 .OnDelete(DeleteBehavior.NoAction);
+            entity.HasOne(d => d.Plane)
+                .WithMany()
+                .HasForeignKey(d => d.PlaneId)
+                .OnDelete(DeleteBehavior.NoAction);
         });
+
         modelBuilder.Entity<Plane>()
             .HasOne(p => p.Airline)
             .WithMany(a => a.Planes)
