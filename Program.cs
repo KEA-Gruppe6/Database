@@ -61,7 +61,7 @@ builder.Services.AddSwaggerGen(c =>
         }
         if (name == "mongodb")
         {
-            return routeTemplate != null && routeTemplate.StartsWith("api/mongodb");
+            return routeTemplate != null && routeTemplate.StartsWith("api/MongoDB");
         }
         if (name == "neo4j")
         {
