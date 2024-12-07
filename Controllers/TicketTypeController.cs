@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Database_project.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/mssql/[controller]")]
 public class TicketTypeController(ITicketTypeService ticketTypeService) : ControllerBase
 {
     [HttpGet()]
@@ -22,7 +22,7 @@ public class TicketTypeController(ITicketTypeService ticketTypeService) : Contro
             return Problem(type: e.GetType().ToString(), title: e.Message, detail: e.StackTrace);
         }
     }
-    
+
     [HttpGet("{id:long}")]
     public async Task<ActionResult<TicketType>> GetTicketType(long id)
     {
@@ -44,7 +44,7 @@ public class TicketTypeController(ITicketTypeService ticketTypeService) : Contro
     public async Task<ActionResult<TicketType>> CreateTicketType([FromBody] TicketTypeDTO ticketTypeDTO)
     {
         var newTicketType = new TicketType { TicketTypeId = 0, TicketTypeName = ticketTypeDTO.TicketTypeName };
-        
+
         try
         {
             var createdTicketType = ticketTypeService.CreateTicketTypeAsync(newTicketType);
@@ -59,7 +59,7 @@ public class TicketTypeController(ITicketTypeService ticketTypeService) : Contro
     [HttpPatch("{id:long}")]
     public async Task<ActionResult<TicketType>> UpdateTicketType(long id, [FromBody] TicketTypeDTO ticketTypeDTO)
     {
-        var updatedTicketType = new TicketType {TicketTypeId = id, TicketTypeName = ticketTypeDTO.TicketTypeName};
+        var updatedTicketType = new TicketType { TicketTypeId = id, TicketTypeName = ticketTypeDTO.TicketTypeName };
 
         try
         {

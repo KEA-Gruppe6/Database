@@ -7,7 +7,7 @@ using Database_project.Core.DTOs;
 namespace Database_project.Controllers;
 
 [ApiController]
-[Route("[controller]")] //TODO: Change all api routes to /api/mssql/...
+[Route("api/mssql/[controller]")]
 public class AirlineController : ControllerBase
 {
     private readonly IAirlineService _airlineService;

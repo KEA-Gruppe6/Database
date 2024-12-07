@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Database_project.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/mssql/[controller]")]
 public class TicketController : ControllerBase
 {
     private ITicketService _ticketService;

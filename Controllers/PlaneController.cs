@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Database_project.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/mssql/[controller]")]
 public class PlaneController : ControllerBase
 {
     private IPlaneService _planeService;
