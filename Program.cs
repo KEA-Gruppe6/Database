@@ -38,11 +38,19 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IAirlineService, AirlineService>();
-builder.Services.AddScoped<PlaneService>();
-builder.Services.AddScoped<OrderService>();
-builder.Services.AddSingleton<MongoDbService>();
-builder.Services.AddScoped<CustomerService>();
+builder.Services.AddScoped<Database_project.Core.Services.PlaneService>();
+builder.Services.AddScoped<Database_project.Core.Services.OrderService>();
+
+
+builder.Services.AddScoped<Database_project.Core.MongoDB.Services.CustomerService>();
 builder.Services.AddScoped<Database_project.Core.MongoDB.Services.AirlineService>();
+builder.Services.AddScoped<Database_project.Core.MongoDB.Services.AirportService>();
+builder.Services.AddScoped<Database_project.Core.MongoDB.Services.OrderService>();
+builder.Services.AddScoped<Database_project.Core.MongoDB.Services.TicketService>();
+builder.Services.AddScoped<Database_project.Core.MongoDB.Services.DepartureService>();
+builder.Services.AddScoped<Database_project.Core.MongoDB.Services.LuggageService>();
+builder.Services.AddScoped<Database_project.Core.MongoDB.Services.PlaneService>();
+builder.Services.AddScoped<Database_project.Core.MongoDB.Services.MaintenanceService>();
 
 var app = builder.Build();
 

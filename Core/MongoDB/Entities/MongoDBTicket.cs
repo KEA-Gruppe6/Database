@@ -25,9 +25,14 @@ public class MongoDBTicket
     public string DepartureId { get; set; }
 
     [BsonElement("OrderId")]
-    public int OrderId { get; set; }
+    public string OrderId { get; set; }
 
     [BsonElement("LuggageIds")]
-    [BsonRepresentation(BsonType.ObjectId)]
     public ICollection<MongoDBLuggage> LuggageIds { get; set; }
+
+
+    public void SetOrder(MongoDBOrder order)
+    {
+        OrderId = order.OrderId;
+    }
 }

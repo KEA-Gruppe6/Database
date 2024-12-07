@@ -29,12 +29,7 @@ public class AirlineController : ControllerBase
 
         return Ok(airline);
     }
-/*
- *  public long AirlineId { get; set; }
-    public string AirlineName { get; set; }
 
-    public ICollection<Plane> Planes { get; set; }
- */
     [HttpPost(Name = "CreateAirline")]
     public async Task<IActionResult> CreateAirline([FromBody] MongoDBAirlineDTO airlineDTO)
     {

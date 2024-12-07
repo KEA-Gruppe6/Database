@@ -16,14 +16,11 @@ public class MongoDBDeparture
     public DateTime ArrivalTime { get; set; }
 
     [BsonElement("DepartureAirportId")]
-    [BsonRepresentation(BsonType.ObjectId)]
     public string DepartureAirportId { get; set; }
 
     [BsonElement("ArrivalAirportId")]
-    [BsonRepresentation(BsonType.ObjectId)]
     public string ArrivalAirportId { get; set; }
 
     [BsonElement("Tickets")]
-    [BsonRepresentation(BsonType.ObjectId)]
     public ICollection<MongoDBTicket> TicketIds { get; set; }
 }

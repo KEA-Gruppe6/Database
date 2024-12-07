@@ -10,10 +10,8 @@ public class MongoDBMaintenance
     public string MaintenanceId { get; set; }
 
     [BsonElement("AirportId")]
-    [BsonRepresentation(BsonType.ObjectId)] 
     public string AirportId { get; set; }
 
     [BsonElement("PlaneId")]
-    [BsonRepresentation(BsonType.ObjectId)] 
     public string PlaneId { get; set; }
 }

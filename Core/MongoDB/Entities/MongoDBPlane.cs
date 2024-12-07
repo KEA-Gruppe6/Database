@@ -13,11 +13,10 @@ public class MongoDBPlane
     public string PlaneDisplayName { get; set; }
     
     [BsonElement("AirlineId")]
-    [BsonRepresentation(BsonType.ObjectId)]
     public string AirlineId { get; set; }
     
     [BsonElement("Departures")]
-    ICollection<MongoDBDeparture> Departures { get; set; } = new List<MongoDBDeparture>();
+    public ICollection<MongoDBDeparture> Departures { get; set; } = new List<MongoDBDeparture>();
 }
     
 

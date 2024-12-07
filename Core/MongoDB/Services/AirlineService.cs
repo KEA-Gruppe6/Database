@@ -55,10 +55,10 @@ public class AirlineService // : IAirlineService
     {
         await Task.Run(() =>
         {
-            var customer = _airlineCollection.AsQueryable()
+            var airline = _airlineCollection.AsQueryable()
                 .FirstOrDefault(c => c.AirlineId == airlineId);
 
-            if (customer != null)
+            if (airline != null)
             {
                 _airlineCollection.DeleteOne(c => c.AirlineId == airlineId);
             }
