@@ -36,7 +36,7 @@ namespace Database_project.Migrations
 
                     b.HasKey("AirlineId");
 
-                    b.ToTable("Airlines");
+                    b.ToTable("Airlines", (string)null);
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.Airport", b =>
@@ -65,7 +65,7 @@ namespace Database_project.Migrations
 
                     b.HasKey("AirportId");
 
-                    b.ToTable("Airports");
+                    b.ToTable("Airports", (string)null);
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.Customer", b =>
@@ -89,7 +89,7 @@ namespace Database_project.Migrations
 
                     b.HasKey("CustomerId");
 
-                    b.ToTable("Customers");
+                    b.ToTable("Customers", (string)null);
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.Flightroute", b =>
@@ -123,7 +123,7 @@ namespace Database_project.Migrations
 
                     b.HasIndex("PlaneId");
 
-                    b.ToTable("Flightroutes");
+                    b.ToTable("Flightroutes", (string)null);
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.Luggage", b =>
@@ -147,7 +147,7 @@ namespace Database_project.Migrations
 
                     b.HasIndex("TicketId");
 
-                    b.ToTable("Luggage");
+                    b.ToTable("Luggage", (string)null);
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.Maintenance", b =>
@@ -176,7 +176,7 @@ namespace Database_project.Migrations
 
                     b.HasIndex("PlaneId");
 
-                    b.ToTable("Maintenances");
+                    b.ToTable("Maintenances", (string)null);
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.Order", b =>
@@ -193,7 +193,7 @@ namespace Database_project.Migrations
 
                     b.HasKey("OrderId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.Plane", b =>
@@ -215,7 +215,7 @@ namespace Database_project.Migrations
 
                     b.HasIndex("AirlineId");
 
-                    b.ToTable("Planes");
+                    b.ToTable("Planes", (string)null);
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.Ticket", b =>
@@ -251,7 +251,7 @@ namespace Database_project.Migrations
 
                     b.HasIndex("TicketTypeId");
 
-                    b.ToTable("Tickets");
+                    b.ToTable("Tickets", (string)null);
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.TicketType", b =>
@@ -268,7 +268,7 @@ namespace Database_project.Migrations
 
                     b.HasKey("TicketTypeId");
 
-                    b.ToTable("TicketTypes");
+                    b.ToTable("TicketTypes", (string)null);
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.Flightroute", b =>
