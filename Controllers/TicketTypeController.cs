@@ -1,33 +1,94 @@
-﻿using Database_project.Core.Entities;
+﻿using Database_project.Controllers.RequestDTOs;
+using Database_project.Core.Entities;
+using Database_project.Core.Interfaces;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Database_project.Controllers;
 
 [ApiController]
-[Route("[controller]")]
-public class TicketTypeController : ControllerBase
+[Route("api/mssql/[controller]")]
+public class TicketTypeController(ITicketTypeService ticketTypeService) : ControllerBase
 {
-    [HttpGet(Name = "TicketType")]
-    public string GetTicketType(int id)
+    [HttpGet()]
+    public async Task<ActionResult<List<TicketType>>> GetAllTicketTypes()
     {
-        throw new NotImplementedException();
+        try
+        {
+            return Ok(await ticketTypeService.GetTicketTypesAsync());
+        }
+        catch (Exception e)
+        {
+            return Problem(type: e.GetType().ToString(), title: e.Message, detail: e.StackTrace);
+        }
     }
 
-    [HttpPost(Name = "TicketType")]
-    public string CreateTicketType([FromBody] TicketType ticketType)
+    [HttpGet("{id:long}")]
+    public async Task<ActionResult<TicketType>> GetTicketType(long id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return Ok(await ticketTypeService.GetTicketTypeByIdAsync(id));
+        }
+        catch (ArgumentException a)
+        {
+            return BadRequest(a.Message);
+        }
+        catch (Exception e)
+        {
+            return Problem(type: e.GetType().ToString(), title: e.Message, detail: e.StackTrace);
+        }
     }
 
-    [HttpPatch(Name = "TicketType")]
-    public string UpdateTicketType([FromBody] TicketType ticketType)
+    [HttpPost()]
+    public async Task<ActionResult<TicketType>> CreateTicketType([FromBody] TicketTypeDTO ticketTypeDTO)
     {
-        throw new NotImplementedException();
+        var newTicketType = new TicketType { TicketTypeId = 0, TicketTypeName = ticketTypeDTO.TicketTypeName };
+
+        try
+        {
+            var createdTicketType = ticketTypeService.CreateTicketTypeAsync(newTicketType);
+            return CreatedAtAction(nameof(GetTicketType), new { id = createdTicketType.Result.TicketTypeId }, createdTicketType.Result);
+        }
+        catch (Exception e)
+        {
+            return Problem(type: e.GetType().ToString(), title: e.Message, detail: e.StackTrace);
+        }
     }
 
-    [HttpDelete(Name = "TicketType")]
-    public string DeleteTicketType(int id)
+    [HttpPatch("{id:long}")]
+    public async Task<ActionResult<TicketType>> UpdateTicketType(long id, [FromBody] TicketTypeDTO ticketTypeDTO)
     {
-        throw new NotImplementedException();
+        var updatedTicketType = new TicketType { TicketTypeId = id, TicketTypeName = ticketTypeDTO.TicketTypeName };
+
+        try
+        {
+            return Ok(await ticketTypeService.UpdateTicketTypeAsync(updatedTicketType));
+        }
+        catch (ArgumentException a)
+        {
+            return BadRequest(a.Message);
+        }
+        catch (Exception e)
+        {
+            return Problem(type: e.GetType().ToString(), title: e.Message, detail: e.StackTrace);
+        }
+    }
+
+    [HttpDelete("{id:long}")]
+    public async Task<ActionResult<TicketType>> DeleteTicketType(long id)
+    {
+        try
+        {
+            return Ok(await ticketTypeService.DeleteTicketTypeAsync(id));
+        }
+        catch (ArgumentException a)
+        {
+            return BadRequest(a.Message);
+        }
+        catch (Exception e)
+        {
+            return Problem(type: e.GetType().ToString(), title: e.Message, detail: e.StackTrace);
+        }
     }
 }

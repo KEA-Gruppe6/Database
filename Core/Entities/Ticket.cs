@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Database_project.Core.Entities;
 
@@ -15,8 +16,12 @@ public class Ticket
     public long CustomerId { get; set; }
     public Customer Customer { get; set; }
 
-    public long DepartureId { get; set; }
-    public Departure Departure { get; set; }
-    public int OrderId { get; set; }
+    public long FlightrouteId { get; set; }
+    public Flightroute Flightroute { get; set; }
+
+    public long OrderId { get; set; }
+    [JsonIgnore]
+    public Order Order { get; set; }
+
     public ICollection<Luggage> Luggage { get; set; }
 }

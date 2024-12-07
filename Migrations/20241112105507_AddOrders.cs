@@ -40,6 +40,9 @@ namespace Database_project.Migrations
                 column: "OrderId",
                 principalTable: "Orders",
                 principalColumn: "OrderId");
+
+            // Insert some data
+            migrationBuilder.Sql("MERGE INTO Orders AS target USING (VALUES('111AAA'),('222BBB'),('333CCC'),('444DDD'),('555EEE'),('666FFF'),('777GGG'),('888HHH'),('999III'),('101JJJ')) AS source (AirlineConfirmationNumber) ON target.AirlineConfirmationNumber = source.AirlineConfirmationNumber WHEN NOT MATCHED BY TARGET THEN INSERT (AirlineConfirmationNumber) VALUES (source.AirlineConfirmationNumber);");
         }
 
         /// <inheritdoc />

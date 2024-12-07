@@ -1,51 +1,83 @@
 ﻿using Database_project.Controllers.RequestDTOs;
 using Database_project.Core.Entities;
-using Database_project.Core.Services;
+using Database_project.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Database_project.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/mssql/[controller]")]
 public class OrderController : ControllerBase
 {
-    private OrderService _orderService;
-    public OrderController(OrderService orderService)
+    private IOrderService _orderService;
+    public OrderController(IOrderService orderService)
     {
         _orderService = orderService;
     }
 
-    [HttpGet(Name = "Order")]
-    public string GetOrder(int id)
+    [HttpGet("{id:long}")]
+    public async Task<ActionResult<OrderDTO?>> GetOrder(long id)
     {
-        throw new NotImplementedException();
+        var order = await _orderService.GetOrderByIdAsync(id);
+        if (order == null)
+        {
+            return NotFound($"Order with ID {id} not found.");
+        }
+
+        return Ok(order);
     }
 
-    [HttpPost("/BuyTickets")]
-    public async Task<ActionResult<Order>> BuyTickets([FromBody] OrderRequestDTO tickets)
+    [HttpPost]
+    public async Task<ActionResult<OrderDTO>> CreateOrder([FromBody] OrderRequestDTO orderDTO)
+    {
+        Order order = new Order
+        {
+            OrderId = 0,
+            AirlineConfirmationNumber = orderDTO.AirlineConfirmationNumber,
+        };
+
+        try
+        {
+            var createdOrder = await _orderService.CreateOrderAsync(order);
+            return CreatedAtAction(nameof(GetOrder), new { id = createdOrder.OrderId }, createdOrder);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpPatch("{id:long}")]
+    public async Task<ActionResult<OrderDTO>> UpdateOrder(long id, [FromBody] OrderRequestDTO updatedOrderDTO)
+    {
+        Order updatedOrder = new Order
+        {
+            OrderId = id,
+            AirlineConfirmationNumber = updatedOrderDTO.AirlineConfirmationNumber,
+        };
+
+        try
+        {
+            var result = await _orderService.UpdateOrderAsync(updatedOrder);
+            return Ok(result);
+        }
+        catch (KeyNotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+    }
+
+    [HttpDelete("{id:long}")]
+    public async Task<ActionResult<Order>> DeleteOrder(long id)
     {
         try
         {
-            var createdTickets = await _orderService.CreateOrder(tickets);
-
-            return Ok(createdTickets);
-
+            var result = await _orderService.DeleteOrderAsync(id);
+            return Ok(result);
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            return BadRequest("Tickets data is invalid.");
+            return BadRequest(e.Message);
         }
-    }
-
-    [HttpPatch(Name = "Order")]
-    public string UpdateOrder([FromBody] Order order)
-    {
-        throw new NotImplementedException();
-    }
-
-    [HttpDelete(Name = "Order")]
-    public string DeleteOrder(int id)
-    {
-        throw new NotImplementedException();
     }
 }
