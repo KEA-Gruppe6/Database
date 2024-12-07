@@ -1,33 +1,81 @@
-﻿using Database_project.Core.Entities;
+﻿using Database_project.Controllers.RequestDTOs;
+using Database_project.Core.Entities;
+using Database_project.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Database_project.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/mssql/[controller]")]
 public class LuggageController : ControllerBase
 {
-    [HttpGet(Name = "Luggage")]
-    public string GetLuggage(int id)
+    private readonly ILuggageService _luggageService;
+
+    public LuggageController(ILuggageService luggageService)
     {
-        throw new NotImplementedException();
+        _luggageService = luggageService;
     }
 
-    [HttpPost(Name = "Luggage")]
-    public string CreateLuggage([FromBody] Luggage luggage)
+    [HttpGet("{id:long}")]
+    public async Task<ActionResult<Luggage?>> GetLuggage(long id)
     {
-        throw new NotImplementedException();
+        var luggage = await _luggageService.GetLuggageByIdAsync(id);
+        if (luggage == null)
+        {
+            return NotFound($"Luggage with ID {id} not found.");
+        }
+
+        return Ok(luggage);
     }
 
-    [HttpPatch(Name = "Luggage")]
-    public string UpdateLuggage([FromBody] Luggage luggage)
+    [HttpPost]
+    public async Task<ActionResult<Luggage>> CreateLuggage([FromBody] LuggageRequestDTO luggageDTO)
     {
-        throw new NotImplementedException();
+        Luggage luggage = new Luggage
+        {
+            LuggageId = 0,
+            Weight = luggageDTO.MaxWeight,
+            IsCarryOn = luggageDTO.IsCarryOn,
+            TicketId = luggageDTO.TicketId
+        };
+
+        var createdLuggage = await _luggageService.CreateLuggageAsync(luggage);
+        return CreatedAtAction(nameof(GetLuggage), new { id = createdLuggage.LuggageId }, createdLuggage);
     }
 
-    [HttpDelete(Name = "Luggage")]
-    public string DeleteLuggage(int id)
+    [HttpPatch("{id:long}")]
+    public async Task<ActionResult<Luggage>> UpdateLuggage(long id, [FromBody] LuggageRequestDTO updatedLuggageDTO)
     {
-        throw new NotImplementedException();
+        Luggage updatedLuggage = new Luggage
+        {
+            LuggageId = id,
+            Weight = updatedLuggageDTO.MaxWeight,
+            IsCarryOn = updatedLuggageDTO.IsCarryOn,
+            TicketId = updatedLuggageDTO.TicketId
+        };
+
+        try
+        {
+            var result = await _luggageService.UpdateLuggageAsync(updatedLuggage);
+            return Ok(result);
+        }
+        catch (KeyNotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
+    }
+
+    [HttpDelete("{id:long}")]
+    public async Task<ActionResult<Luggage>> DeleteLuggage(long id)
+    {
+        try
+        {
+            var result = await _luggageService.DeleteLuggageAsync(id);
+            return Ok(result);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 }

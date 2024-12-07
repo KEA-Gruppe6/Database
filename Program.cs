@@ -14,6 +14,7 @@ builder.Services.AddDbContextFactory<DatabaseContext>(options =>
     options.UseSqlServer(connectionString);
 });
 
+//TODO: Authentication of API calls
 
 // Add services to the container.
 
@@ -22,10 +23,16 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IAirlineService, AirlineService>();
 builder.Services.AddScoped<IAirportService, AirportService>();
-builder.Services.AddScoped<PlaneService>();
-builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<ITicketTypeService, TicketTypeService>();
+builder.Services.AddScoped<IPlaneService, PlaneService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IFlightrouteService, FlightrouteService>();
+builder.Services.AddScoped<ILuggageService, LuggageService>();
+builder.Services.AddScoped<IMaintenanceService, MaintenanceService>();
+builder.Services.AddScoped<ITicketService, TicketService>();
 
 var app = builder.Build();
 

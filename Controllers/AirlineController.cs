@@ -1,11 +1,13 @@
 ﻿using Database_project.Core.Entities;
 using Database_project.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Database_project.Controllers.RequestDTOs;
+using Database_project.Core.DTOs;
 
 namespace Database_project.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/mssql/[controller]")]
 public class AirlineController : ControllerBase
 {
     private readonly IAirlineService _airlineService;
@@ -16,8 +18,8 @@ public class AirlineController : ControllerBase
     }
 
 
-    [HttpGet("{id:long}", Name = "Airline")]
-    public async Task<IActionResult> GetAirline(long id)
+    [HttpGet("{id:long}")]
+    public async Task<ActionResult<AirlineDTO_Planes?>> GetAirline(long id)
     {
         var airline = await _airlineService.GetAirlineByIdAsync(id);
         if (airline == null)
@@ -29,41 +31,53 @@ public class AirlineController : ControllerBase
     }
 
 
-    [HttpPost]
-    public async Task<IActionResult> CreateAirline([FromBody] Airline airline)
+    [HttpPost()]
+    public async Task<ActionResult<AirlineDTO_Planes>> CreateAirline([FromBody] AirlineRequestDTO airlineDTO)
     {
+        Airline airline = new Airline
+        {
+            AirlineId = 0,
+            AirlineName = airlineDTO.AirlineName,
+            Planes = null
+        };
+
         var createdAirline = await _airlineService.CreateAirlineAsync(airline);
         return CreatedAtAction(nameof(GetAirline), new { id = createdAirline.AirlineId }, createdAirline);
     }
 
 
     [HttpPatch("{id:long}")]
-    public async Task<IActionResult> UpdateAirline(long id, [FromBody] Airline updatedAirline)
+    public async Task<ActionResult<AirlineDTO_Planes>> UpdateAirline(long id, [FromBody] AirlineRequestDTO updatedAirlineDTO)
     {
-        if (id != updatedAirline.AirlineId)
+        Airline updatedAirline = new Airline
         {
-            return BadRequest("Airline ID mismatch.");
-        }
+            AirlineId = id,
+            AirlineName = updatedAirlineDTO.AirlineName,
+        };
 
-        var result = await _airlineService.UpdateAirlineAsync(updatedAirline);
-        if (!result)
+        try
         {
-            return NotFound($"Airline with ID {id} not found.");
+            var result = await _airlineService.UpdateAirlineAsync(updatedAirline);
+            return Ok(result);
         }
-
-        return Ok(updatedAirline);
+        catch (KeyNotFoundException e)
+        {
+            return NotFound(e.Message);
+        }
     }
 
 
     [HttpDelete("{id:long}")]
-    public async Task<IActionResult> DeleteAirline(long id)
+    public async Task<ActionResult<Airline>> DeleteAirline(long id)
     {
-        var result = await _airlineService.DeleteAirlineAsync(id);
-        if (!result)
+        try
         {
-            return NotFound($"Airline with ID {id} not found.");
+            var result = await _airlineService.DeleteAirlineAsync(id);
+            return Ok(result);
         }
-
-        return NoContent();
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 }

@@ -9,7 +9,7 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbCont
     public DbSet<Airline> Airlines { get; set; }
     public DbSet<Airport> Airports { get; set; }
     public DbSet<Customer> Customers { get; set; }
-    public DbSet<Departure> Departures { get; set; }
+    public DbSet<Flightroute> Flightroutes { get; set; }
     public DbSet<Luggage> Luggage { get; set; }
     public DbSet<Maintenance> Maintenances { get; set; }
     public DbSet<Plane> Planes { get; set; }
@@ -22,9 +22,9 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbCont
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Departure>(entity =>
+        modelBuilder.Entity<Flightroute>(entity =>
         {
-            entity.HasKey(e => e.DepartureId);
+            entity.HasKey(e => e.FlightrouteId);
             entity.HasOne(d => d.DepartureAirport)
                 .WithMany()
                 .HasForeignKey(d => d.DepartureAirportId)
@@ -33,11 +33,46 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbCont
                 .WithMany()
                 .HasForeignKey(d => d.ArrivalAirportId)
                 .OnDelete(DeleteBehavior.NoAction);
+            entity.HasOne(d => d.Plane)
+                .WithMany(p => p.Flightroutes)
+                .HasForeignKey(d => d.PlaneId)
+                .OnDelete(DeleteBehavior.NoAction);
         });
+
         modelBuilder.Entity<Plane>()
             .HasOne(p => p.Airline)
             .WithMany(a => a.Planes)
             .HasForeignKey(p => p.AirlineId);
+
+        modelBuilder.Entity<Airline>()
+            .HasMany(a => a.Planes)
+            .WithOne(p => p.Airline)
+            .HasForeignKey(p => p.AirlineId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<Ticket>(entity =>
+        {
+            entity.HasKey(t => t.TicketId);
+            entity.HasOne(t => t.TicketType)
+                .WithMany()
+                .HasForeignKey(t => t.TicketTypeId);
+
+            entity.HasOne(t => t.Customer)
+                .WithMany()
+                .HasForeignKey(t => t.CustomerId);
+
+            entity.HasOne(t => t.Flightroute)
+                .WithMany()
+                .HasForeignKey(t => t.FlightrouteId);
+
+            entity.HasOne(t => t.Order)
+                .WithMany(o => o.Tickets)
+                .HasForeignKey(t => t.OrderId);
+
+            entity.HasMany(t => t.Luggage)
+                .WithOne()
+                .HasForeignKey(l => l.TicketId);
+        });
 
         base.OnModelCreating(modelBuilder);
     }

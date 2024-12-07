@@ -15,107 +15,86 @@ public class AirlineService : IAirlineService
         _context = context;
     }
 
-    public async Task<AirlineDTO?> GetAirlineByIdAsync(long id)
+    public async Task<AirlineDTO_Planes?> GetAirlineByIdAsync(long id)
     {
         await using var context = await _context.CreateDbContextAsync();
 
+        //Get Airline object with nested objects Planes
         var airline = await context.Airlines
-            .Select(a => new AirlineDTO()
-            {
-                AirlineId = a.AirlineId,
-                AirlineName = a.AirlineName,
-                Planes = a.Planes.Select(p => new PlaneDTO()
-                {
-                    PlaneId = p.PlaneId,
-                    PlaneDisplayName = p.PlaneDisplayName
-                }).ToList()
-            })
+            .Include(a => a.Planes)
             .FirstOrDefaultAsync(a => a.AirlineId == id);
 
-        return airline;
+        if (airline == null)
+        {
+            throw new KeyNotFoundException($"Airline with ID {id} not found.");
+        }
+
+        //Map Airline object to AirlineDTO object
+        var airlineDTO = new AirlineDTO_Planes()
+        {
+            AirlineId = airline.AirlineId,
+            AirlineName = airline.AirlineName,
+            Planes = airline.Planes.Select(p => new PlaneDTO()
+            {
+                PlaneId = p.PlaneId,
+                PlaneDisplayName = p.PlaneDisplayName
+            }).ToList()
+        };
+        return airlineDTO;
     }
 
-    public async Task<Airline> CreateAirlineAsync(Airline airline)
+    public async Task<AirlineDTO_Planes> CreateAirlineAsync(Airline airline)
     {
         await using var context = await _context.CreateDbContextAsync();
 
-        await context.Airlines.AddAsync(airline);
+        // Ensure that the airline object does not include planes
+        airline.Planes = null;
+
+        // Add the airline to the database
+        context.Airlines.AddAsync(airline);
         await context.SaveChangesAsync();
 
-        return airline;
+        return GetAirlineByIdAsync(airline.AirlineId).Result;
     }
 
-    public async Task<bool> UpdateAirlineAsync(Airline airline)
+    public async Task<AirlineDTO_Planes> UpdateAirlineAsync(Airline airline)
     {
         await using var context = await _context.CreateDbContextAsync();
-        try
+
+        // Retrieve the existing airline from the database
+        var existingAirline = await context.Airlines
+            .Include(a => a.Planes)
+            .FirstOrDefaultAsync(a => a.AirlineId == airline.AirlineId);
+
+        if (existingAirline == null)
         {
-            var existingAirline = await context.Airlines
-                .Include(a => a.Planes)  // Include planes to handle updates
-                .FirstOrDefaultAsync(a => a.AirlineId == airline.AirlineId);
-
-            if (existingAirline == null)
-            {
-                return false;  // If the airline doesn't exist, return false
-            }
-            //change airline name 
-            existingAirline.AirlineName = airline.AirlineName;
-
-            //Remove Planes
-            var planeIdsToRemove = existingAirline.Planes
-                .Where(p => !airline.Planes.Any(updatedPlane => updatedPlane.PlaneId == p.PlaneId))
-                .Select(p => p.PlaneId)
-                .ToList();
-
-            foreach (var planeId in planeIdsToRemove)
-            {
-                var planeToRemove = existingAirline.Planes.First(p => p.PlaneId == planeId);
-                existingAirline.Planes.Remove(planeToRemove);
-            }
-
-            //Add planes
-            var planeIdsToAdd = airline.Planes
-                .Where(p => !existingAirline.Planes.Any(existingPlane => existingPlane.PlaneId == p.PlaneId))
-                .ToList();
-
-            foreach (var newPlane in planeIdsToAdd)
-            {
-                existingAirline.Planes.Add(new Plane
-                {
-                    PlaneId = newPlane.PlaneId,
-                    PlaneDisplayName = newPlane.PlaneDisplayName,
-                    AirlineId = airline.AirlineId // Ensure the new plane is associated with the updated airline
-                });
-            }
-
-            await context.SaveChangesAsync();
-            return true;
+            throw new KeyNotFoundException($"Airline with ID {airline.AirlineId} not found.");
         }
-        catch (Exception ex)
-        {
-            throw new Exception();
-        }
+
+        // Update the properties of the existing airline
+        existingAirline.AirlineName = airline.AirlineName;
+        // Ensure that the planes collection is not updated
+        existingAirline.Planes = existingAirline.Planes;
+
+        // Save the changes to the database
+        context.Airlines.Update(existingAirline);
+        await context.SaveChangesAsync();
+
+        return GetAirlineByIdAsync(airline.AirlineId).Result;
     }
 
-    public async Task<bool> DeleteAirlineAsync(long id)
+    public async Task<Airline> DeleteAirlineAsync(long id)
     {
         await using var context = await _context.CreateDbContextAsync();
-        try
-        {
-            var airline = await context.Airlines.FindAsync(id);
-            if (airline == null)
-            {
-                return false;
-            }
 
-            context.Airlines.Remove(airline);
-            await context.SaveChangesAsync();
-
-            return true;
-        }
-        catch (Exception ex)
+        var airline = await context.Airlines.FindAsync(id);
+        if (airline == null)
         {
-            throw new Exception();
+            throw new KeyNotFoundException($"Airline with ID {id} not found.");
         }
+        var returnEntityEntry = context.Airlines.Remove(airline);
+        await context.SaveChangesAsync();
+
+        return returnEntityEntry.Entity;
     }
 }

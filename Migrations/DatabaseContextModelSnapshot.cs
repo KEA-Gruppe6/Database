@@ -36,7 +36,7 @@ namespace Database_project.Migrations
 
                     b.HasKey("AirlineId");
 
-                    b.ToTable("Airlines");
+                    b.ToTable("Airlines", (string)null);
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.Airport", b =>
@@ -65,7 +65,7 @@ namespace Database_project.Migrations
 
                     b.HasKey("AirportId");
 
-                    b.ToTable("Airports");
+                    b.ToTable("Airports", (string)null);
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.Customer", b =>
@@ -89,16 +89,16 @@ namespace Database_project.Migrations
 
                     b.HasKey("CustomerId");
 
-                    b.ToTable("Customers");
+                    b.ToTable("Customers", (string)null);
                 });
 
-            modelBuilder.Entity("Database_project.Core.Entities.Departure", b =>
+            modelBuilder.Entity("Database_project.Core.Entities.Flightroute", b =>
                 {
-                    b.Property<long>("DepartureId")
+                    b.Property<long>("FlightrouteId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("DepartureId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("FlightrouteId"));
 
                     b.Property<long>("ArrivalAirportId")
                         .HasColumnType("bigint");
@@ -112,13 +112,18 @@ namespace Database_project.Migrations
                     b.Property<DateTime>("DepartureTime")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("DepartureId");
+                    b.Property<long>("PlaneId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("FlightrouteId");
 
                     b.HasIndex("ArrivalAirportId");
 
                     b.HasIndex("DepartureAirportId");
 
-                    b.ToTable("Departures");
+                    b.HasIndex("PlaneId");
+
+                    b.ToTable("Flightroutes", (string)null);
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.Luggage", b =>
@@ -132,17 +137,17 @@ namespace Database_project.Migrations
                     b.Property<bool>("IsCarryOn")
                         .HasColumnType("bit");
 
-                    b.Property<double>("MaxWeight")
-                        .HasColumnType("float");
-
-                    b.Property<long?>("TicketId")
+                    b.Property<long>("TicketId")
                         .HasColumnType("bigint");
+
+                    b.Property<double>("Weight")
+                        .HasColumnType("float");
 
                     b.HasKey("LuggageId");
 
                     b.HasIndex("TicketId");
 
-                    b.ToTable("Luggage");
+                    b.ToTable("Luggage", (string)null);
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.Maintenance", b =>
@@ -156,8 +161,14 @@ namespace Database_project.Migrations
                     b.Property<long>("AirportId")
                         .HasColumnType("bigint");
 
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<long>("PlaneId")
                         .HasColumnType("bigint");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("MaintenanceId");
 
@@ -165,16 +176,16 @@ namespace Database_project.Migrations
 
                     b.HasIndex("PlaneId");
 
-                    b.ToTable("Maintenances");
+                    b.ToTable("Maintenances", (string)null);
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.Order", b =>
                 {
-                    b.Property<int>("OrderId")
+                    b.Property<long>("OrderId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("OrderId"));
 
                     b.Property<string>("AirlineConfirmationNumber")
                         .IsRequired()
@@ -182,7 +193,7 @@ namespace Database_project.Migrations
 
                     b.HasKey("OrderId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.Plane", b =>
@@ -204,7 +215,7 @@ namespace Database_project.Migrations
 
                     b.HasIndex("AirlineId");
 
-                    b.ToTable("Planes");
+                    b.ToTable("Planes", (string)null);
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.Ticket", b =>
@@ -218,11 +229,11 @@ namespace Database_project.Migrations
                     b.Property<long>("CustomerId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("DepartureId")
+                    b.Property<long>("FlightrouteId")
                         .HasColumnType("bigint");
 
-                    b.Property<int?>("OrderId")
-                        .HasColumnType("int");
+                    b.Property<long>("OrderId")
+                        .HasColumnType("bigint");
 
                     b.Property<double>("Price")
                         .HasColumnType("float");
@@ -234,13 +245,13 @@ namespace Database_project.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.HasIndex("DepartureId");
+                    b.HasIndex("FlightrouteId");
 
                     b.HasIndex("OrderId");
 
                     b.HasIndex("TicketTypeId");
 
-                    b.ToTable("Tickets");
+                    b.ToTable("Tickets", (string)null);
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.TicketType", b =>
@@ -257,10 +268,10 @@ namespace Database_project.Migrations
 
                     b.HasKey("TicketTypeId");
 
-                    b.ToTable("TicketTypes");
+                    b.ToTable("TicketTypes", (string)null);
                 });
 
-            modelBuilder.Entity("Database_project.Core.Entities.Departure", b =>
+            modelBuilder.Entity("Database_project.Core.Entities.Flightroute", b =>
                 {
                     b.HasOne("Database_project.Core.Entities.Airport", "ArrivalAirport")
                         .WithMany()
@@ -274,16 +285,26 @@ namespace Database_project.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("Database_project.Core.Entities.Plane", "Plane")
+                        .WithMany("Flightroutes")
+                        .HasForeignKey("PlaneId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.Navigation("ArrivalAirport");
 
                     b.Navigation("DepartureAirport");
+
+                    b.Navigation("Plane");
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.Luggage", b =>
                 {
                     b.HasOne("Database_project.Core.Entities.Ticket", null)
                         .WithMany("Luggage")
-                        .HasForeignKey("TicketId");
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.Maintenance", b =>
@@ -309,7 +330,8 @@ namespace Database_project.Migrations
                 {
                     b.HasOne("Database_project.Core.Entities.Airline", "Airline")
                         .WithMany("Planes")
-                        .HasForeignKey("AirlineId");
+                        .HasForeignKey("AirlineId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Airline");
                 });
@@ -322,15 +344,17 @@ namespace Database_project.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Database_project.Core.Entities.Departure", "Departure")
+                    b.HasOne("Database_project.Core.Entities.Flightroute", "Flightroute")
                         .WithMany()
-                        .HasForeignKey("DepartureId")
+                        .HasForeignKey("FlightrouteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Database_project.Core.Entities.Order", null)
+                    b.HasOne("Database_project.Core.Entities.Order", "Order")
                         .WithMany("Tickets")
-                        .HasForeignKey("OrderId");
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Database_project.Core.Entities.TicketType", "TicketType")
                         .WithMany()
@@ -340,7 +364,9 @@ namespace Database_project.Migrations
 
                     b.Navigation("Customer");
 
-                    b.Navigation("Departure");
+                    b.Navigation("Flightroute");
+
+                    b.Navigation("Order");
 
                     b.Navigation("TicketType");
                 });
@@ -353,6 +379,11 @@ namespace Database_project.Migrations
             modelBuilder.Entity("Database_project.Core.Entities.Order", b =>
                 {
                     b.Navigation("Tickets");
+                });
+
+            modelBuilder.Entity("Database_project.Core.Entities.Plane", b =>
+                {
+                    b.Navigation("Flightroutes");
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.Ticket", b =>
