@@ -34,7 +34,7 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbCont
                 .HasForeignKey(d => d.ArrivalAirportId)
                 .OnDelete(DeleteBehavior.NoAction);
             entity.HasOne(d => d.Plane)
-                .WithMany()
+                .WithMany(p => p.Flightroutes)
                 .HasForeignKey(d => d.PlaneId)
                 .OnDelete(DeleteBehavior.NoAction);
         });
@@ -49,6 +49,30 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbCont
             .WithOne(p => p.Airline)
             .HasForeignKey(p => p.AirlineId)
             .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<Ticket>(entity =>
+        {
+            entity.HasKey(t => t.TicketId);
+            entity.HasOne(t => t.TicketType)
+                .WithMany()
+                .HasForeignKey(t => t.TicketTypeId);
+
+            entity.HasOne(t => t.Customer)
+                .WithMany()
+                .HasForeignKey(t => t.CustomerId);
+
+            entity.HasOne(t => t.Flightroute)
+                .WithMany()
+                .HasForeignKey(t => t.FlightrouteId);
+
+            entity.HasOne(t => t.Order)
+                .WithMany(o => o.Tickets)
+                .HasForeignKey(t => t.OrderId);
+
+            entity.HasMany(t => t.Luggage)
+                .WithOne()
+                .HasForeignKey(l => l.TicketId);
+        });
 
         base.OnModelCreating(modelBuilder);
     }

@@ -9,7 +9,7 @@ public class Flightroute
     public DateTime DepartureTime { get; set; }
     public DateTime ArrivalTime { get; set; }
 
-    public long? PlaneId { get; set; }
+    public long PlaneId { get; set; }
     public Plane Plane { get; set; }
 
     public long DepartureAirportId { get; set; }

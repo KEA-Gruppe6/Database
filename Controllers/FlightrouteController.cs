@@ -39,6 +39,7 @@ public class FlightrouteController : ControllerBase
             ArrivalAirportId = flightrouteDTO.ArrivalAirportId,
             ArrivalTime = flightrouteDTO.ArrivalTime,
             DepartureTime = flightrouteDTO.DepartureTime,
+            PlaneId = flightrouteDTO.PlaneId
         };
 
         try
@@ -62,6 +63,7 @@ public class FlightrouteController : ControllerBase
             ArrivalAirportId = updatedFlightrouteDTO.ArrivalAirportId,
             ArrivalTime = updatedFlightrouteDTO.ArrivalTime,
             DepartureTime = updatedFlightrouteDTO.DepartureTime,
+            PlaneId = updatedFlightrouteDTO.PlaneId
         };
 
         try

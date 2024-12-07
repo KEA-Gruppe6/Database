@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Database_project.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20241207104921_AddPlaneIdToFlightroute")]
+    [Migration("20241207133643_AddPlaneIdToFlightroute")]
     partial class AddPlaneIdToFlightroute
     {
         /// <inheritdoc />
@@ -115,7 +115,7 @@ namespace Database_project.Migrations
                     b.Property<DateTime>("DepartureTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<long?>("PlaneId")
+                    b.Property<long>("PlaneId")
                         .HasColumnType("bigint");
 
                     b.HasKey("FlightrouteId");
@@ -289,9 +289,10 @@ namespace Database_project.Migrations
                         .IsRequired();
 
                     b.HasOne("Database_project.Core.Entities.Plane", "Plane")
-                        .WithMany()
+                        .WithMany("Flightroutes")
                         .HasForeignKey("PlaneId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.Navigation("ArrivalAirport");
 
@@ -381,6 +382,11 @@ namespace Database_project.Migrations
             modelBuilder.Entity("Database_project.Core.Entities.Order", b =>
                 {
                     b.Navigation("Tickets");
+                });
+
+            modelBuilder.Entity("Database_project.Core.Entities.Plane", b =>
+                {
+                    b.Navigation("Flightroutes");
                 });
 
             modelBuilder.Entity("Database_project.Core.Entities.Ticket", b =>

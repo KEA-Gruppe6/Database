@@ -8,4 +8,5 @@ public class FlightrouteRequestDTO
     public DateTime ArrivalTime { get; set; }
     public long DepartureAirportId { get; set; }
     public long ArrivalAirportId { get; set; }
+    public long PlaneId { get; set; }
 }

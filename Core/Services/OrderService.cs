@@ -20,6 +20,23 @@ namespace Database_project.Core.Services
             await using var context = await _context.CreateDbContextAsync();
             var order = await context.Orders
                 .Include(m => m.Tickets)
+                    .ThenInclude(t => t.TicketType)
+                .Include(m => m.Tickets)
+                    .ThenInclude(c => c.Customer)
+                .Include(m => m.Tickets)
+                    .ThenInclude(f => f.Flightroute)
+                        .ThenInclude(a => a.Plane)
+
+                .Include(m => m.Tickets)
+                    .ThenInclude(f => f.Flightroute)
+                        .ThenInclude(a => a.DepartureAirport)
+
+                .Include(m => m.Tickets)
+                    .ThenInclude(f => f.Flightroute)
+                        .ThenInclude(a => a.ArrivalAirport)
+
+                .Include(m => m.Tickets)
+                    .ThenInclude(l => l.Luggage)
                 .FirstOrDefaultAsync(a => a.OrderId == id);
 
             return order;

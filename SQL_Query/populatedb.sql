@@ -117,24 +117,6 @@ WHEN NOT MATCHED BY TARGET THEN
     INSERT (TicketTypeName)
     VALUES (source.TicketTypeName);
 
-MERGE INTO Flightroutes AS target
-USING (VALUES
-    ('2024-11-15 08:00:00', '2024-11-15 10:30:00', 1, 2),
-    ('2024-11-15 09:30:00', '2024-11-15 12:00:00', 3, 4),
-    ('2024-11-15 10:00:00', '2024-11-15 13:00:00', 5, 6),
-    ('2024-11-15 11:00:00', '2024-11-15 13:30:00', 7, 8),
-    ('2024-11-15 12:00:00', '2024-11-15 14:30:00', 9, 10),
-    ('2024-11-15 13:00:00', '2024-11-15 15:30:00', 2, 1),
-    ('2024-11-15 14:00:00', '2024-11-15 16:30:00', 4, 3),
-    ('2024-11-15 15:00:00', '2024-11-15 17:30:00', 6, 5),
-    ('2024-11-15 16:00:00', '2024-11-15 18:30:00', 8, 7),
-    ('2024-11-15 17:00:00', '2024-11-15 19:30:00', 10, 9)
-) AS source (DepartureTime, ArrivalTime, DepartureAirportId, ArrivalAirportId)
-ON target.DepartureTime = source.DepartureTime AND target.ArrivalTime = source.ArrivalTime AND target.DepartureAirportId = source.DepartureAirportId AND target.ArrivalAirportId = source.ArrivalAirportId
-WHEN NOT MATCHED BY TARGET THEN
-    INSERT (DepartureTime, ArrivalTime, DepartureAirportId, ArrivalAirportId)
-    VALUES (source.DepartureTime, source.ArrivalTime, source.DepartureAirportId, source.ArrivalAirportId);
-
 MERGE INTO Planes AS target
 USING (VALUES
     ('Boeing 737', 1),
@@ -152,6 +134,24 @@ ON target.PlaneDisplayName = source.PlaneDisplayName AND target.AirlineId = sour
 WHEN NOT MATCHED BY TARGET THEN
     INSERT (PlaneDisplayName, AirlineId)
     VALUES (source.PlaneDisplayName, source.AirlineId);
+
+MERGE INTO Flightroutes AS target
+USING (VALUES
+    ('2024-11-15 08:00:00', '2024-11-15 10:30:00', 1, 2, 1),
+    ('2024-11-15 09:30:00', '2024-11-15 12:00:00', 3, 4, 2),
+    ('2024-11-15 10:00:00', '2024-11-15 13:00:00', 5, 6, 3),
+    ('2024-11-15 11:00:00', '2024-11-15 13:30:00', 7, 8, 4),
+    ('2024-11-15 12:00:00', '2024-11-15 14:30:00', 9, 10, 5),
+    ('2024-11-15 13:00:00', '2024-11-15 15:30:00', 2, 1, 6),
+    ('2024-11-15 14:00:00', '2024-11-15 16:30:00', 4, 3, 7),
+    ('2024-11-15 15:00:00', '2024-11-15 17:30:00', 6, 5, 8),
+    ('2024-11-15 16:00:00', '2024-11-15 18:30:00', 8, 7, 9),
+    ('2024-11-15 17:00:00', '2024-11-15 19:30:00', 10, 9, 10)
+) AS source (DepartureTime, ArrivalTime, DepartureAirportId, ArrivalAirportId, PlaneId)
+ON target.DepartureTime = source.DepartureTime AND target.ArrivalTime = source.ArrivalTime AND target.DepartureAirportId = source.DepartureAirportId AND target.ArrivalAirportId = source.ArrivalAirportId AND target.PlaneId = source.PlaneId
+WHEN NOT MATCHED BY TARGET THEN
+    INSERT (DepartureTime, ArrivalTime, DepartureAirportId, ArrivalAirportId, PlaneId)
+    VALUES (source.DepartureTime, source.ArrivalTime, source.DepartureAirportId, source.ArrivalAirportId, source.PlaneId);
 
 MERGE INTO Tickets AS target
 USING (VALUES

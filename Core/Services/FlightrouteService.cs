@@ -23,11 +23,12 @@ namespace Database_project.Core.Services
             var flightroute = await context.Flightroutes
                 .Include(m => m.ArrivalAirport)
                 .Include(m => m.DepartureAirport)
+                .Include(m => m.Plane)
                 .FirstOrDefaultAsync(a => a.FlightrouteId == id);
 
             if (flightroute == null)
             {
-                throw new KeyNotFoundException($"Flightroute with ID {id} not found.");
+                return null;
             }
 
             //Map flightroute object to FlightrouteDTO object
@@ -51,6 +52,11 @@ namespace Database_project.Core.Services
                     AirportCity = flightroute.DepartureAirport.AirportCity,
                     Municipality = flightroute.DepartureAirport.Municipality,
                     AirportAbbreviation = flightroute.DepartureAirport.AirportAbbreviation
+                },
+                Plane = new PlaneDTO()
+                {
+                    PlaneId = flightroute.Plane.PlaneId,
+                    PlaneDisplayName = flightroute.Plane.PlaneDisplayName,
                 }
             };
             return flightrouteDTO;
@@ -66,6 +72,12 @@ namespace Database_project.Core.Services
             if (flightroute.DepartureAirport == null || flightroute.ArrivalAirport == null)
             {
                 throw new KeyNotFoundException("One or both airports not found");
+            }
+
+            flightroute.Plane = await context.Planes.FindAsync(flightroute.PlaneId);
+            if (flightroute.Plane == null)
+            {
+                throw new KeyNotFoundException("Plane not found");
             }
 
             await context.Flightroutes.AddAsync(flightroute);
@@ -93,11 +105,17 @@ namespace Database_project.Core.Services
                 throw new KeyNotFoundException("One or both airports not found");
             }
 
+            flightroute.Plane = await context.Planes.FindAsync(flightroute.PlaneId);
+            if (flightroute.Plane == null)
+            {
+                throw new KeyNotFoundException("Plane not found");
+            }
 
             existingFlightroute.DepartureTime = flightroute.DepartureTime;
             existingFlightroute.ArrivalTime = flightroute.ArrivalTime;
             existingFlightroute.DepartureAirportId = flightroute.DepartureAirportId;
             existingFlightroute.ArrivalAirportId = flightroute.ArrivalAirportId;
+            existingFlightroute.PlaneId = flightroute.PlaneId;
 
             context.Flightroutes.Update(existingFlightroute);
             await context.SaveChangesAsync();

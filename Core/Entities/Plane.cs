@@ -14,6 +14,6 @@ public class Plane
     public Airline? Airline { get; set; }
     [JsonIgnore]
 
-    ICollection<Flightroute> Flightroutes { get; set; } = new List<Flightroute>();
+    public ICollection<Flightroute> Flightroutes { get; set; }
 
 }
