@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using Database_project.Core.MongoDB.DTO;
+using Database_project.Core.MongoDB.RequestDTOs;
 using Database_project.Core.MongoDB.Entities;
 using Database_project.Core.MongoDB.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -38,7 +38,7 @@ public class FlightrouteController : ControllerBase
         {
             return BadRequest(new { Message = "Invalid flightroute data." });
         }
-        
+
         var flightroute = new MongoDBFlightroute
         {
             DepartureTime = flightrouteDTO.DepartureTime,
@@ -59,14 +59,14 @@ public class FlightrouteController : ControllerBase
         {
             return BadRequest(new { Message = "Invalid flightroute data." });
         }
-        
+
         var existingFlightroute = await _flightrouteService.GetFlightrouteByIdAsync(id);
 
         if (existingFlightroute == null)
         {
             return NotFound(new { Message = $"MongoDBFlightroute with ID {id} not found." });
         }
-        
+
         var flightroute = new MongoDBFlightroute
         {
             DepartureTime = flightrouteDTO.DepartureTime,

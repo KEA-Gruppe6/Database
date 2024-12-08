@@ -1,7 +1,7 @@
 ﻿using Database_project.Core.MongoDB.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using Database_project.Core.MongoDB.DTO;
+using Database_project.Core.MongoDB.RequestDTOs;
 using Database_project.Core.MongoDB.Entities;
 
 namespace Database_project.Core.MongoDB.Controllers;
@@ -37,7 +37,7 @@ public class MaintenanceController : ControllerBase
         {
             return BadRequest(new { Message = "Invalid maintenance data." });
         }
-        
+
         var maintenance = new MongoDBMaintenance
         {
             AirportId = maintenanceDTO.AirportId,
@@ -55,14 +55,14 @@ public class MaintenanceController : ControllerBase
         {
             return BadRequest(new { Message = "Invalid maintenance data." });
         }
-        
+
         var existingMaintenance = await _maintenanceService.GetMaintenanceByIdAsync(id);
 
         if (existingMaintenance == null)
         {
             return NotFound(new { Message = $"MongoDBMaintenance with ID {id} not found." });
         }
-        
+
         var maintenance = new MongoDBMaintenance
         {
             AirportId = maintenanceDTO.AirportId,

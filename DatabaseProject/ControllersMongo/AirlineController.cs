@@ -1,7 +1,7 @@
 ﻿using Database_project.Core.MongoDB.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using Database_project.Core.MongoDB.DTO;
+using Database_project.Core.MongoDB.RequestDTOs;
 using Database_project.Core.MongoDB.Entities;
 
 namespace Database_project.Core.MongoDB.Controllers;
@@ -37,7 +37,7 @@ public class AirlineController : ControllerBase
         {
             return BadRequest(new { Message = "Invalid airline data." });
         }
-        
+
         var airline = new MongoDBAirline
         {
             AirlineName = airlineDTO.AirlineName,
@@ -55,14 +55,14 @@ public class AirlineController : ControllerBase
         {
             return BadRequest(new { Message = "Invalid airline data." });
         }
-        
+
         var existingAirline = await _airlineService.GetAirlineByIdAsync(id);
 
         if (existingAirline == null)
         {
             return NotFound(new { Message = $"MongoDBAirline with ID {id} not found." });
         }
-        
+
         var airline = new MongoDBAirline
         {
             AirlineName = airlineDTO.AirlineName,

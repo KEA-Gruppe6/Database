@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using Database_project.Core.MongoDB.DTO;
+using Database_project.Core.MongoDB.RequestDTOs;
 using Database_project.Core.MongoDB.Entities;
 using Database_project.Core.MongoDB.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -38,7 +38,7 @@ public class TicketController : ControllerBase
         {
             return BadRequest(new { Message = "Invalid ticket data." });
         }
-        
+
         var ticket = new MongoDBTicket
         {
             Price = ticketDTO.Price,
@@ -60,14 +60,14 @@ public class TicketController : ControllerBase
         {
             return BadRequest(new { Message = "Invalid ticket data." });
         }
-        
+
         var existingTicket = await _ticketService.GetTicketByIdAsync(id);
 
         if (existingTicket == null)
         {
             return NotFound(new { Message = $"MongoDBTicket with ID {id} not found." });
         }
-        
+
         var ticket = new MongoDBTicket
         {
             Price = ticketDTO.Price,

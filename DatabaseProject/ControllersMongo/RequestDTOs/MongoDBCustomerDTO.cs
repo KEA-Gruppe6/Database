@@ -1,4 +1,4 @@
-﻿namespace Database_project.Core.MongoDB.DTO;
+﻿namespace Database_project.Core.MongoDB.RequestDTOs;
 
 public class MongoDBCustomerDTO
 {

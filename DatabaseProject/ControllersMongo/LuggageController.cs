@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using Database_project.Core.MongoDB.DTO;
+using Database_project.Core.MongoDB.RequestDTOs;
 using Database_project.Core.MongoDB.Entities;
 using Database_project.Core.MongoDB.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -38,7 +38,7 @@ public class LuggageController : ControllerBase
         {
             return BadRequest(new { Message = "Invalid luggage data." });
         }
-        
+
         var luggage = new MongoDBLuggage
         {
             Weight = luggageDTO.Weight,
@@ -56,14 +56,14 @@ public class LuggageController : ControllerBase
         {
             return BadRequest(new { Message = "Invalid luggage data." });
         }
-        
+
         var existingLuggage = await _luggageService.GetLuggageByIdAsync(id);
 
         if (existingLuggage == null)
         {
             return NotFound(new { Message = $"MongoDBLuggage with ID {id} not found." });
         }
-        
+
         var luggage = new MongoDBLuggage
         {
             Weight = luggageDTO.Weight,

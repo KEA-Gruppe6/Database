@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using Database_project.Core.MongoDB.DTO;
+using Database_project.Core.MongoDB.RequestDTOs;
 using Database_project.Core.MongoDB.Entities;
 using Database_project.Core.MongoDB.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -38,7 +38,7 @@ public class PlaneController : ControllerBase
         {
             return BadRequest(new { Message = "Invalid plane data." });
         }
-        
+
         var plane = new MongoDBPlane
         {
             PlaneDisplayName = planeDTO.PlaneDisplayName,
@@ -57,14 +57,14 @@ public class PlaneController : ControllerBase
         {
             return BadRequest(new { Message = "Invalid plane data." });
         }
-        
+
         var existingPlane = await _planeService.GetPlaneByIdAsync(id);
 
         if (existingPlane == null)
         {
             return NotFound(new { Message = $"MongoDBPlane with ID {id} not found." });
         }
-        
+
         var plane = new MongoDBPlane
         {
             PlaneDisplayName = planeDTO.PlaneDisplayName,

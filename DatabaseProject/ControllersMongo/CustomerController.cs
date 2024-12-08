@@ -1,7 +1,7 @@
 ﻿using Database_project.Core.MongoDB.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using Database_project.Core.MongoDB.DTO;
+using Database_project.Core.MongoDB.RequestDTOs;
 using Database_project.Core.MongoDB.Entities;
 
 namespace Database_project.Core.MongoDB.Controllers;
@@ -37,7 +37,7 @@ public class CustomerController : ControllerBase
         {
             return BadRequest(new { Message = "Invalid customer data." });
         }
-        
+
         var customer = new MongoDBCustomer
         {
             FirstName = customerDTO.FirstName,
@@ -56,14 +56,14 @@ public class CustomerController : ControllerBase
         {
             return BadRequest(new { Message = "Invalid customer data." });
         }
-        
+
         var existingCustomer = await _customerService.GetCustomerByIdAsync(id);
 
         if (existingCustomer == null)
         {
             return NotFound(new { Message = $"MongoDBCustomer with ID {id} not found." });
         }
-        
+
         var customer = new MongoDBCustomer
         {
             FirstName = customerDTO.FirstName,
