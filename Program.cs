@@ -117,6 +117,7 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
+    // SQL Server migration starts
     var dbContext = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
     var retryCount = 5;
     var delay = TimeSpan.FromSeconds(10);
@@ -145,6 +146,14 @@ using (var scope = app.Services.CreateScope())
     sqlFilePath = "populatedb.sql";
     sqlQuery = File.ReadAllText(sqlFilePath);
     dbContext.Database.ExecuteSqlRaw(sqlQuery);
+    // SQL Server migration ends
+
+    // MongoDB migration starts
+    var addUsersService = scope.ServiceProvider.GetRequiredService<AddUsers>();
+    addUsersService.CreateMongoUsers();  // Run the user creation script
+    var mongodSeeder = scope.ServiceProvider.GetRequiredService<MongoDBSeeder>();
+    await mongodSeeder.SeederInitalization();
+    // MongoDB migration ends
 }
 
 // Configure the HTTP request pipeline.
@@ -156,15 +165,6 @@ app.UseSwaggerUI(c =>
     c.SwaggerEndpoint("/swagger/neo4j/swagger.json", "Neo4j API");
     c.RoutePrefix = string.Empty;
 });
-
-// Create a scope to resolve AddUsers (because it's a scoped service)
-using (var scope = app.Services.CreateScope())
-{
-    var addUsersService = scope.ServiceProvider.GetRequiredService<AddUsers>();
-    addUsersService.CreateMongoUsers();  // Run the user creation script
-    var mongodSeeder = scope.ServiceProvider.GetRequiredService<MongoDBSeeder>();
-    await mongodSeeder.SeederInitalization();
-}
 
 app.UseHttpsRedirection();
 
