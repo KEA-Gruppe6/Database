@@ -5,6 +5,10 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using System.Reflection;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,7 +42,50 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
 builder.Services.AddControllers();
 // Add Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("mssql", new OpenApiInfo { Title = "Database project MSSQL", Version = "mssql" });
+
+    c.SwaggerDoc("mongodb", new OpenApiInfo { Title = "Database project MongoDB", Version = "mongodb" });
+
+    c.SwaggerDoc("neo4j", new OpenApiInfo { Title = "Database project Neo4j", Version = "neo4j" });
+
+    // Group by route template
+    c.DocInclusionPredicate((name, api) =>
+    {
+        var routeTemplate = (api.ActionDescriptor as ControllerActionDescriptor)?.AttributeRouteInfo?.Template;
+        if (name == "mssql")
+        {
+            return routeTemplate != null && routeTemplate.StartsWith("api/mssql");
+        }
+        if (name == "mongodb")
+        {
+            return routeTemplate != null && routeTemplate.StartsWith("api/mongodb");
+        }
+        if (name == "neo4j")
+        {
+            return routeTemplate != null && routeTemplate.StartsWith("api/neo4j");
+        }
+        return false;
+    });
+
+    // Define the grouping mechanism
+    c.TagActionsBy(api =>
+    {
+        if (api.GroupName != null)
+        {
+            return new[] { api.GroupName };
+        }
+
+        var controllerActionDescriptor = api.ActionDescriptor as ControllerActionDescriptor;
+        if (controllerActionDescriptor != null)
+        {
+            return new[] { controllerActionDescriptor.ControllerName };
+        }
+
+        return new[] { "Default" };
+    });
+});
 
 builder.Services.AddScoped<ICustomerService, Database_project.Core.Services.CustomerService>();
 builder.Services.AddScoped<IAirlineService, Database_project.Core.Services.AirlineService>();
@@ -61,6 +108,7 @@ builder.Services.AddScoped<Database_project.Core.MongoDB.Services.DepartureServi
 builder.Services.AddScoped<Database_project.Core.MongoDB.Services.LuggageService>();
 builder.Services.AddScoped<Database_project.Core.MongoDB.Services.PlaneService>();
 builder.Services.AddScoped<Database_project.Core.MongoDB.Services.MaintenanceService>();
+builder.Services.AddScoped<MongoDBSeeder>();
 
 // Register AddUsers as scoped service
 builder.Services.AddScoped<AddUsers>();
@@ -100,13 +148,21 @@ using (var scope = app.Services.CreateScope())
 
 // Configure the HTTP request pipeline.
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/mssql/swagger.json", "MSSQL API");
+    c.SwaggerEndpoint("/swagger/mongodb/swagger.json", "MongoDB API");
+    c.SwaggerEndpoint("/swagger/neo4j/swagger.json", "Neo4j API");
+    c.RoutePrefix = string.Empty;
+});
 
 // Create a scope to resolve AddUsers (because it's a scoped service)
 using (var scope = app.Services.CreateScope())
 {
     var addUsersService = scope.ServiceProvider.GetRequiredService<AddUsers>();
     addUsersService.CreateMongoUsers();  // Run the user creation script
+    var mongodSeeder = scope.ServiceProvider.GetRequiredService<MongoDBSeeder>();
+    await mongodSeeder.SeederInitalization();
 }
 
 app.UseHttpsRedirection();

@@ -13,7 +13,6 @@ public class MongoDBTicket
     public double Price { get; set; }
 
     [BsonElement("TicketTypeId")]
-    [BsonRepresentation(BsonType.ObjectId)]
     public string TicketType { get; set; }
 
     [BsonElement("CustomerId")]
