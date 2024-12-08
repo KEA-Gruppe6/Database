@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Database_project.Core.Entities;
+namespace Database_project.Core.SQL.Entities;
 
 public class OrderDTO
 {

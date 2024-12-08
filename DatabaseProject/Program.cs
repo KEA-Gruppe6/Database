@@ -1,5 +1,6 @@
-using Database_project.Core;
-using Database_project.Core.Interfaces;
+using Database_project.Core.SQL;
+using Database_project.Core.MongoDB;
+using Database_project.Core.SQL.Interfaces;
 using Database_project.MongoDB_Query;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;

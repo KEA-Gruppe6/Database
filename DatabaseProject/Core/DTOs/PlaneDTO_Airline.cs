@@ -1,4 +1,4 @@
-namespace Database_project.Core.DTOs;
+namespace Database_project.Core.SQL.DTOs;
 
 public class PlaneDTO_Airline
 {

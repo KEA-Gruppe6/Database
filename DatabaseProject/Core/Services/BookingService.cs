@@ -1,6 +1,5 @@
-using Database_project.Controllers.RequestDTOs;
-using Database_project.Core.Entities;
-using Database_project.Core.Interfaces;
+using Database_project.Core.SQL;
+using Database_project.Core.SQL.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Database_project.Core.Services

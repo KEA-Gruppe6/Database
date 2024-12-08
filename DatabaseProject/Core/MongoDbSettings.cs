@@ -1,4 +1,4 @@
-﻿namespace Database_project.Core
+﻿namespace Database_project.Core.MongoDB
 {
     public class MongoDbSettings
     {

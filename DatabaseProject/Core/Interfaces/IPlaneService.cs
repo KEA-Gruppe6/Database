@@ -1,7 +1,7 @@
-using Database_project.Core.DTOs;
-using Database_project.Core.Entities;
+using Database_project.Core.SQL.DTOs;
+using Database_project.Core.SQL.Entities;
 
-namespace Database_project.Core.Interfaces;
+namespace Database_project.Core.SQL.Interfaces;
 
 public interface IPlaneService
 {

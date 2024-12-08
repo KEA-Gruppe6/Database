@@ -1,4 +1,4 @@
-﻿using Database_project.Core;
+﻿using Database_project.Core.MongoDB;
 using MongoDB.Driver;
 using MongoDB.Bson;
 using Microsoft.Extensions.Options;
@@ -13,7 +13,7 @@ namespace Database_project.MongoDB_Query
         public AddUsers(IMongoClient mongoClient, IOptions<MongoDbSettings> settings)
         {
             _mongoClient = mongoClient;
-            _settings = settings.Value; 
+            _settings = settings.Value;
         }
 
         public void CreateMongoUsers()
@@ -42,24 +42,24 @@ namespace Database_project.MongoDB_Query
                     new BsonDocument { { "role", "read" }, { "db", "AirportDB" } }
                 });
             }
-/*
- * run this code for the role to be created
-  db.createRole({
-  role: "readInCustomers",  
-  privileges: [
-    {
-      resource: { db: "AirportDB", collection: "Customers" },  
-      actions: ["find"]
-    }
-  ],
-  roles: []  
-  });
- */
+            /*
+             * run this code for the role to be created
+              db.createRole({
+              role: "readInCustomers",  
+              privileges: [
+                {
+                  resource: { db: "AirportDB", collection: "Customers" },  
+                  actions: ["find"]
+                }
+              ],
+              roles: []  
+              });
+             */
             if (!UserExists(database, "restrictedUser"))
             {
                 CreateUser(database, "restrictedUser", "restrictedPassword", new[] {
-                    new BsonDocument { 
-                        { "role", "readInCustomers" },  
+                    new BsonDocument {
+                        { "role", "readInCustomers" },
                         { "db", "AirportDB" }
                     }
                 });

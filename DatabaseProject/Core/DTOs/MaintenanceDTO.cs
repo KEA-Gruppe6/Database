@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using Database_project.Core.Entities;
+using Database_project.Core.SQL.Entities;
 
-namespace Database_project.Core.DTOs;
+namespace Database_project.Core.SQL.DTOs;
 
 public class MaintenanceDTO
 {

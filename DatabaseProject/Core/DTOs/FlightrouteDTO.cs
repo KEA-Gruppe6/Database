@@ -1,6 +1,6 @@
-using Database_project.Core.Entities;
+using Database_project.Core.SQL.Entities;
 
-namespace Database_project.Core.DTOs;
+namespace Database_project.Core.SQL.DTOs;
 public class FlightrouteDTO
 {
     public long FlightrouteId { get; set; }

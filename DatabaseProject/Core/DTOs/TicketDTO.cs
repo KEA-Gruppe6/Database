@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-using Database_project.Core.DTOs;
+using Database_project.Core.SQL.DTOs;
 
-namespace Database_project.Core.Entities;
+namespace Database_project.Core.SQL.Entities;
 
 public class TicketDTO
 {

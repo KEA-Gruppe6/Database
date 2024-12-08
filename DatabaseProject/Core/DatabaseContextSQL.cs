@@ -1,7 +1,7 @@
-﻿using Database_project.Core.Entities;
+﻿using Database_project.Core.SQL.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Database_project.Core;
+namespace Database_project.Core.SQL;
 
 public class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbContext(options)
 {

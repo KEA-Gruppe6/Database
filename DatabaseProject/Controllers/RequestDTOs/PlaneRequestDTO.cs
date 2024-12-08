@@ -1,4 +1,4 @@
-using Database_project.Core.Entities;
+using Database_project.Core.SQL.Entities;
 
 namespace Database_project.Controllers.RequestDTOs
 {

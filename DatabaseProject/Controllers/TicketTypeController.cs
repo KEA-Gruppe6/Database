@@ -1,6 +1,6 @@
 ﻿using Database_project.Controllers.RequestDTOs;
-using Database_project.Core.Entities;
-using Database_project.Core.Interfaces;
+using Database_project.Core.SQL.Entities;
+using Database_project.Core.SQL.Interfaces;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 

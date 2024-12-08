@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Database_project.Core.Entities;
+namespace Database_project.Core.SQL.Entities;
 public class Flightroute
 {
     [Key]

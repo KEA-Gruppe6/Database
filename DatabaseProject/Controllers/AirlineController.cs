@@ -1,8 +1,8 @@
-﻿using Database_project.Core.Entities;
-using Database_project.Core.Interfaces;
+﻿using Database_project.Core.SQL.Entities;
+using Database_project.Core.SQL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Database_project.Controllers.RequestDTOs;
-using Database_project.Core.DTOs;
+using Database_project.Core.SQL.DTOs;
 
 namespace Database_project.Controllers;
 
