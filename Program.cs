@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using System.Reflection;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure MongoDbSettings
@@ -60,7 +61,7 @@ builder.Services.AddSwaggerGen(c =>
         }
         if (name == "mongodb")
         {
-            return routeTemplate != null && routeTemplate.StartsWith("api/mongodb");
+            return routeTemplate != null && routeTemplate.StartsWith("api/MongoDB");
         }
         if (name == "neo4j")
         {
