@@ -19,9 +19,10 @@ public class MongoDBTicket
     [BsonRepresentation(BsonType.ObjectId)]
     public string CustomerId { get; set; }
 
-    [BsonElement("DepartureId")]
+    [BsonElement("FlightrouteId")]
     [BsonRepresentation(BsonType.ObjectId)]
-    public string DepartureId { get; set; }
+    
+    public string FlightrouteId { get; set; }
 
     [BsonElement("OrderId")]
     public string OrderId { get; set; }

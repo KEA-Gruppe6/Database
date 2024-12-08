@@ -41,7 +41,7 @@ public class LuggageController : ControllerBase
         
         var luggage = new MongoDBLuggage
         {
-            MaxWeight = luggageDTO.MaxWeight,
+            Weight = luggageDTO.Weight,
             IsCarryOn = luggageDTO.IsCarryOn,
         };
 
@@ -66,7 +66,7 @@ public class LuggageController : ControllerBase
         
         var luggage = new MongoDBLuggage
         {
-            MaxWeight = luggageDTO.MaxWeight,
+            Weight = luggageDTO.Weight,
             IsCarryOn = luggageDTO.IsCarryOn,
         };
 

@@ -44,7 +44,7 @@ public class TicketController : ControllerBase
             Price = ticketDTO.Price,
             TicketType = ticketDTO.TicketType,
             CustomerId = ticketDTO.CustomerId,
-            DepartureId = ticketDTO.DepartureId,
+            FlightrouteId = ticketDTO.FlightrouteId,
             OrderId = ticketDTO.OrderId,
             LuggageIds = ticketDTO.LuggageIds
         };
@@ -73,7 +73,7 @@ public class TicketController : ControllerBase
             Price = ticketDTO.Price,
             TicketType = ticketDTO.TicketType,
             CustomerId = ticketDTO.CustomerId,
-            DepartureId = ticketDTO.DepartureId,
+            FlightrouteId = ticketDTO.FlightrouteId,
             OrderId = ticketDTO.OrderId,
             LuggageIds = ticketDTO.LuggageIds
         };

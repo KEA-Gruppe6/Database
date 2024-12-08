@@ -10,7 +10,7 @@ public class MongoDBTicketDTO
     
     public string CustomerId { get; set; }
     
-    public string DepartureId { get; set; }
+    public string FlightrouteId { get; set; }
     
     public string? OrderId { get; set; }
     

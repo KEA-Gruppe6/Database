@@ -43,7 +43,7 @@ public class PlaneController : ControllerBase
         {
             PlaneDisplayName = planeDTO.PlaneDisplayName,
             AirlineId = planeDTO.AirlineId,
-            Departures = planeDTO.Departures
+            Flightroutes = planeDTO.Flightroutes
         };
 
         await _planeService.CreatePlaneAsync(plane);
@@ -69,7 +69,7 @@ public class PlaneController : ControllerBase
         {
             PlaneDisplayName = planeDTO.PlaneDisplayName,
             AirlineId = planeDTO.AirlineId,
-            Departures = planeDTO.Departures
+            Flightroutes = planeDTO.Flightroutes
         };
 
         await _planeService.UpdatePlaneAsync(id, plane);

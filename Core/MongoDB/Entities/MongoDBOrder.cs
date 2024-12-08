@@ -15,6 +15,9 @@ public class MongoDBOrder
     [BsonElement("TicketIds")]
     public ICollection<string> TicketIds { get; set; }
     
+    
+    
+    
     public MongoDBOrder()
     {
         AirlineConfirmationNumber = GenerateConfirmationNumber();
@@ -24,18 +27,5 @@ public class MongoDBOrder
     public static string GenerateConfirmationNumber()
     {
         return Guid.NewGuid().ToString().Substring(0, 8).ToUpper();
-    }
-
-    public void addTicket(MongoDBTicket ticket)
-    {
-        TicketIds.Add(ticket.TicketId);
-    }
-
-    public void removeTicket(MongoDBTicket ticket)
-    {
-        if (TicketIds.Contains(ticket.TicketId))
-        {
-            TicketIds.Remove(ticket.TicketId);
-        }
     }
 }

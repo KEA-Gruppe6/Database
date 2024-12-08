@@ -38,7 +38,7 @@ public class PlaneService
         var updateDefinition = Builders<MongoDBPlane>.Update
             .Set(c => c.PlaneDisplayName, updatedPlane.PlaneDisplayName)
             .Set(c => c.AirlineId, updatedPlane.AirlineId)
-            .Set(c => c.Departures, updatedPlane.Departures);
+            .Set(c => c.Flightroutes, updatedPlane.Flightroutes);
 
         var result = await _planeCollection.UpdateOneAsync(
             c => c.PlaneId == id,

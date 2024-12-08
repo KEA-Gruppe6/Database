@@ -35,7 +35,8 @@ public class LuggageService
     {
         var updateDefinition = Builders<MongoDBLuggage>.Update
             .Set(c => c.IsCarryOn, updatedLuggage.IsCarryOn)
-            .Set(c => c.MaxWeight, updatedLuggage.MaxWeight);
+            .Set(c => c.Weight, updatedLuggage.Weight)
+            .Set(c => c.TicketId, updatedLuggage.TicketId);
 
         var result = await _luggageCollection.UpdateOneAsync(
             c => c.LuggageId == id,

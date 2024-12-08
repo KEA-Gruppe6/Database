@@ -2,7 +2,7 @@
 
 namespace Database_project.Core.MongoDB.DTO;
 
-public class MongoDBDepartureDTO
+public class MongoDBFlightrouteDTO
 {
     public DateTime DepartureTime { get; set; }
     public DateTime ArrivalTime { get; set; }

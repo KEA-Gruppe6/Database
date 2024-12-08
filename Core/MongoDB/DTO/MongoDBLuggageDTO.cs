@@ -2,7 +2,7 @@
 
 public class MongoDBLuggageDTO
 {
-    public double MaxWeight { get; set; }
+    public double Weight { get; set; }
     
     public bool IsCarryOn { get; set; } 
 }

@@ -64,7 +64,7 @@ public class TicketService
             .Set(c => c.TicketType, updatedTicket.TicketType)
             .Set(c => c.Price, updatedTicket.Price)
             .Set(c => c.CustomerId, updatedTicket.CustomerId)
-            .Set(c => c.DepartureId, updatedTicket.DepartureId)
+            .Set(c => c.FlightrouteId, updatedTicket.FlightrouteId)
             .Set(c => c.LuggageIds, updatedTicket.LuggageIds);
 
         var result = await _ticketCollection.UpdateOneAsync(

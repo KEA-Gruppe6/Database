@@ -15,8 +15,8 @@ public class MongoDBPlane
     [BsonElement("AirlineId")]
     public string AirlineId { get; set; }
     
-    [BsonElement("Departures")]
-    public ICollection<MongoDBDeparture> Departures { get; set; } = new List<MongoDBDeparture>();
+    [BsonElement("Flightroutes")]
+    public ICollection<MongoDBFlightroute> Flightroutes { get; set; } = new List<MongoDBFlightroute>();
 }
     
 

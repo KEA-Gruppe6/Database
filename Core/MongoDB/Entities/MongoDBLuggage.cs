@@ -9,8 +9,11 @@ public class MongoDBLuggage
     [BsonRepresentation(BsonType.ObjectId)]
     public string LuggageId { get; set; }
 
-    [BsonElement("MaxWeight")]
-    public double MaxWeight { get; set; }
+    [BsonElement("Weight")]
+    public double Weight { get; set; }
+    
+    [BsonElement("TicketId")]
+    public string TicketId { get; set; }
 
     [BsonElement("IsCarryOn")]
     public bool IsCarryOn { get; set; } 

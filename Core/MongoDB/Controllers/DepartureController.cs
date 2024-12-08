@@ -9,88 +9,88 @@ namespace Database_project.Core.MongoDB.Controllers;
 
 [ApiController]
 [Route("api/MongoDB/[controller]")]
-public class DepartureController : ControllerBase
+public class FlightrouteController : ControllerBase
 {
-    private readonly DepartureService _departureService;
+    private readonly FlightrouteService _flightrouteService;
 
-    public DepartureController(DepartureService departureService)
+    public FlightrouteController(FlightrouteService flightrouteService)
     {
-        _departureService = departureService;
+        _flightrouteService = flightrouteService;
     }
 
-    [HttpGet("{id}", Name = "GetDeparture")]
-    public async Task<IActionResult> GetDeparture(string id)
+    [HttpGet("{id}", Name = "GetFlightroute")]
+    public async Task<IActionResult> GetFlightroute(string id)
     {
-        var departure = await _departureService.GetDepartureByIdAsync(id);
+        var flightroute = await _flightrouteService.GetFlightrouteByIdAsync(id);
 
-        if (departure == null)
+        if (flightroute == null)
         {
-            return NotFound(new { Message = $"MongoDBDeparture with ID {id} not found." });
+            return NotFound(new { Message = $"MongoDBFlightroute with ID {id} not found." });
         }
 
-        return Ok(departure);
+        return Ok(flightroute);
     }
 
-    [HttpPost(Name = "CreateDeparture")]
-    public async Task<IActionResult> CreateDeparture([FromBody] MongoDBDepartureDTO departureDTO)
+    [HttpPost(Name = "CreateFlightroute")]
+    public async Task<IActionResult> CreateFlightroute([FromBody] MongoDBFlightrouteDTO flightrouteDTO)
     {
-        if (departureDTO == null)
+        if (flightrouteDTO == null)
         {
-            return BadRequest(new { Message = "Invalid departure data." });
+            return BadRequest(new { Message = "Invalid flightroute data." });
         }
         
-        var departure = new MongoDBDeparture
+        var flightroute = new MongoDBFlightroute
         {
-            DepartureTime = departureDTO.DepartureTime,
-            ArrivalTime = departureDTO.ArrivalTime,
-            DepartureAirportId = departureDTO.DepartureAirportId,
-            ArrivalAirportId = departureDTO.ArrivalAirportId,
-            TicketIds = departureDTO.TicketIds
+            DepartureTime = flightrouteDTO.DepartureTime,
+            ArrivalTime = flightrouteDTO.ArrivalTime,
+            DepartureAirportId = flightrouteDTO.DepartureAirportId,
+            ArrivalAirportId = flightrouteDTO.ArrivalAirportId,
+            TicketIds = flightrouteDTO.TicketIds
         };
 
-        await _departureService.CreateDepartureAsync(departure);
-        return StatusCode((int)HttpStatusCode.Created, new { Message = "MongoDBDeparture created successfully.", departure = departure });
+        await _flightrouteService.CreateFlightrouteAsync(flightroute);
+        return StatusCode((int)HttpStatusCode.Created, new { Message = "MongoDBFlightroute created successfully.", flightroute = flightroute });
     }
 
-    [HttpPatch("{id}", Name = "UpdateDeparture")]
-    public async Task<IActionResult> UpdateDeparture(string id, [FromBody] MongoDBDepartureDTO departureDTO)
+    [HttpPatch("{id}", Name = "UpdateFlightroute")]
+    public async Task<IActionResult> UpdateFlightroute(string id, [FromBody] MongoDBFlightrouteDTO flightrouteDTO)
     {
-        if (departureDTO == null)
+        if (flightrouteDTO == null)
         {
-            return BadRequest(new { Message = "Invalid departure data." });
+            return BadRequest(new { Message = "Invalid flightroute data." });
         }
         
-        var existingDeparture = await _departureService.GetDepartureByIdAsync(id);
+        var existingFlightroute = await _flightrouteService.GetFlightrouteByIdAsync(id);
 
-        if (existingDeparture == null)
+        if (existingFlightroute == null)
         {
-            return NotFound(new { Message = $"MongoDBDeparture with ID {id} not found." });
+            return NotFound(new { Message = $"MongoDBFlightroute with ID {id} not found." });
         }
         
-        var departure = new MongoDBDeparture
+        var flightroute = new MongoDBFlightroute
         {
-            DepartureTime = departureDTO.DepartureTime,
-            ArrivalTime = departureDTO.ArrivalTime,
-            DepartureAirportId = departureDTO.DepartureAirportId,
-            ArrivalAirportId = departureDTO.ArrivalAirportId,
-            TicketIds = departureDTO.TicketIds
+            DepartureTime = flightrouteDTO.DepartureTime,
+            ArrivalTime = flightrouteDTO.ArrivalTime,
+            DepartureAirportId = flightrouteDTO.DepartureAirportId,
+            ArrivalAirportId = flightrouteDTO.ArrivalAirportId,
+            TicketIds = flightrouteDTO.TicketIds
         };
 
-        await _departureService.UpdateDepartureAsync(id, departure);
-        return Ok(new { Message = "MongoDBDeparture updated successfully.", departure = departure });
+        await _flightrouteService.UpdateFlightrouteAsync(id, flightroute);
+        return Ok(new { Message = "MongoDBFlightroute updated successfully.", flightroute = flightroute });
     }
 
-    [HttpDelete("{id}", Name = "DeleteDeparture")]
-    public async Task<IActionResult> DeleteDeparture(string id)
+    [HttpDelete("{id}", Name = "DeleteFlightroute")]
+    public async Task<IActionResult> DeleteFlightroute(string id)
     {
-        var existingDeparture = await _departureService.GetDepartureByIdAsync(id);
+        var existingFlightroute = await _flightrouteService.GetFlightrouteByIdAsync(id);
 
-        if (existingDeparture == null)
+        if (existingFlightroute == null)
         {
-            return NotFound(new { Message = $"MongoDBDeparture with ID {id} not found." });
+            return NotFound(new { Message = $"MongoDBFlightroute with ID {id} not found." });
         }
 
-        await _departureService.DeleteDepartureAsync(id);
-        return Ok(new { Message = "MongoDBDeparture deleted successfully." });
+        await _flightrouteService.DeleteFlightrouteAsync(id);
+        return Ok(new { Message = "MongoDBFlightroute deleted successfully." });
     }
 }

@@ -8,5 +8,5 @@ public class MongoDBPlaneDTO
     
     public string AirlineId { get; set; }
     
-    public ICollection<MongoDBDeparture> Departures { get; set; }
+    public ICollection<MongoDBFlightroute> Flightroutes { get; set; }
 }

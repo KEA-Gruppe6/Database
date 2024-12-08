@@ -11,7 +11,13 @@ public class MongoDBMaintenance
 
     [BsonElement("AirportId")]
     public string AirportId { get; set; }
+    
+    [BsonElement("StartDate")]
+    public DateTime StartDate { get; set; }
 
+    [BsonElement("EndDate")]
+    public DateTime EndDate { get; set; }
+    
     [BsonElement("PlaneId")]
     public string PlaneId { get; set; }
 }

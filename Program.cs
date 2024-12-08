@@ -105,7 +105,7 @@ builder.Services.AddScoped<Database_project.Core.MongoDB.Services.AirlineService
 builder.Services.AddScoped<Database_project.Core.MongoDB.Services.AirportService>();
 builder.Services.AddScoped<Database_project.Core.MongoDB.Services.OrderService>();
 builder.Services.AddScoped<Database_project.Core.MongoDB.Services.TicketService>();
-builder.Services.AddScoped<Database_project.Core.MongoDB.Services.DepartureService>();
+builder.Services.AddScoped<Database_project.Core.MongoDB.Services.FlightrouteService>();
 builder.Services.AddScoped<Database_project.Core.MongoDB.Services.LuggageService>();
 builder.Services.AddScoped<Database_project.Core.MongoDB.Services.PlaneService>();
 builder.Services.AddScoped<Database_project.Core.MongoDB.Services.MaintenanceService>();
