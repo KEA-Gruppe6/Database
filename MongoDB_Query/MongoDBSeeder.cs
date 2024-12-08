@@ -17,8 +17,9 @@ public class MongoDBSeeder
     private readonly DepartureService _departureService;
     private readonly OrderService _orderService;
     private readonly LuggageService _luggageService;
+    private readonly TicketService _ticketService;
 
-    public MongoDBSeeder(IMongoClient mongoClient, IOptions<MongoDbSettings> settings, AirlineService airlineService, AirportService airportService, PlaneService planeService, CustomerService customerService, DepartureService departureService, OrderService orderService, LuggageService luggageService)
+    public MongoDBSeeder(IMongoClient mongoClient, IOptions<MongoDbSettings> settings, AirlineService airlineService, AirportService airportService, PlaneService planeService, CustomerService customerService, DepartureService departureService, OrderService orderService, LuggageService luggageService, TicketService ticketService)
     {
         _mongoClient = mongoClient;
         _settings = settings.Value;
@@ -29,6 +30,7 @@ public class MongoDBSeeder
         _departureService = departureService;
         _orderService = orderService;
         _luggageService = luggageService;
+        _ticketService = ticketService;
     }
 
     public async Task SeederInitalization()
@@ -40,12 +42,9 @@ public class MongoDBSeeder
         await FillMongoDBPlane();
         await FillMongoDBDeparture();
         await FillMongoDBMaintenance();
-        await FillMongoDBOrder();
         await FillMongoDBTicket();
         await UpdateTicketAndDepartureAutomatically();
     }
-    
-    
     
     public async Task FillMongoDBCustomers()
     {
@@ -292,39 +291,6 @@ public class MongoDBSeeder
         }
     }
 
-    public async Task FillMongoDBOrder()
-    {
-        var database = _mongoClient.GetDatabase(_settings.DatabaseName);
-        
-        var collection = database.GetCollection<MongoDBOrder>("Order");
-        
-        var orders = new List<MongoDBOrder>
-        {
-            new MongoDBOrder { AirlineConfirmationNumber = "111AAA" },
-            new MongoDBOrder { AirlineConfirmationNumber = "222BBB" },
-            new MongoDBOrder { AirlineConfirmationNumber = "333CCC" },
-            new MongoDBOrder { AirlineConfirmationNumber = "444DDD" },
-            new MongoDBOrder { AirlineConfirmationNumber = "555EEE" },
-            new MongoDBOrder { AirlineConfirmationNumber = "666FFF" },
-            new MongoDBOrder { AirlineConfirmationNumber = "777GGG" },
-            new MongoDBOrder { AirlineConfirmationNumber = "888HHH" },
-            new MongoDBOrder { AirlineConfirmationNumber = "999III" },
-            new MongoDBOrder { AirlineConfirmationNumber = "101JJJ" }
-        };
-
-        if (await collection.CountDocumentsAsync(FilterDefinition<MongoDBOrder>.Empty) == 0)
-        {
-            await collection.InsertManyAsync(orders);
-            Console.WriteLine("Order collection seeded successfully.");
-        }
-        else
-        {
-            Console.WriteLine("Order collection already contains data. No seeding performed.");
-        }
-    }
-
-    
-
     public async Task FillMongoDBTicket()
     {
         var database = _mongoClient.GetDatabase(_settings.DatabaseName);
@@ -336,58 +302,61 @@ public class MongoDBSeeder
         var orders = await _orderService.GetOrdersAsync();
         var luggage = await _luggageService.GetLuggageAsync();
         
-        var tickets = new List<MongoDBTicket>
+        var count = await collection.CountDocumentsAsync(FilterDefinition<MongoDBTicket>.Empty);
+        if (count == 0)
         {
-            new MongoDBTicket
+            await _ticketService.CreateTicketAsync(new MongoDBTicket
+            {
+                Price = 199.99,
+                TicketType = "Economy",
+                CustomerId = customers[0].CustomerId,
+                DepartureId = departures[0].DepartureId,
+                LuggageIds = new List<MongoDBLuggage>
+                {
+                    new MongoDBLuggage { LuggageId = luggage[0].LuggageId }
+                }
+            });
+            await _ticketService.CreateTicketAsync(new MongoDBTicket
             {
                 Price = 199.99,
                 TicketType = "Economy", 
                 CustomerId = customers[0].CustomerId, 
                 DepartureId = departures[0].DepartureId, 
-                OrderId = orders[0].OrderId, 
                 LuggageIds = new List<MongoDBLuggage>
                 {
                     new MongoDBLuggage { LuggageId = luggage[0].LuggageId }
                 }
-            },
-            new MongoDBTicket
+            });
+            await _ticketService.CreateTicketAsync(new MongoDBTicket
             {
                 Price = 299.99,
                 TicketType = "Economy",
                 CustomerId = customers[1].CustomerId,
                 DepartureId = departures[1].DepartureId,
-                OrderId = orders[1].OrderId,
                 LuggageIds = new List<MongoDBLuggage>
                 {
                     new MongoDBLuggage { LuggageId = luggage[1].LuggageId }
                 }
-            },
-            new MongoDBTicket
+            });
+            await _ticketService.CreateTicketAsync(new MongoDBTicket
             {
                 Price = 99.99,
                 TicketType = "Economy",
                 CustomerId = customers[2].CustomerId,
                 DepartureId = departures[2].DepartureId,
-                OrderId = orders[2].OrderId,
                 LuggageIds = new List<MongoDBLuggage>
                 {
                     new MongoDBLuggage { LuggageId = luggage[2].LuggageId }
                 }
-            }
-        };
-        var count = await collection.CountDocumentsAsync(FilterDefinition<MongoDBTicket>.Empty);
-        if (count == 0)
-        {
-            await collection.InsertManyAsync(tickets);
+            });
             Console.WriteLine("Ticket collection seeded successfully.");
         }
         else
         {
             Console.WriteLine("Ticket collection already contains data. No seeding performed.");
         }
-
     }
-
+    
     public async Task UpdateTicketAndDepartureAutomatically()
 {
     var database = _mongoClient.GetDatabase(_settings.DatabaseName);
@@ -423,5 +392,5 @@ public class MongoDBSeeder
     }
 
     Console.WriteLine("First 3 tickets and departures have been linked.");
-}
+    }
 }

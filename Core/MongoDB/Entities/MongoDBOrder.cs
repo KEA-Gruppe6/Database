@@ -23,7 +23,7 @@ public class MongoDBOrder
     
     public static string GenerateConfirmationNumber()
     {
-        return Guid.NewGuid().ToString().Substring(0, 8).ToUpper(); // Example: "ABC12345"
+        return Guid.NewGuid().ToString().Substring(0, 8).ToUpper();
     }
 
     public void addTicket(MongoDBTicket ticket)
