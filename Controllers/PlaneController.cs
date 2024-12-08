@@ -20,6 +20,7 @@ public class PlaneController : ControllerBase
     [HttpGet()]
     public async Task<ActionResult<List<PlaneDTO_Airline>>> GetPlanes()
     {
+        //TODO: pagination support, add GetAll call to other services
         var planes = await _planeService.GetPlanesAsync();
 
         return Ok(planes);

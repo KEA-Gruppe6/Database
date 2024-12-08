@@ -3,7 +3,7 @@ using Database_project.Core.Entities;
 using Database_project.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace Database_project.Services;
+namespace Database_project.Core.Services;
 
 public class AirportService : IAirportService
 {

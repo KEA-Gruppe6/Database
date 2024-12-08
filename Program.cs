@@ -1,29 +1,47 @@
 using Database_project.Core;
 using Database_project.Core.Interfaces;
-using Database_project.Core.Services;
-using Database_project.Services;
+using Database_project.MongoDB_Query;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using MongoDB.Driver;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using System.Reflection;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
-//Add Database context
+// Configure MongoDbSettings
+builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDbSettings"));
+
+// Add Database context
 var connectionString = builder.Configuration.GetConnectionString("MSSQL") ?? Environment.GetEnvironmentVariable("MSSQL");
+var mongoDbConnectionString = builder.Configuration.GetConnectionString("MongoDB") ?? Environment.GetEnvironmentVariable("MongoDB");
+var mongoDbDatabaseName = builder.Configuration.GetConnectionString("DatabaseName");
 builder.Services.AddDbContextFactory<DatabaseContext>(options =>
 {
     options.UseSqlServer(connectionString);
 });
 
 //TODO: Authentication of API calls
+// Setup for MongoDb driver
+builder.Services.Configure<MongoDbSettings>(options =>
+{
+    options.ConnectionString = mongoDbConnectionString;
+    options.DatabaseName = mongoDbDatabaseName;
+});
 
-// Add services to the container.
+// Singleton pattern implementation for connection
+builder.Services.AddSingleton<IMongoClient>(sp =>
+{
+    var settings = sp.GetRequiredService<IOptions<MongoDbSettings>>().Value;
+    return new MongoClient(settings.ConnectionString);
+});
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Add Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -43,7 +61,7 @@ builder.Services.AddSwaggerGen(c =>
         }
         if (name == "mongodb")
         {
-            return routeTemplate != null && routeTemplate.StartsWith("api/mongodb");
+            return routeTemplate != null && routeTemplate.StartsWith("api/MongoDB");
         }
         if (name == "neo4j")
         {
@@ -70,21 +88,36 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-builder.Services.AddScoped<ICustomerService, CustomerService>();
-builder.Services.AddScoped<IAirlineService, AirlineService>();
-builder.Services.AddScoped<IAirportService, AirportService>();
-builder.Services.AddScoped<ITicketTypeService, TicketTypeService>();
-builder.Services.AddScoped<IPlaneService, PlaneService>();
-builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<IFlightrouteService, FlightrouteService>();
-builder.Services.AddScoped<ILuggageService, LuggageService>();
-builder.Services.AddScoped<IMaintenanceService, MaintenanceService>();
-builder.Services.AddScoped<ITicketService, TicketService>();
+builder.Services.AddScoped<ICustomerService, Database_project.Core.Services.CustomerService>();
+builder.Services.AddScoped<IAirlineService, Database_project.Core.Services.AirlineService>();
+builder.Services.AddScoped<IAirportService, Database_project.Core.Services.AirportService>();
+builder.Services.AddScoped<ITicketTypeService, Database_project.Core.Services.TicketTypeService>();
+builder.Services.AddScoped<IPlaneService, Database_project.Core.Services.PlaneService>();
+builder.Services.AddScoped<IOrderService, Database_project.Core.Services.OrderService>();
+builder.Services.AddScoped<IFlightrouteService, Database_project.Core.Services.FlightrouteService>();
+builder.Services.AddScoped<ILuggageService, Database_project.Core.Services.LuggageService>();
+builder.Services.AddScoped<IMaintenanceService, Database_project.Core.Services.MaintenanceService>();
+builder.Services.AddScoped<ITicketService, Database_project.Core.Services.TicketService>();
 
+// Register MongoDB services
+builder.Services.AddScoped<Database_project.Core.MongoDB.Services.CustomerService>();
+builder.Services.AddScoped<Database_project.Core.MongoDB.Services.AirlineService>();
+builder.Services.AddScoped<Database_project.Core.MongoDB.Services.AirportService>();
+builder.Services.AddScoped<Database_project.Core.MongoDB.Services.OrderService>();
+builder.Services.AddScoped<Database_project.Core.MongoDB.Services.TicketService>();
+builder.Services.AddScoped<Database_project.Core.MongoDB.Services.FlightrouteService>();
+builder.Services.AddScoped<Database_project.Core.MongoDB.Services.LuggageService>();
+builder.Services.AddScoped<Database_project.Core.MongoDB.Services.PlaneService>();
+builder.Services.AddScoped<Database_project.Core.MongoDB.Services.MaintenanceService>();
+builder.Services.AddScoped<MongoDBSeeder>();
+
+// Register AddUsers as scoped service
+builder.Services.AddScoped<AddUsers>();
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
+    // SQL Server migration starts
     var dbContext = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
     var retryCount = 5;
     var delay = TimeSpan.FromSeconds(10);
@@ -113,6 +146,14 @@ using (var scope = app.Services.CreateScope())
     sqlFilePath = "populatedb.sql";
     sqlQuery = File.ReadAllText(sqlFilePath);
     dbContext.Database.ExecuteSqlRaw(sqlQuery);
+    // SQL Server migration ends
+
+    // MongoDB migration starts
+    var addUsersService = scope.ServiceProvider.GetRequiredService<AddUsers>();
+    addUsersService.CreateMongoUsers();  // Run the user creation script
+    var mongodSeeder = scope.ServiceProvider.GetRequiredService<MongoDBSeeder>();
+    await mongodSeeder.SeederInitalization();
+    // MongoDB migration ends
 }
 
 // Configure the HTTP request pipeline.
