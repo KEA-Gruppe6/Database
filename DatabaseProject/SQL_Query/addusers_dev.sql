@@ -61,3 +61,7 @@ GRANT SELECT ON SCHEMA::dbo TO readOnlyUser;
 GRANT SELECT, INSERT, UPDATE, DELETE ON SCHEMA::dbo TO appUser;
 GRANT CONTROL ON SCHEMA::dbo TO adminUser;
 GO
+
+-- Print a message to the log
+PRINT 'Database initialization script has completed successfully.';
+GO
