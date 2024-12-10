@@ -33,6 +33,7 @@ public class CustomerService : ICustomerService
             throw new ArgumentException($"Customer with ID {customer.CustomerId} already exists.");
         }
 
+        // Use raw SQL to operate with trigger in the database. Uses parameters to prevent SQL injection.
         var sql = "INSERT INTO Customers (FirstName, LastName, PassportNumber) VALUES (@FirstName, @LastName, @PassportNumber)";
         var parameters = new[]
         {
