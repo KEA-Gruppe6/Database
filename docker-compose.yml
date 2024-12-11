@@ -20,6 +20,8 @@ services:
       - mssql
       - neo4j
       - mongo
+    volumes:
+      - api-data:/app
 
   neo4j:
     image: neo4j:latest
@@ -53,3 +55,4 @@ volumes:
   neo4j-import:
   neo4j-plugins:
   mongo-data:
+  api-data:
