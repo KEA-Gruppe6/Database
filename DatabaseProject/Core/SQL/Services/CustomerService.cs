@@ -23,17 +23,13 @@ public class CustomerService : ICustomerService
         return customer;
     }
 
-    public async Task<Customer> CreateCustomerAsync(Customer customer)
+    public async Task<Customer> CreateCustomerRawSQLAsync(Customer customer)
     {
         await using var context = await _context.CreateDbContextAsync();
 
-        var existingCustomer = await context.Customers.FindAsync(customer.CustomerId);
-        if (existingCustomer != null)
-        {
-            throw new ArgumentException($"Customer with ID {customer.CustomerId} already exists.");
-        }
+        var existingCustomer = context.Customers.OrderByDescending(c => c.CustomerId).FirstOrDefault().CustomerId;
 
-        // Use raw SQL to operate with trigger in the database. Uses parameters to prevent SQL injection.
+        //Use raw SQL to operate with trigger in the database. Uses parameters to prevent SQL injection.
         var sql = "INSERT INTO Customers (FirstName, LastName, PassportNumber) VALUES (@FirstName, @LastName, @PassportNumber)";
         var parameters = new[]
         {
@@ -43,7 +39,29 @@ public class CustomerService : ICustomerService
             };
         await context.Database.ExecuteSqlRawAsync(sql, parameters);
 
-        return context.Customers.OrderByDescending(c => c.CustomerId).FirstOrDefault();
+        var returnCustomer = await context.Customers
+            .OrderByDescending(c => c.CustomerId)
+            .FirstOrDefaultAsync(c => c.FirstName == customer.FirstName && c.LastName == customer.LastName && c.PassportNumber == customer.PassportNumber);
+
+        if (existingCustomer == returnCustomer.CustomerId)
+        {
+            throw new DbUpdateException("Customer was not created.");
+        }
+
+        return returnCustomer;
+    }
+
+    public async Task<Customer> CreateCustomerEFAddAsync(Customer customer)
+    {
+        await using var context = await _context.CreateDbContextAsync();
+
+        await context.Customers.AddAsync(customer);
+        await context.SaveChangesAsync();
+
+        // Reload the customer to ensure any changes made by the trigger are reflected
+        await context.Entry(customer).ReloadAsync();
+
+        return customer;
     }
 
     public async Task<Customer> UpdateCustomerAsync(Customer customer)

@@ -6,7 +6,8 @@ namespace Database_project.Core.SQL.Interfaces;
 public interface ICustomerService
 {
     Task<Customer?> GetCustomerByIdAsync(long id);
-    Task<Customer> CreateCustomerAsync(Customer customer);
+    Task<Customer> CreateCustomerEFAddAsync(Customer customer);
+    Task<Customer> CreateCustomerRawSQLAsync(Customer customer);
     Task<Customer> UpdateCustomerAsync(Customer customer);
     Task<Customer> DeleteCustomerAsync(long id);
 }
