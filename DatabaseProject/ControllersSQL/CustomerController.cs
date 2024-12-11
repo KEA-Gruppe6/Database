@@ -2,6 +2,7 @@
 using Database_project.Core.SQL.Entities;
 using Database_project.Core.SQL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Database_project.Controllers;
 
@@ -28,8 +29,8 @@ public class CustomerController : ControllerBase
         return Ok(customer);
     }
 
-    [HttpPost]
-    public async Task<ActionResult<Customer>> CreateCustomer([FromBody] CustomerRequestDTO customerDTO)
+    [HttpPost("create-raw-sql")]
+    public async Task<ActionResult<Customer>> CreateCustomerRawSQL([FromBody] CustomerRequestDTO customerDTO)
     {
         Customer customer = new Customer
         {
@@ -41,15 +42,41 @@ public class CustomerController : ControllerBase
 
         try
         {
-            var createdCustomer = await _customerService.CreateCustomerAsync(customer);
+            var createdCustomer = await _customerService.CreateCustomerRawSQLAsync(customer);
             return CreatedAtAction(nameof(GetCustomer), new { id = createdCustomer.CustomerId }, createdCustomer);
+        }
+        catch (ArgumentException e)
+        {
+            return BadRequest(e.Message);
         }
         catch (Exception e)
         {
-            if (e is ArgumentException)
-            {
-                return BadRequest(e.Message);
-            }
+            return StatusCode(500, e.Message);
+        }
+    }
+
+    [HttpPost("create-ef-add")]
+    public async Task<ActionResult<Customer>> CreateCustomerEFAdd([FromBody] CustomerRequestDTO customerDTO)
+    {
+        Customer customer = new Customer
+        {
+            CustomerId = 0,
+            FirstName = customerDTO.FirstName,
+            LastName = customerDTO.LastName,
+            PassportNumber = customerDTO.PassportNumber,
+        };
+
+        try
+        {
+            var createdCustomer = await _customerService.CreateCustomerEFAddAsync(customer);
+            return CreatedAtAction(nameof(GetCustomer), new { id = createdCustomer.CustomerId }, createdCustomer);
+        }
+        catch (DbUpdateException ex) when (ex.InnerException is Microsoft.Data.SqlClient.SqlException sqlEx && sqlEx.Message.Contains("Passport number must be exactly 9 characters long"))
+        {
+            return BadRequest(sqlEx.Message);
+        }
+        catch (Exception e)
+        {
             return StatusCode(500, e.Message);
         }
     }

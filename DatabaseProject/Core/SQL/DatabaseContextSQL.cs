@@ -39,6 +39,9 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbCont
                 .OnDelete(DeleteBehavior.NoAction);
         });
 
+        modelBuilder.Entity<Customer>()
+            .ToTable(tb => tb.HasTrigger("trg_ValidatePassportNumber"));
+
         modelBuilder.Entity<Plane>()
             .HasOne(p => p.Airline)
             .WithMany(a => a.Planes)
