@@ -10,6 +10,9 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using System.Reflection;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Database_project.Core.Neo4j;
+using Neo4j.Driver;
+using Neo4jClient;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,6 +43,15 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
     var settings = sp.GetRequiredService<IOptions<MongoDbSettings>>().Value;
     return new MongoClient(settings.ConnectionString);
 });
+
+// Configure Neo4jAppSettings
+builder.Services.Configure<Neo4jAppSettings>(builder.Configuration.GetSection("Neo4jAppSettings"));
+var neo4jAppSettings = new Neo4jAppSettings();
+builder.Configuration.GetSection("Neo4jAppSettings").Bind(neo4jAppSettings);
+// Add Neo4j driver
+var neo4jClient = new BoltGraphClient(neo4jAppSettings.Neo4jConnection, neo4jAppSettings.Neo4jUser, neo4jAppSettings.Neo4jPassword);
+await neo4jClient.ConnectAsync();
+builder.Services.AddSingleton<IGraphClient>(neo4jClient);
 
 builder.Services.AddControllers();
 // Add Swagger/OpenAPI
@@ -89,6 +101,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+// Register SQL services
 builder.Services.AddScoped<ICustomerService, Database_project.Core.Services.CustomerService>();
 builder.Services.AddScoped<IAirlineService, Database_project.Core.Services.AirlineService>();
 builder.Services.AddScoped<IAirportService, Database_project.Core.Services.AirportService>();
@@ -111,6 +124,9 @@ builder.Services.AddScoped<Database_project.Core.MongoDB.Services.LuggageService
 builder.Services.AddScoped<Database_project.Core.MongoDB.Services.PlaneService>();
 builder.Services.AddScoped<Database_project.Core.MongoDB.Services.MaintenanceService>();
 builder.Services.AddScoped<MongoDBSeeder>();
+
+// Register Neo4j services
+builder.Services.AddScoped<Database_project.Core.Neo4j.Interfaces.IPlaneService, Database_project.Core.Neo4j.Services.PlaneService>();
 
 // Register AddUsers as scoped service
 builder.Services.AddScoped<AddUsers>();
