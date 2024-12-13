@@ -32,17 +32,19 @@ public class PlaneService : IPlaneService
             .Return(plane => plane.As<Plane>())
             .ResultsAsync;
 
-        if (plane == null)
+        var planeResult = plane.FirstOrDefault();
+
+        if (planeResult == null)
         {
             throw new KeyNotFoundException($"Plane with ID {id} not found.");
         }
 
-        return plane.FirstOrDefault();
+        return planeResult;
     }
 
     public async Task<Plane> CreatePlaneAsync(Plane plane)
     {
-        await _neo4jClient.Cypher
+        await _neo4jClient.Cypher //TODO create reference to airline
             .Create("(plane:Plane $newPlane)")
             .WithParam("newPlane", plane)
             .ExecuteWithoutResultsAsync();
