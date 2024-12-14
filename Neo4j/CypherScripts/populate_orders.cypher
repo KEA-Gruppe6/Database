@@ -23,11 +23,8 @@ CREATE (p3:Plane {PlaneId: 3, PlaneDisplayName: 'Plane 3'});
 CREATE (p4:Plane {PlaneId: 4, PlaneDisplayName: 'Plane 4'});
 
 // Create Orders
-CREATE (o1:Order {OrderId: 1, AirlineConfirmationNumber: 'CONF12345'});
-CREATE (o2:Order {OrderId: 2, AirlineConfirmationNumber: 'CONF67890'});
-CREATE (o3:Order {OrderId: 3, AirlineConfirmationNumber: 'CONF11111'});
-CREATE (o4:Order {OrderId: 4, AirlineConfirmationNumber: 'CONF22222'});
-CREATE (o5:Order {OrderId: 5, AirlineConfirmationNumber: 'CONF33333'});
+CREATE (o1:Order {OrderId: 1, AirlineConfirmationNumber: 'CONF12345'})
+CREATE (o2:Order {OrderId: 2, AirlineConfirmationNumber: 'CONF67890'})
 
 // Create TicketTypes
 CREATE (tt1:TicketType {TicketTypeId: 1, TicketTypeName: 'Economy'});
