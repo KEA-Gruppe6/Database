@@ -1,0 +1,1065 @@
+{
+	"info": {
+		"_postman_id": "50e68efc-b341-47cf-abdd-758eb1f47e93",
+		"name": "Database_project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38992093"
+	},
+	"item": [
+		{
+			"name": "Make order",
+			"item": [
+				{
+					"name": "Add Airline",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Check POST response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    pm.expect(jsonData).to.have.property('airlineId');",
+									"    pm.expect(jsonData).to.have.property('airlineName');",
+									"    pm.expect(jsonData).to.have.property('planes');",
+									"});",
+									"",
+									"pm.test(\"Check values\", function () {    ",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    pm.expect(jsonData.airlineName).to.eql(\"Discount Airlines Inc.\");",
+									"    pm.expect(jsonData.planes).to.be.empty;",
+									"",
+									"    pm.collectionVariables.set(\"AirlineId\", jsonData.airlineId);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"airlineName\": \"Discount Airlines Inc.\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/Airline",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"Airline"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Plane",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Check schema\", function () {",
+									"    const planeSchema = {",
+									"        \"type\": \"object\",",
+									"        \"properties\": {",
+									"            \"planeId\": { \"type\": \"number\" },",
+									"            \"planeDisplayName\": { \"type\": \"string\" },",
+									"            \"airline\": {",
+									"                \"type\": \"object\",",
+									"                \"properties\": {",
+									"                    \"airlineId\": { \"type\": \"number\" },",
+									"                    \"airlineName\": { \"type\": \"string\" }",
+									"                },",
+									"                \"required\": [\"airlineId\", \"airlineName\"]",
+									"            }",
+									"        },",
+									"        \"required\": [\"planeId\", \"planeDisplayName\", \"airline\"]",
+									"    };",
+									"",
+									"    pm.response.to.have.jsonSchema(planeSchema);",
+									"});",
+									"",
+									"pm.test(\"Check values\", function () {    ",
+									"    var jsonData = pm.response.json();",
+									"    ",
+									"    pm.expect(jsonData.planeDisplayName).to.eql(\"Boeing 747\");",
+									"    pm.expect(jsonData.airline.airlineId).to.eql(pm.collectionVariables.get(\"AirlineId\"));",
+									"    pm.expect(jsonData.airline.airlineName).to.eql(\"Discount Airlines Inc.\");",
+									"",
+									"    pm.collectionVariables.set(\"PlaneId\", jsonData.planeId);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"planeDisplayName\": \"Boeing 747\",\n  \"airlineId\": \"{{AirlineId}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/Plane",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"Plane"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Airport Vejen",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Check POST response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    pm.expect(jsonData).to.have.property('airportName');",
+									"    pm.expect(jsonData).to.have.property('airportCity');",
+									"    pm.expect(jsonData).to.have.property('municipality');",
+									"    pm.expect(jsonData).to.have.property('airportAbbreviation');",
+									"});",
+									"",
+									"pm.test(\"Check values\", function () {    ",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    pm.expect(jsonData.airportName).to.eql(\"Vejen Lufthavn\");",
+									"    pm.expect(jsonData.airportCity).to.eql(\"Vejen\");",
+									"    pm.expect(jsonData.municipality).to.eql(\"Vejen Kommune\");",
+									"    pm.expect(jsonData.airportAbbreviation).to.eql(\"VJN\");",
+									"",
+									"    pm.collectionVariables.set(\"VejenId\", jsonData.airportId);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"airportName\": \"Vejen Lufthavn\",\n  \"airportCity\": \"Vejen\",\n  \"municipality\": \"Vejen Kommune\",\n  \"airportAbbreviation\": \"VJN\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/Airport",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"Airport"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Airport Nyrup",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Check POST response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    pm.expect(jsonData).to.have.property('airportName');",
+									"    pm.expect(jsonData).to.have.property('airportCity');",
+									"    pm.expect(jsonData).to.have.property('municipality');",
+									"    pm.expect(jsonData).to.have.property('airportAbbreviation');",
+									"});",
+									"",
+									"pm.test(\"Check values\", function () {    ",
+									"    var jsonData = pm.response.json();",
+									"    ",
+									"    pm.expect(jsonData.airportName).to.eql(\"Nyrup Intl. Lufthavn\");",
+									"    pm.expect(jsonData.airportCity).to.eql(\"Nyrup\");",
+									"    pm.expect(jsonData.municipality).to.eql(\"Sorø Kommune\");",
+									"    pm.expect(jsonData.airportAbbreviation).to.eql(\"NRP\");",
+									"",
+									"    pm.collectionVariables.set(\"NyrupId\", jsonData.airportId);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"airportName\": \"Nyrup Intl. Lufthavn\",\n  \"airportCity\": \"Nyrup\",\n  \"municipality\": \"Sorø Kommune\",\n  \"airportAbbreviation\": \"NRP\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/Airport",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"Airport"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Flightroute",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"/*pm.test(\"Check POST response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    pm.expect(jsonData).to.have.property('flightrouteId');",
+									"    pm.expect(jsonData).to.have.property('departureTime');",
+									"    pm.expect(jsonData).to.have.property('arrivalTime');",
+									"    pm.expect(jsonData).to.have.property('departureAirport').with.property(\"airportId\").and.with.property(\"airportName\").and.with.property(\"airportCity\").and.with.property(\"municipality\").and.with.property(\"airportAbbreviation\");",
+									"    pm.expect(jsonData).to.have.property('arrivalAirport').with.property(\"airportId\").and.with.property(\"airportName\").and.with.property(\"airportCity\").and.with.property(\"municipality\").and.with.property(\"airportAbbreviation\");",
+									"    pm.expect(jsonData).to.have.property('plane').with.property(planeId).and.with.property(\"planeDisplayName\");",
+									"});*/",
+									"",
+									"pm.test(\"Check values\", function () {    ",
+									"    var jsonData = pm.response.json();",
+									"    ",
+									"    pm.expect(jsonData.departureTime).to.eql(\"2024-12-23T13:48:02.69\");",
+									"    pm.expect(jsonData.arrivalTime).to.eql(\"2024-12-23T14:25:00.691\");",
+									"    pm.expect(jsonData.departureAirport.airportName).to.eql(\"Nyrup Intl. Lufthavn\");",
+									"    pm.expect(jsonData.arrivalAirport.airportName).to.eql(\"Vejen Lufthavn\");",
+									"    pm.expect(jsonData.plane.planeId).to.eql(pm.collectionVariables.get(\"PlaneId\"));",
+									"",
+									"    pm.collectionVariables.set(\"FlightrouteId\", jsonData.flightrouteId);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"departureTime\": \"2024-12-23T13:48:02.690Z\",\n  \"arrivalTime\": \"2024-12-23T14:25:00.691Z\",\n  \"departureAirportId\": {{NyrupId}},\n  \"arrivalAirportId\": {{VejenId}},\n  \"planeId\": {{PlaneId}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/Flightroute",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"Flightroute"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Customer Jørgen",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Check POST response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    pm.expect(jsonData).to.have.property('firstName');",
+									"    pm.expect(jsonData).to.have.property('lastName');",
+									"    pm.expect(jsonData).to.have.property('passportNumber');",
+									"});",
+									"",
+									"pm.test(\"Check values\", function () {    ",
+									"    var jsonData = pm.response.json();",
+									"    ",
+									"    pm.expect(jsonData.firstName).to.eql(\"Jørgen\");",
+									"    pm.expect(jsonData.lastName).to.eql(\"Berendsen\");",
+									"    pm.expect(jsonData.passportNumber).to.eql(473926479);",
+									"",
+									"    pm.collectionVariables.set(\"JørgenId\", jsonData.customerId);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Jørgen\",\n  \"lastName\": \"Berendsen\",\n  \"passportNumber\": 473926479\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/Customer/create-raw-sql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"Customer",
+								"create-raw-sql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Customer Bendte",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Check POST response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    pm.expect(jsonData).to.have.property('firstName');",
+									"    pm.expect(jsonData).to.have.property('lastName');",
+									"    pm.expect(jsonData).to.have.property('passportNumber');",
+									"});",
+									"",
+									"pm.test(\"Check values\", function () {    ",
+									"    var jsonData = pm.response.json();",
+									"    ",
+									"    pm.expect(jsonData.firstName).to.eql(\"Bendte\");",
+									"    pm.expect(jsonData.lastName).to.eql(\"Berendsen\");",
+									"    pm.expect(jsonData.passportNumber).to.eql(274935127);",
+									"",
+									"    pm.collectionVariables.set(\"BendteId\", jsonData.customerId);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Bendte\",\n  \"lastName\": \"Berendsen\",\n  \"passportNumber\": 274935127\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/Customer/create-raw-sql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"Customer",
+								"create-raw-sql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Check POST response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    pm.expect(jsonData).to.have.property('orderId');",
+									"    pm.expect(jsonData).to.have.property('airlineConfirmationNumber');",
+									"    pm.expect(jsonData).to.have.property('tickets');",
+									"});",
+									"",
+									"pm.test(\"Check values\", function () {    ",
+									"    var jsonData = pm.response.json();",
+									"    ",
+									"    pm.expect(jsonData.airlineConfirmationNumber).to.eql(\"7598\");",
+									"    pm.expect(jsonData.tickets).to.be.empty;",
+									"",
+									"    pm.collectionVariables.set(\"OrderId\", jsonData.orderId);",
+									"    pm.collectionVariables.set(\"AirlineConfirmationNumber\", jsonData.airlineConfirmationNumber);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"airlineConfirmationNumber\": \"7598\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/Order",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"Order"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Jørgen Ticket",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"/*pm.test(\"Check POST response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    pm.expect(jsonData).to.have.property('ticketId');",
+									"    pm.expect(jsonData).to.have.property('price');",
+									"    pm.expect(jsonData).to.have.property('ticketType').with.property(\"ticketTypeId\").and.with.property(\"ticketTypeName\");",
+									"    pm.expect(jsonData).to.have.property('customer').with.property(\"firstName\");",
+									"    pm.expect(jsonData).to.have.property('flightroute').with.property(\"departureAirport\").with.property(\"airportName\");",
+									"    pm.expect(jsonData).to.have.property('flightroute').with.property(\"arrivalAirport\").with.property(\"airportName\");",
+									"    pm.expect(jsonData).to.have.property('flightroute').with.property(\"plane\").with.property(\"planeId\").and.with.property(\"planeDisplayName\");",
+									"    pm.expect(jsonData).to.have.property('luggage').to.be.empty;",
+									"});*/",
+									"",
+									"pm.test(\"Check values\", function () {    ",
+									"    var jsonData = pm.response.json();",
+									"    ",
+									"    pm.expect(jsonData.price).to.eql(1300);",
+									"    pm.expect(jsonData.ticketType.ticketTypeName).to.eql(\"Economy\");",
+									"    pm.expect(jsonData.customer.firstName).to.eql(\"Jørgen\");",
+									"    pm.expect(jsonData.flightroute.departureAirport.airportName).to.eql(\"Nyrup Intl. Lufthavn\");",
+									"    pm.expect(jsonData.flightroute.arrivalAirport.airportName).to.eql(\"Vejen Lufthavn\");",
+									"    pm.expect(jsonData.flightroute.plane.planeId).to.eql(pm.collectionVariables.get(\"PlaneId\"));",
+									"",
+									"    pm.collectionVariables.set(\"JørgenTicketId\", jsonData.ticketId);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"price\": 1300,\n  \"ticketTypeId\": 1,\n  \"customerId\": {{JørgenId}},\n  \"flightrouteId\": {{FlightrouteId}},\n  \"orderId\": {{OrderId}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/Ticket",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"Ticket"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Bendte Ticket",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"/*pm.test(\"Check POST response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    pm.expect(jsonData).to.have.property('ticketId');",
+									"    pm.expect(jsonData).to.have.property('price');",
+									"    pm.expect(jsonData).to.have.property('ticketType').with.property(\"ticketTypeId\").and.with.property(\"ticketTypeName\");",
+									"    pm.expect(jsonData).to.have.property('customer').with.property(\"firstName\");",
+									"    pm.expect(jsonData).to.have.property('flightroute').with.property(\"departureAirport\").with.property(\"airportName\");",
+									"    pm.expect(jsonData).to.have.property('flightroute').with.property(\"arrivalAirport\").with.property(\"airportName\");",
+									"    pm.expect(jsonData).to.have.property('flightroute').with.property(\"plane\").with.property(\"planeId\").and.with.property(\"planeDisplayName\");",
+									"    pm.expect(jsonData).to.have.property('luggage').to.be.empty;",
+									"});*/",
+									"",
+									"pm.test(\"Check values\", function () {    ",
+									"    var jsonData = pm.response.json();",
+									"    ",
+									"    pm.expect(jsonData.price).to.eql(1200);",
+									"    pm.expect(jsonData.ticketType.ticketTypeName).to.eql(\"Economy\");",
+									"    pm.expect(jsonData.customer.firstName).to.eql(\"Bendte\");",
+									"    pm.expect(jsonData.flightroute.departureAirport.airportName).to.eql(\"Nyrup Intl. Lufthavn\");",
+									"    pm.expect(jsonData.flightroute.arrivalAirport.airportName).to.eql(\"Vejen Lufthavn\");",
+									"    pm.expect(jsonData.flightroute.plane.planeId).to.eql(pm.collectionVariables.get(\"PlaneId\"));",
+									"",
+									"    pm.collectionVariables.set(\"BendteTicketId\", jsonData.ticketId);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"price\": 1200,\n  \"ticketTypeId\": 1,\n  \"customerId\": {{BendteId}},\n  \"flightrouteId\": {{FlightrouteId}},\n  \"orderId\": {{OrderId}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/Ticket",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"Ticket"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Jørgen Luggage",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Check POST response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    pm.expect(jsonData).to.have.property('luggageId');",
+									"    pm.expect(jsonData).to.have.property('weight');",
+									"    pm.expect(jsonData).to.have.property('isCarryOn');",
+									"    pm.expect(jsonData).to.have.property('ticketId');",
+									"});",
+									"",
+									"pm.test(\"Check values\", function () {    ",
+									"    var jsonData = pm.response.json();",
+									"    ",
+									"    pm.expect(jsonData.weight).to.eql(50);",
+									"    pm.expect(jsonData.isCarryOn).to.eql(false);",
+									"    pm.expect(jsonData.ticketId).to.eql(pm.collectionVariables.get(\"JørgenTicketId\"));",
+									"",
+									"    pm.collectionVariables.set(\"JørgenLuggageId\", jsonData.luggageId);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"maxWeight\": 50,\n  \"isCarryOn\": false,\n  \"ticketId\": {{JørgenTicketId}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/Luggage",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"Luggage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Bendte Luggage",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Check POST response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    pm.expect(jsonData).to.have.property('luggageId');",
+									"    pm.expect(jsonData).to.have.property('weight');",
+									"    pm.expect(jsonData).to.have.property('isCarryOn');",
+									"    pm.expect(jsonData).to.have.property('ticketId');",
+									"});",
+									"",
+									"pm.test(\"Check values\", function () {    ",
+									"    var jsonData = pm.response.json();",
+									"    ",
+									"    pm.expect(jsonData.weight).to.eql(40);",
+									"    pm.expect(jsonData.isCarryOn).to.eql(false);",
+									"    pm.expect(jsonData.ticketId).to.eql(pm.collectionVariables.get(\"BendteTicketId\"));",
+									"",
+									"    pm.collectionVariables.set(\"BendteLuggageId\", jsonData.luggageId);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"maxWeight\": 40,\n  \"isCarryOn\": false,\n  \"ticketId\": {{BendteTicketId}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/Luggage",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"Luggage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Bendte CarryOn",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Check POST response\", function () {",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    pm.expect(jsonData).to.have.property('luggageId');",
+									"    pm.expect(jsonData).to.have.property('weight');",
+									"    pm.expect(jsonData).to.have.property('isCarryOn');",
+									"    pm.expect(jsonData).to.have.property('ticketId');",
+									"});",
+									"",
+									"pm.test(\"Check values\", function () {   ",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    pm.expect(jsonData.weight).to.eql(10);",
+									"    pm.expect(jsonData.isCarryOn).to.eql(true);",
+									"    pm.expect(jsonData.ticketId).to.eql(pm.collectionVariables.get(\"BendteTicketId\"));",
+									"",
+									"    pm.collectionVariables.set(\"BendteCarryOnId\", jsonData.luggageId);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"maxWeight\": 10,\n  \"isCarryOn\": true,\n  \"ticketId\": {{BendteTicketId}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/Luggage",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"Luggage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Complete Order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Check POST response\", function () {",
+									"    const orderSchema = {",
+									"        \"type\": \"object\",",
+									"        \"properties\": {",
+									"            \"orderId\": { \"type\": \"number\" },",
+									"            \"airlineConfirmationNumber\": { \"type\": \"string\" },",
+									"            \"tickets\": {",
+									"                \"type\": \"array\",",
+									"                \"minItems\": 2,",
+									"                \"items\": {",
+									"                    \"type\": \"object\",",
+									"                    \"properties\": {",
+									"                        \"ticketId\": { \"type\": \"number\" },",
+									"                        \"price\": { \"type\": \"number\" },",
+									"                        \"ticketType\": {",
+									"                            \"type\": \"object\",",
+									"                            \"properties\": {",
+									"                                \"ticketTypeId\": { \"type\": \"number\" },",
+									"                                \"ticketTypeName\": { \"type\": \"string\" }",
+									"                            },",
+									"                            \"required\": [\"ticketTypeId\", \"ticketTypeName\"]",
+									"                        },",
+									"                        \"customer\": {",
+									"                            \"type\": \"object\",",
+									"                            \"properties\": {",
+									"                                \"customerId\": { \"type\": \"number\" },",
+									"                                \"firstName\": { \"type\": \"string\" },",
+									"                                \"lastName\": { \"type\": \"string\" },",
+									"                                \"passportNumber\": { \"type\": \"number\" }",
+									"                            },",
+									"                            \"required\": [\"customerId\", \"firstName\", \"lastName\", \"passportNumber\"]",
+									"                        },",
+									"                        \"flightroute\": {",
+									"                            \"type\": \"object\",",
+									"                            \"properties\": {",
+									"                                \"flightrouteId\": { \"type\": \"number\" },",
+									"                                \"departureTime\": { \"type\": \"string\" },",
+									"                                \"arrivalTime\": { \"type\": \"string\" },",
+									"                                \"departureAirport\": {",
+									"                                    \"type\": \"object\",",
+									"                                    \"properties\": {",
+									"                                        \"airportId\": { \"type\": \"number\" },",
+									"                                        \"airportName\": { \"type\": \"string\" },",
+									"                                        \"airportCity\": { \"type\": \"string\" },",
+									"                                        \"municipality\": { \"type\": \"string\" },",
+									"                                        \"airportAbbreviation\": { \"type\": \"string\" }",
+									"                                    },",
+									"                                    \"required\": [\"airportId\", \"airportName\", \"airportCity\", \"municipality\", \"airportAbbreviation\"]",
+									"                                },",
+									"                                \"arrivalAirport\": {",
+									"                                    \"type\": \"object\",",
+									"                                    \"properties\": {",
+									"                                        \"airportId\": { \"type\": \"number\" },",
+									"                                        \"airportName\": { \"type\": \"string\" },",
+									"                                        \"airportCity\": { \"type\": \"string\" },",
+									"                                        \"municipality\": { \"type\": \"string\" },",
+									"                                        \"airportAbbreviation\": { \"type\": \"string\" }",
+									"                                    },",
+									"                                    \"required\": [\"airportId\", \"airportName\", \"airportCity\", \"municipality\", \"airportAbbreviation\"]",
+									"                                },",
+									"                                \"plane\": {",
+									"                                    \"type\": \"object\",",
+									"                                    \"properties\": {",
+									"                                        \"planeId\": { \"type\": \"number\" },",
+									"                                        \"planeDisplayName\": { \"type\": \"string\" }",
+									"                                    },",
+									"                                    \"required\": [\"planeId\", \"planeDisplayName\"]",
+									"                                }",
+									"                            },",
+									"                            \"required\": [\"flightrouteId\", \"departureTime\", \"arrivalTime\", \"departureAirport\", \"arrivalAirport\", \"plane\"]",
+									"                        },",
+									"                        \"luggage\": {",
+									"                            \"type\": \"array\",",
+									"                            \"maxItems\": 2,",
+									"                            \"items\": {",
+									"                                \"type\": \"object\",",
+									"                                \"properties\": {",
+									"                                    \"weight\": { \"type\": \"number\" },",
+									"                                    \"isCarryOn\": { \"type\": \"boolean\" }",
+									"                                },",
+									"                                \"required\": [\"weight\", \"isCarryOn\"]",
+									"                            }",
+									"                        }",
+									"                    },",
+									"                    \"required\": [\"ticketId\", \"price\", \"ticketType\", \"customer\", \"flightroute\", \"luggage\"]",
+									"                }",
+									"            }",
+									"        },",
+									"        \"required\": [\"orderId\", \"airlineConfirmationNumber\", \"tickets\"]",
+									"    };",
+									"",
+									"    pm.response.to.have.jsonSchema(orderSchema);",
+									"});",
+									"pm.test(\"Check values\", function () {    ",
+									"    var jsonData = pm.response.json();",
+									"",
+									"    pm.expect(jsonData.airlineConfirmationNumber).to.eql(pm.collectionVariables.get(\"AirlineConfirmationNumber\"));",
+									"    pm.expect(jsonData.orderId).to.eql(pm.collectionVariables.get(\"OrderId\"));",
+									"",
+									"    const jørgenTicket = jsonData.tickets.find(t => t.ticketId === pm.collectionVariables.get(\"JørgenTicketId\"));",
+									"    pm.expect(jørgenTicket.price).to.eql(1300);",
+									"    pm.expect(jørgenTicket.ticketType.ticketTypeName).to.eql(\"Economy\");",
+									"    pm.expect(jørgenTicket.customer.customerId).to.eql(pm.collectionVariables.get(\"JørgenId\"));",
+									"    pm.expect(jørgenTicket.customer.firstName).to.eql(\"Jørgen\");",
+									"    pm.expect(jørgenTicket.customer.passportNumber).to.eql(473926479);",
+									"",
+									"    const bendteTicket = jsonData.tickets.find(t => t.ticketId === pm.collectionVariables.get(\"BendteTicketId\"));",
+									"    pm.expect(bendteTicket.price).to.eql(1200);",
+									"    pm.expect(bendteTicket.ticketType.ticketTypeName).to.eql(\"Economy\");",
+									"    pm.expect(bendteTicket.customer.customerId).to.eql(pm.collectionVariables.get(\"BendteId\"));",
+									"    pm.expect(bendteTicket.customer.firstName).to.eql(\"Bendte\");",
+									"    pm.expect(bendteTicket.customer.passportNumber).to.eql(274935127);",
+									"",
+									"    pm.expect(bendteTicket.flightroute.flightrouteId).to.eql(pm.collectionVariables.get(\"FlighrouteId\"));",
+									"    pm.expect(bendteTicket.flightroute.departureTime).to.eql(\"2024-12-23T13:48:02.69\");",
+									"    pm.expect(bendteTicket.flightroute.arrivalTime).to.eql(\"2024-12-23T14:25:00.691\");",
+									"",
+									"    pm.expect(bendteTicket.flightroute.departureAirport.airportId).to.eql(pm.collectionVariables.get(\"NyrupId\"));",
+									"    pm.expect(bendteTicket.flightroute.departureAirport.airportName).to.eql(\"Nyrup Intl. Lufthavn\");",
+									"    pm.expect(bendteTicket.flightroute.departureAirport.airportCity).to.eql(\"Nyrup\");",
+									"    pm.expect(bendteTicket.flightroute.departureAirport.municipality).to.eql(\"Sorø Kommune\");",
+									"    pm.expect(bendteTicket.flightroute.departureAirport.airportAbbreviation).to.eql(\"NRP\");",
+									"",
+									"    pm.expect(bendteTicket.flightroute.arrivalAirport.airportId).to.eql(pm.collectionVariables.get(\"VejenId\"));",
+									"    pm.expect(bendteTicket.flightroute.arrivalAirport.airportName).to.eql(\"Vejen Lufthavn\");",
+									"    pm.expect(bendteTicket.flightroute.arrivalAirport.airportCity).to.eql(\"Vejen\");",
+									"    pm.expect(bendteTicket.flightroute.arrivalAirport.municipality).to.eql(\"Vejen Kommune\");",
+									"    pm.expect(bendteTicket.flightroute.arrivalAirport.airportAbbreviation).to.eql(\"VJN\");",
+									"",
+									"    pm.expect(bendteTicket.flightroute.plane.planeId).to.eql(pm.collectionVariables.get(\"PlaneId\"));",
+									"    pm.expect(bendteTicket.flightroute.plane.planeDisplayName).to.eql(\"Boeing 747\");",
+									"",
+									"    pm.expect(jørgenTicket.luggage.length).to.eql(1);",
+									"    pm.expect(jørgenTicket.luggage[0].weight).to.eql(50);",
+									"    pm.expect(jørgenTicket.luggage[0].isCarryOn).to.eql(false);",
+									"",
+									"    pm.expect(bendteTicket.luggage.length).to.eql(2);",
+									"    const bendteLuggage1 = bendteTicket.luggage.find(l => l.weight === 40);",
+									"    pm.expect(bendteLuggage1).to.be.not.null;",
+									"    pm.expect(bendteLuggage1.isCarryOn).to.eql(false);",
+									"    const bendteLuggage2 = bendteTicket.luggage.find(l => l.weight === 10);",
+									"    pm.expect(bendteLuggage2).to.be.not.null;",
+									"    pm.expect(bendteLuggage2.isCarryOn).to.eql(true);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/Order/{{OrderId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"Order",
+								"{{OrderId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080/api/mssql",
+			"type": "default"
+		},
+		{
+			"key": "AirlineId",
+			"value": ""
+		},
+		{
+			"key": "VejenId",
+			"value": ""
+		},
+		{
+			"key": "NyrupId",
+			"value": ""
+		},
+		{
+			"key": "JørgenId",
+			"value": ""
+		},
+		{
+			"key": "BendteId",
+			"value": ""
+		},
+		{
+			"key": "OrderId",
+			"value": ""
+		},
+		{
+			"key": "PlaneId",
+			"value": ""
+		},
+		{
+			"key": "AirlineConfirmationNumber",
+			"value": ""
+		},
+		{
+			"key": "FlighrouteId",
+			"value": ""
+		},
+		{
+			"key": "FlightrouteId",
+			"value": ""
+		},
+		{
+			"key": "JørgenTicketId",
+			"value": ""
+		},
+		{
+			"key": "BendteTicketId",
+			"value": ""
+		},
+		{
+			"key": "JørgenLuggageId",
+			"value": ""
+		},
+		{
+			"key": "BendteLuggageId",
+			"value": ""
+		},
+		{
+			"key": "BendteCarryOnId",
+			"value": ""
+		}
+	]
+}
