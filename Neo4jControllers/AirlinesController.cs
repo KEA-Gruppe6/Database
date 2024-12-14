@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace Database_project.Controllers.Neo4j
+namespace Database_project.Neo4jControllers
 {
     [Route("neo4j/[controller]")]
     [ApiController]
@@ -22,7 +22,7 @@ namespace Database_project.Controllers.Neo4j
         public async Task<ActionResult<List<AirlineDTO>>> Get()
         {
             var airlines = await _airlineService.GetAllAirlinesAsync();
-            return  Ok(airlines);
+            return Ok(airlines);
         }
 
         // GET api/<AirlinesController>/5
