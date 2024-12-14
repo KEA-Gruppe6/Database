@@ -9,11 +9,12 @@ CREATE (ap3:Airport {AirportId: 3, AirportName: 'Airport 3', AirportCity: 'City 
 CREATE (ap4:Airport {AirportId: 4, AirportName: 'Airport 4', AirportCity: 'City 4', Municipality: 'Municipality 4', AirportAbbreviation: 'AP4'});
 
 // Create Customers
-CREATE (c1:Customer {CustomerId: 1, FirstName: 'John', LastName: 'Doe', PassportNumber: 123456});
-CREATE (c2:Customer {CustomerId: 2, FirstName: 'Jane', LastName: 'Smith', PassportNumber: 654321});
-CREATE (c3:Customer {CustomerId: 3, FirstName: 'Alice', LastName: 'Johnson', PassportNumber: 111222});
-CREATE (c4:Customer {CustomerId: 4, FirstName: 'Bob', LastName: 'Brown', PassportNumber: 333444});
-CREATE (c5:Customer {CustomerId: 5, FirstName: 'Charlie', LastName: 'Davis', PassportNumber: 555666});
+CREATE (c1:Customer {CustomerId: 1, FirstName: 'John', LastName: 'Doe', PassportNumber: 12345675});
+CREATE (c2:Customer {CustomerId: 2, FirstName: 'Jane', LastName: 'Smith', PassportNumber: 65432102});
+CREATE (c3:Customer {CustomerId: 3, FirstName: 'Alice', LastName: 'Johnson', PassportNumber: 11122215});
+CREATE (c4:Customer {CustomerId: 4, FirstName: 'Bob', LastName: 'Brown', PassportNumber: 33344445});
+CREATE (c5:Customer {CustomerId: 5, FirstName: 'Charlie', LastName: 'Davis', PassportNumber: 55566678});
+CREATE (c6:Customer {CustomerId: 6, FirstName: 'A.F. Asht', LastName: 'Kweery', PassportNumber: 98765457});
 
 // Create Planes
 CREATE (p1:Plane {PlaneId: 1, PlaneDisplayName: 'Plane 1'});
@@ -65,12 +66,12 @@ CREATE (t5:Ticket {TicketId: 105, Price: 350.00, TicketTypeId: 3, CustomerId: 5,
 CREATE (t6:Ticket {TicketId: 106, Price: 400.00, TicketTypeId: 1, CustomerId: 6, FlightrouteId: 3, OrderId: 3});
 
 // Create Tickets for Order 4
-CREATE (t7:Ticket {TicketId: 107, Price: 450.00, TicketTypeId: 2, CustomerId: 7, FlightrouteId: 4, OrderId: 4});
-CREATE (t8:Ticket {TicketId: 108, Price: 500.00, TicketTypeId: 3, CustomerId: 8, FlightrouteId: 4, OrderId: 4});
+CREATE (t7:Ticket {TicketId: 107, Price: 450.00, TicketTypeId: 2, CustomerId: 1, FlightrouteId: 4, OrderId: 4});
+CREATE (t8:Ticket {TicketId: 108, Price: 500.00, TicketTypeId: 3, CustomerId: 3, FlightrouteId: 4, OrderId: 4});
 
 // Create Tickets for Order 5
-CREATE (t9:Ticket {TicketId: 109, Price: 550.00, TicketTypeId: 1, CustomerId: 9, FlightrouteId: 5, OrderId: 5});
-CREATE (t10:Ticket {TicketId: 110, Price: 600.00, TicketTypeId: 2, CustomerId: 10, FlightrouteId: 5, OrderId: 5});
+CREATE (t9:Ticket {TicketId: 109, Price: 550.00, TicketTypeId: 1, CustomerId: 3, FlightrouteId: 5, OrderId: 5});
+CREATE (t10:Ticket {TicketId: 110, Price: 600.00, TicketTypeId: 2, CustomerId: 6, FlightrouteId: 5, OrderId: 5});
 
 // Create relationships between Orders and Tickets
 MATCH (o3:Order {OrderId: 3}), (t5:Ticket {TicketId: 105})
