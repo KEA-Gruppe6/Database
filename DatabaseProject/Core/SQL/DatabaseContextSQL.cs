@@ -40,7 +40,7 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbCont
         });
 
         modelBuilder.Entity<Customer>()
-            .ToTable(tb => tb.HasTrigger("trg_ValidatePassportNumber"));
+            .ToTable(tb => tb.UseSqlOutputClause(false));
 
         modelBuilder.Entity<Plane>()
             .HasOne(p => p.Airline)

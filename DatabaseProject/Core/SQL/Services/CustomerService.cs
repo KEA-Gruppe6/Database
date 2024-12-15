@@ -59,12 +59,6 @@ public class CustomerService : ICustomerService
     {
         await using var context = await _context.CreateDbContextAsync();
 
-        var existingCustomer = context.Customers.OrderByDescending(c => c.CustomerId).FirstOrDefault();
-        if (existingCustomer != null && existingCustomer.IsDeleted)
-        {
-            throw new InvalidOperationException($"Customer with ID {customer.CustomerId} is deleted.");
-        }
-
         await context.Customers.AddAsync(customer);
         await context.SaveChangesAsync();
 
