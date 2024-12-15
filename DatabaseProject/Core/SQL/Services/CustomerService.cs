@@ -31,6 +31,7 @@ public class CustomerService : ICustomerService
     {
         await using var context = await _context.CreateDbContextAsync();
 
+        // Get the last customer ID to compare with the new one after the trigger is executed (manual tracking)
         var existingCustomerId = context.Customers.OrderByDescending(c => c.CustomerId).FirstOrDefault().CustomerId;
 
         //Use raw SQL to operate with trigger in the database. Uses parameters to prevent SQL injection.
@@ -43,10 +44,12 @@ public class CustomerService : ICustomerService
         };
         await context.Database.ExecuteSqlRawAsync(sql, parameters);
 
+        // Get the new customer to return it as EF Core won't automatically update the entity when executing Raw SQL (manual tracking)
         var returnCustomer = await context.Customers
             .OrderByDescending(c => c.CustomerId)
             .FirstOrDefaultAsync(c => c.FirstName == customer.FirstName && c.LastName == customer.LastName && c.PassportNumber == customer.PassportNumber);
 
+        // Check if the new customer was created by comparing the last customer ID with the new one (manual tracking)
         if (existingCustomerId == returnCustomer.CustomerId)
         {
             throw new DbUpdateException("Customer was not created.");
