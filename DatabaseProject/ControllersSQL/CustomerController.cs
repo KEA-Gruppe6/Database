@@ -49,6 +49,10 @@ public class CustomerController : ControllerBase
         {
             return BadRequest(e.Message);
         }
+        catch (Microsoft.Data.SqlClient.SqlException sqlEx)
+        {
+            return BadRequest(sqlEx.Message);
+        }
         catch (Exception e)
         {
             return StatusCode(500, e.Message);
@@ -71,7 +75,7 @@ public class CustomerController : ControllerBase
             var createdCustomer = await _customerService.CreateCustomerEFAddAsync(customer);
             return CreatedAtAction(nameof(GetCustomer), new { id = createdCustomer.CustomerId }, createdCustomer);
         }
-        catch (DbUpdateException ex) when (ex.InnerException is Microsoft.Data.SqlClient.SqlException sqlEx && sqlEx.Message.Contains("Passport number must be exactly 9 characters long"))
+        catch (Microsoft.Data.SqlClient.SqlException sqlEx)
         {
             return BadRequest(sqlEx.Message);
         }
@@ -89,6 +93,7 @@ public class CustomerController : ControllerBase
             CustomerId = id,
             FirstName = updatedCustomerDTO.FirstName,
             LastName = updatedCustomerDTO.LastName,
+            PassportNumber = updatedCustomerDTO.PassportNumber,
         };
 
         try
@@ -99,6 +104,14 @@ public class CustomerController : ControllerBase
         catch (KeyNotFoundException e)
         {
             return NotFound(e.Message);
+        }
+        catch (Microsoft.Data.SqlClient.SqlException sqlEx)
+        {
+            return BadRequest(sqlEx.Message);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(500, e.Message);
         }
     }
 

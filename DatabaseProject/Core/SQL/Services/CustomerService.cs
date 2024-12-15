@@ -27,23 +27,23 @@ public class CustomerService : ICustomerService
     {
         await using var context = await _context.CreateDbContextAsync();
 
-        var existingCustomer = context.Customers.OrderByDescending(c => c.CustomerId).FirstOrDefault().CustomerId;
+        var existingCustomerId = context.Customers.OrderByDescending(c => c.CustomerId).FirstOrDefault().CustomerId;
 
         //Use raw SQL to operate with trigger in the database. Uses parameters to prevent SQL injection.
         var sql = "INSERT INTO Customers (FirstName, LastName, PassportNumber) VALUES (@FirstName, @LastName, @PassportNumber)";
         var parameters = new[]
         {
-                new SqlParameter("@FirstName", customer.FirstName),
-                new SqlParameter("@LastName", customer.LastName),
-                new SqlParameter("@PassportNumber", customer.PassportNumber),
-            };
+            new SqlParameter("@FirstName", customer.FirstName),
+            new SqlParameter("@LastName", customer.LastName),
+            new SqlParameter("@PassportNumber", customer.PassportNumber),
+        };
         await context.Database.ExecuteSqlRawAsync(sql, parameters);
 
         var returnCustomer = await context.Customers
             .OrderByDescending(c => c.CustomerId)
             .FirstOrDefaultAsync(c => c.FirstName == customer.FirstName && c.LastName == customer.LastName && c.PassportNumber == customer.PassportNumber);
 
-        if (existingCustomer == returnCustomer.CustomerId)
+        if (existingCustomerId == returnCustomer.CustomerId)
         {
             throw new DbUpdateException("Customer was not created.");
         }
@@ -68,21 +68,32 @@ public class CustomerService : ICustomerService
     {
         await using var context = await _context.CreateDbContextAsync();
 
-        // Retrieve the existing customer from the database
-        var existingCustomer = await context.Customers.FindAsync(customer.CustomerId);
+        var existingCustomer = await context.Customers.FirstOrDefaultAsync(c => c.CustomerId == customer.CustomerId);
         if (existingCustomer == null)
         {
-            throw new KeyNotFoundException($"Customer with ID {customer.CustomerId} not found.");
+            throw new KeyNotFoundException("Customer not found.");
         }
 
-        existingCustomer.FirstName = customer.FirstName;
-        existingCustomer.LastName = customer.LastName;
-        existingCustomer.PassportNumber = customer.PassportNumber;
+        //Use raw SQL to operate with trigger in the database. Uses parameters to prevent SQL injection.
+        var sql = "UPDATE Customers SET FirstName = @FirstName, LastName = @LastName, PassportNumber = @PassportNumber WHERE CustomerId = @CustomerId";
+        var parameters = new[]
+        {
+            new SqlParameter("@FirstName", customer.FirstName),
+            new SqlParameter("@LastName", customer.LastName),
+            new SqlParameter("@PassportNumber", customer.PassportNumber),
+            new SqlParameter("@CustomerId", customer.CustomerId)
+        };
+        await context.Database.ExecuteSqlRawAsync(sql, parameters);
 
-        var returnEntityEntry = context.Customers.Update(existingCustomer);
-        await context.SaveChangesAsync();
+        // Reload the customer to ensure any changes made by the trigger are reflected
+        context.Entry(existingCustomer).State = EntityState.Detached;
+        var updatedCustomer = await context.Customers.FirstOrDefaultAsync(c => c.CustomerId == customer.CustomerId);
+        if (existingCustomer == updatedCustomer)
+        {
+            throw new DbUpdateException("Customer was not updated.");
+        }
 
-        return returnEntityEntry.Entity;
+        return updatedCustomer;
     }
 
     public async Task<Customer> DeleteCustomerAsync(long id)
