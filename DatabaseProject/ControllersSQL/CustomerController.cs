@@ -20,13 +20,20 @@ public class CustomerController : ControllerBase
     [HttpGet("{id:long}", Name = "Customer")]
     public async Task<ActionResult<Customer?>> GetCustomer(long id)
     {
-        var customer = await _customerService.GetCustomerByIdAsync(id);
-        if (customer == null)
+        try
         {
-            return NotFound($"Customer with ID {id} not found.");
-        }
+            var customer = await _customerService.GetCustomerByIdAsync(id);
+            if (customer == null)
+            {
+                return NotFound($"Customer with ID {id} not found.");
+            }
 
-        return Ok(customer);
+            return Ok(customer);
+        }
+        catch (InvalidOperationException e)
+        {
+            return NotFound(e.Message);
+        }
     }
 
     [HttpPost("create-raw-sql")]
@@ -49,9 +56,9 @@ public class CustomerController : ControllerBase
         {
             return BadRequest(e.Message);
         }
-        catch (Microsoft.Data.SqlClient.SqlException sqlEx)
+        catch (Exception e) when (e is Microsoft.Data.SqlClient.SqlException || e is InvalidOperationException)
         {
-            return BadRequest(sqlEx.Message);
+            return BadRequest(e.Message);
         }
         catch (Exception e)
         {
@@ -75,9 +82,9 @@ public class CustomerController : ControllerBase
             var createdCustomer = await _customerService.CreateCustomerEFAddAsync(customer);
             return CreatedAtAction(nameof(GetCustomer), new { id = createdCustomer.CustomerId }, createdCustomer);
         }
-        catch (Microsoft.Data.SqlClient.SqlException sqlEx)
+        catch (Exception e) when (e is Microsoft.Data.SqlClient.SqlException || e is InvalidOperationException)
         {
-            return BadRequest(sqlEx.Message);
+            return BadRequest(e.Message);
         }
         catch (Exception e)
         {
@@ -105,9 +112,9 @@ public class CustomerController : ControllerBase
         {
             return NotFound(e.Message);
         }
-        catch (Microsoft.Data.SqlClient.SqlException sqlEx)
+        catch (Exception e) when (e is Microsoft.Data.SqlClient.SqlException || e is InvalidOperationException)
         {
-            return BadRequest(sqlEx.Message);
+            return BadRequest(e.Message);
         }
         catch (Exception e)
         {

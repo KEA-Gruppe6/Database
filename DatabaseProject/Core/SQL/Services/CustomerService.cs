@@ -18,7 +18,11 @@ public class CustomerService : ICustomerService
     public async Task<Customer?> GetCustomerByIdAsync(long id)
     {
         await using var context = await _context.CreateDbContextAsync();
-        var customer = await context.Customers.FirstOrDefaultAsync(a => a.CustomerId == id);
+        var customer = await context.Customers.FirstOrDefaultAsync(a => a.CustomerId == id) ?? null;
+        if (customer != null && customer.IsDeleted)
+        {
+            throw new InvalidOperationException($"Customer with ID {id} is deleted.");
+        }
 
         return customer;
     }
@@ -55,6 +59,12 @@ public class CustomerService : ICustomerService
     {
         await using var context = await _context.CreateDbContextAsync();
 
+        var existingCustomer = context.Customers.OrderByDescending(c => c.CustomerId).FirstOrDefault();
+        if (existingCustomer != null && existingCustomer.IsDeleted)
+        {
+            throw new InvalidOperationException($"Customer with ID {customer.CustomerId} is deleted.");
+        }
+
         await context.Customers.AddAsync(customer);
         await context.SaveChangesAsync();
 
@@ -72,6 +82,10 @@ public class CustomerService : ICustomerService
         if (existingCustomer == null)
         {
             throw new KeyNotFoundException("Customer not found.");
+        }
+        if (existingCustomer.IsDeleted)
+        {
+            throw new InvalidOperationException($"Customer with ID {customer.CustomerId} is deleted.");
         }
 
         //Use raw SQL to operate with trigger in the database. Uses parameters to prevent SQL injection.
@@ -103,7 +117,11 @@ public class CustomerService : ICustomerService
         var customer = await context.Customers.FindAsync(id);
         if (customer == null)
         {
-            throw new KeyNotFoundException($"Customer with ID {id} not found.");
+            throw new KeyNotFoundException("Customer not found.");
+        }
+        if (customer.IsDeleted)
+        {
+            throw new InvalidOperationException($"Customer with ID {id} was already deleted.");
         }
         var returnEntityEntry = context.Customers.Remove(customer);
         await context.SaveChangesAsync();

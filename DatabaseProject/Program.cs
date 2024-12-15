@@ -143,6 +143,12 @@ using (var scope = app.Services.CreateScope())
     dbContext.Database.ExecuteSqlRaw("IF OBJECT_ID('trg_ValidatePassportNumber', 'TR') IS NOT NULL DROP TRIGGER trg_ValidatePassportNumber;");
     dbContext.Database.ExecuteSqlRaw(sqlQuery);
 
+    // Add customer soft delete trigger 
+    sqlFilePath = "SQL_Query/customersoftdeletetrigger.sql";
+    sqlQuery = File.ReadAllText(sqlFilePath);
+    dbContext.Database.ExecuteSqlRaw("IF OBJECT_ID('trg_SoftDeleteCustomer', 'TR') IS NOT NULL DROP TRIGGER trg_SoftDeleteCustomer;");
+    dbContext.Database.ExecuteSqlRaw(sqlQuery);
+
     // Run seed SQL query
     sqlFilePath = "SQL_Query/populatedb.sql";
     sqlQuery = File.ReadAllText(sqlFilePath);
