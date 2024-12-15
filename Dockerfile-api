@@ -22,6 +22,7 @@ RUN mkdir -p SQL_Query
 COPY DatabaseProject/SQL_Query/populatedb.sql /app/SQL_Query
 COPY DatabaseProject/SQL_Query/passportlengthtrigger.sql /app/SQL_Query
 COPY DatabaseProject/SQL_Query/customersoftdeletetrigger.sql /app/SQL_Query
+COPY DatabaseProject/SQL_Query/addroles.sql /app/SQL_Query
 
 ENV ASPNETCORE_URLS=http://*:8080
 

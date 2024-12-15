@@ -153,6 +153,11 @@ using (var scope = app.Services.CreateScope())
     sqlFilePath = "SQL_Query/populatedb.sql";
     sqlQuery = File.ReadAllText(sqlFilePath);
     dbContext.Database.ExecuteSqlRaw(sqlQuery);
+
+    // Add specific roles
+    sqlFilePath = "SQL_Query/addroles.sql";
+    sqlQuery = File.ReadAllText(sqlFilePath);
+    dbContext.Database.ExecuteSqlRaw(sqlQuery);
     // SQL Server migration ends
 
     // MongoDB migration starts
