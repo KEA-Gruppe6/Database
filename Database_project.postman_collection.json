@@ -939,7 +939,7 @@
 									"    pm.expect(bendteTicket.customer.firstName).to.eql(\"Bendte\");",
 									"    pm.expect(bendteTicket.customer.passportNumber).to.eql(274935127);",
 									"",
-									"    pm.expect(bendteTicket.flightroute.flightrouteId).to.eql(pm.collectionVariables.get(\"FlighrouteId\"));",
+									"    pm.expect(bendteTicket.flightroute.flightrouteId).to.eql(pm.collectionVariables.get(\"FlightrouteId\"));",
 									"    pm.expect(bendteTicket.flightroute.departureTime).to.eql(\"2024-12-23T13:48:02.69\");",
 									"    pm.expect(bendteTicket.flightroute.arrivalTime).to.eql(\"2024-12-23T14:25:00.691\");",
 									"",
@@ -1031,10 +1031,6 @@
 		},
 		{
 			"key": "AirlineConfirmationNumber",
-			"value": ""
-		},
-		{
-			"key": "FlighrouteId",
 			"value": ""
 		},
 		{
