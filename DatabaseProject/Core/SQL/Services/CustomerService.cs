@@ -37,20 +37,20 @@ public class CustomerService : ICustomerService
         await using var context = await _context.CreateDbContextAsync();
 
         // Get the last customer ID to compare with the new one after the trigger is executed (manual tracking)
-        // Uses raw SQL to access the Costumers table instead of the view, CustomersDeletedIsNull, from EF Core
+        // Uses raw SQL to access the Customers table instead of the view, CustomersDeletedIsNull, from EF Core
         var existingCustomer = await context.Customers
-                .FromSqlRaw("SELECT TOP 1 * FROM Customers WHERE FirstName ORDER BY CustomerId DESC")
+                .FromSqlRaw("SELECT TOP 1 * FROM Customers ORDER BY CustomerId DESC")
                 .FirstOrDefaultAsync();
         var existingCustomerId = existingCustomer?.CustomerId ?? 0;
 
-        //Use raw SQL to operate with trigger in the database. Uses parameters to prevent SQL injection.
+        // Use raw SQL to operate with trigger in the database. Uses parameters to prevent SQL injection.
         var sql = "INSERT INTO Customers (FirstName, LastName, PassportNumber) VALUES (@FirstName, @LastName, @PassportNumber)";
         var parameters = new[]
         {
-            new SqlParameter("@FirstName", customer.FirstName),
-            new SqlParameter("@LastName", customer.LastName),
-            new SqlParameter("@PassportNumber", customer.PassportNumber),
-        };
+        new SqlParameter("@FirstName", customer.FirstName),
+        new SqlParameter("@LastName", customer.LastName),
+        new SqlParameter("@PassportNumber", customer.PassportNumber),
+    };
         await context.Database.ExecuteSqlRawAsync(sql, parameters);
 
         // Get the new customer to return it as EF Core won't automatically update the entity when executing Raw SQL (manual tracking)
