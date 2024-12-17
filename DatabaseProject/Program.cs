@@ -126,6 +126,7 @@ builder.Services.AddScoped<Database_project.Neo4j.Services.LuggageService>();
 builder.Services.AddScoped<Database_project.Neo4j.Services.FlightrouteService>();
 builder.Services.AddScoped<Database_project.Neo4j.Services.AirportService>();
 builder.Services.AddScoped<Database_project.Neo4j.Services.PlaneService>();
+builder.Services.AddScoped<Database_project.Neo4j.Services.MaintenanceService>();
 
 // Register AddUsers as scoped service
 builder.Services.AddScoped<AddUsers>();
