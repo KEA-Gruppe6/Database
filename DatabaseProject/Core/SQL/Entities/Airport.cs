@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Database_project.Core.SQL.Entities;
 
@@ -10,6 +11,7 @@ public class Airport
     public string AirportCity { get; set; }
     public string Municipality { get; set; }
     public string AirportAbbreviation { get; set; }
+    [JsonIgnore]
     public ICollection<Maintenance> Maintenances { get; set; }
 
 }
