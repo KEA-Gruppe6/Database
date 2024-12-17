@@ -1,3 +1,4 @@
+using System.Data.SqlTypes;
 using Database_project.Core.SQL;
 using Database_project.Core.SQL.Entities;
 using Database_project.Core.SQL.Interfaces;
@@ -18,13 +19,17 @@ public class CustomerService : ICustomerService
     public async Task<Customer?> GetCustomerByIdAsync(long id)
     {
         await using var context = await _context.CreateDbContextAsync();
-        var customer = await context.Customers.FirstOrDefaultAsync(a => a.CustomerId == id) ?? null;
-        if (customer != null && customer.IsDeleted)
+        try
         {
-            throw new InvalidOperationException($"Customer with ID {id} is deleted.");
+            var customer = await context.Customers.FirstOrDefaultAsync(a => a.CustomerId == id) ?? null;
+            return customer;
+        }
+        catch (SqlNullValueException)
+        {
+            return null;
         }
 
-        return customer;
+
     }
 
     public async Task<Customer> CreateCustomerRawSQLAsync(Customer customer)
@@ -32,7 +37,11 @@ public class CustomerService : ICustomerService
         await using var context = await _context.CreateDbContextAsync();
 
         // Get the last customer ID to compare with the new one after the trigger is executed (manual tracking)
-        var existingCustomerId = context.Customers.OrderByDescending(c => c.CustomerId).FirstOrDefault().CustomerId;
+        // Uses raw SQL to access the Costumers table instead of the view, CustomersDeletedIsNull, from EF Core
+        var existingCustomer = await context.Customers
+                .FromSqlRaw("SELECT TOP 1 * FROM Customers WHERE FirstName ORDER BY CustomerId DESC")
+                .FirstOrDefaultAsync();
+        var existingCustomerId = existingCustomer?.CustomerId ?? 0;
 
         //Use raw SQL to operate with trigger in the database. Uses parameters to prevent SQL injection.
         var sql = "INSERT INTO Customers (FirstName, LastName, PassportNumber) VALUES (@FirstName, @LastName, @PassportNumber)";
@@ -75,14 +84,14 @@ public class CustomerService : ICustomerService
     {
         await using var context = await _context.CreateDbContextAsync();
 
-        var existingCustomer = await context.Customers.FirstOrDefaultAsync(c => c.CustomerId == customer.CustomerId);
+        // Use Raw SQL to prevent creating a new entity with nullable fields
+        var existingCustomer = await context.Customers
+            .FromSqlRaw("SELECT * FROM CustomersDeletedIsNull WHERE FirstName IS NOT NULL AND CustomerId = {0}", customer.CustomerId)
+            .FirstOrDefaultAsync();
+
         if (existingCustomer == null)
         {
             throw new KeyNotFoundException("Customer not found.");
-        }
-        if (existingCustomer.IsDeleted)
-        {
-            throw new InvalidOperationException($"Customer with ID {customer.CustomerId} is deleted.");
         }
 
         //Use raw SQL to operate with trigger in the database. Uses parameters to prevent SQL injection.
@@ -115,10 +124,6 @@ public class CustomerService : ICustomerService
         if (customer == null)
         {
             throw new KeyNotFoundException("Customer not found.");
-        }
-        if (customer.IsDeleted)
-        {
-            throw new InvalidOperationException($"Customer with ID {id} was already deleted.");
         }
         var returnEntityEntry = context.Customers.Remove(customer);
         await context.SaveChangesAsync();

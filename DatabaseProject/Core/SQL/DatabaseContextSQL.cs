@@ -39,8 +39,13 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbCont
                 .OnDelete(DeleteBehavior.NoAction);
         });
 
-        modelBuilder.Entity<Customer>()
-            .ToTable(tb => tb.UseSqlOutputClause(false));
+        modelBuilder.Entity<Customer>(entity =>
+        {
+            entity.ToTable("Customers");
+            entity.ToView("CustomersDeletedIsNull");
+            entity.HasKey(c => c.CustomerId);
+            entity.ToTable(tb => tb.UseSqlOutputClause(false));
+        });
 
         modelBuilder.Entity<Plane>()
             .HasOne(p => p.Airline)

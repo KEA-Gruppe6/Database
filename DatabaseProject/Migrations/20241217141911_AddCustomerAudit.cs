@@ -11,6 +11,10 @@ namespace Database_project.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropColumn(
+                name: "IsDeleted",
+                table: "Customers");
+
             migrationBuilder.AddColumn<string>(
                 name: "CreatedBy",
                 table: "Customers",
@@ -58,6 +62,13 @@ namespace Database_project.Migrations
             migrationBuilder.DropColumn(
                 name: "ModifiedDate",
                 table: "Customers");
+
+            migrationBuilder.AddColumn<bool>(
+                name: "IsDeleted",
+                table: "Customers",
+                type: "bit",
+                nullable: false,
+                defaultValue: false);
         }
     }
 }

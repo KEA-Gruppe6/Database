@@ -130,6 +130,11 @@ public class CustomerController : ControllerBase
             var result = await _customerService.DeleteCustomerAsync(id);
             return Ok(result);
         }
+        catch (DbUpdateException e)
+        {
+            var errorMessage = e.InnerException?.Message ?? e.Message;
+            return BadRequest(errorMessage);
+        }
         catch (Exception e)
         {
             return BadRequest(e.Message);

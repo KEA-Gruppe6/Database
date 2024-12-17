@@ -11,8 +11,6 @@ public class Customer
     public string LastName { get; set; }
     public int PassportNumber { get; set; }
     [JsonIgnore]
-    public bool IsDeleted { get; set; } // Soft delete column
-    [JsonIgnore]
     public DateTime CreatedDate { get; set; } // Audit column
     [JsonIgnore]
     public string CreatedBy { get; set; } // Audit column

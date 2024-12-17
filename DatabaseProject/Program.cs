@@ -143,18 +143,12 @@ using (var scope = app.Services.CreateScope())
     dbContext.Database.ExecuteSqlRaw("IF OBJECT_ID('trg_ValidatePassportNumber', 'TR') IS NOT NULL DROP TRIGGER trg_ValidatePassportNumber;");
     dbContext.Database.ExecuteSqlRaw(sqlQuery);
 
-    // Add customer soft delete trigger 
-    sqlFilePath = "SQL_Query/customersoftdeletetrigger.sql";
-    sqlQuery = File.ReadAllText(sqlFilePath);
-    dbContext.Database.ExecuteSqlRaw("IF OBJECT_ID('trg_SoftDeleteCustomer', 'TR') IS NOT NULL DROP TRIGGER trg_SoftDeleteCustomer;");
-    dbContext.Database.ExecuteSqlRaw(sqlQuery);
-
     // Add customer audit trigger
     sqlFilePath = "SQL_Query/customeraudittrigger.sql";
     sqlQuery = File.ReadAllText(sqlFilePath);
-    dbContext.Database.ExecuteSqlRaw("IF OBJECT_ID('trgAuditCustomerInsert', 'TR') IS NOT NULL DROP TRIGGER trgAuditCustomerInsert;");
-    dbContext.Database.ExecuteSqlRaw("IF OBJECT_ID('trgAuditCustomerUpdate', 'TR') IS NOT NULL DROP TRIGGER trgAuditCustomerUpdate;");
-    dbContext.Database.ExecuteSqlRaw("IF OBJECT_ID('trgAuditCustomerDelete', 'TR') IS NOT NULL DROP TRIGGER trgAuditCustomerDelete;");
+    dbContext.Database.ExecuteSqlRaw("IF OBJECT_ID('trg_AuditCustomerInsert', 'TR') IS NOT NULL DROP TRIGGER trg_AuditCustomerInsert;");
+    dbContext.Database.ExecuteSqlRaw("IF OBJECT_ID('trg_AuditCustomerUpdate', 'TR') IS NOT NULL DROP TRIGGER trg_AuditCustomerUpdate;");
+    dbContext.Database.ExecuteSqlRaw("IF OBJECT_ID('trg_AuditCustomerDelete', 'TR') IS NOT NULL DROP TRIGGER trg_AuditCustomerDelete;");
     var sqlCommands = sqlQuery.Split(new[] { "GO" }, StringSplitOptions.RemoveEmptyEntries);
 
     foreach (var command in sqlCommands)
