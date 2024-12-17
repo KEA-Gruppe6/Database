@@ -1,4 +1,4 @@
-﻿using Database_project.Core.Entities;
+﻿using Database_project.Neo4j.Entities;
 using Database_project.Neo4j.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Database_project.Neo4jControllers
 {
-    [Route("neo4j/[controller]")]
+    [Route("api/neo4j/[controller]")]
     [ApiController]
     public class OrdersController : ControllerBase
     {
@@ -22,31 +22,6 @@ namespace Database_project.Neo4jControllers
         {
             var order = await _orderService.GetAllOrdersAsync();
             return Ok(order);
-        }
-
-        // GET api/<OrdersController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<OrdersController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/<OrdersController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<OrdersController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
         }
     }
 }

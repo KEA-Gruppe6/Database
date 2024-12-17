@@ -1,4 +1,4 @@
-﻿using Database_project.Core.DTOs;
+﻿using Database_project.Neo4j.Entities;
 using Neo4j.Driver;
 
 
@@ -11,7 +11,7 @@ namespace Database_project.Neo4j.Services
         {
             _driver = driver;
         }
-        public async Task<AirlineDTO?> GetAirlineByIdAsync(long id)
+        public async Task<Airline?> GetAirlineByIdAsync(long id)
         {
             var (queryResults, _) = await _driver
             .ExecutableQuery(@"MATCH (a:Airline)-[:OWNS]->(p:Plane)
@@ -22,13 +22,13 @@ namespace Database_project.Neo4j.Services
             .ExecuteAsync();
 
             return queryResults
-                .Select(record => new AirlineDTO
+                .Select(record => new Airline
                 {
                     AirlineId = record["AirlineId"].As<long>(),
                     AirlineName = record["AirlineName"].As<string>(),
                     Planes = record["Planes"]
                         .As<List<IDictionary<string, object>>>()
-                        .Select(plane => new PlaneDTO
+                        .Select(plane => new Plane
                         {
                             PlaneId = (long)plane["PlaneId"],
                             PlaneDisplayName = (string)plane["PlaneDisplayName"]
@@ -38,7 +38,7 @@ namespace Database_project.Neo4j.Services
                 .SingleOrDefault();
         }
 
-        public async Task<List<AirlineDTO>> GetAllAirlinesAsync()
+        public async Task<List<Airline>> GetAllAirlinesAsync()
         {
             var (queryResults, _) = await _driver
                 .ExecutableQuery(@"
@@ -48,13 +48,13 @@ namespace Database_project.Neo4j.Services
                 .ExecuteAsync();
 
             return queryResults
-                .Select(record => new AirlineDTO
+                .Select(record => new Airline
                 {
                     AirlineId = record["AirlineId"].As<long>(),
                     AirlineName = record["AirlineName"].As<string>(),
                     Planes = record["Planes"]
                         .As<List<IDictionary<string, object>>>()
-                        .Select(plane => new PlaneDTO
+                        .Select(plane => new Plane
                         {
                             PlaneId = (long)plane["PlaneId"],
                             PlaneDisplayName = (string)plane["PlaneDisplayName"]
@@ -64,7 +64,7 @@ namespace Database_project.Neo4j.Services
                 .ToList();
         }
 
-        public async Task AddAirlineAsync(AirlineDTO airline)
+        public async Task AddAirlineAsync(Airline airline)
         {
             IAsyncSession session = _driver.AsyncSession();
             try
@@ -123,7 +123,7 @@ namespace Database_project.Neo4j.Services
         }
 
 
-        public async Task UpdateAirlineAsync(long id, AirlineDTO updatedAirline)
+        public async Task UpdateAirlineAsync(long id, Airline updatedAirline)
         {
             IAsyncSession session = _driver.AsyncSession();
             try
