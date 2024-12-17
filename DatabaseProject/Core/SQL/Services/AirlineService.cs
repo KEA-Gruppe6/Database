@@ -26,7 +26,7 @@ public class AirlineService : IAirlineService
 
         if (airline == null)
         {
-            throw new KeyNotFoundException($"Airline with ID {id} not found.");
+            return null;
         }
 
         //Map Airline object to AirlineDTO object
