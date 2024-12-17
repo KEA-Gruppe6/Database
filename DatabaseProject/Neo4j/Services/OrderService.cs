@@ -1,4 +1,4 @@
-﻿using Database_project.Core.Entities;
+﻿using Database_project.Neo4j.Entities;
 using Neo4j.Driver;
 
 namespace Database_project.Neo4j.Services

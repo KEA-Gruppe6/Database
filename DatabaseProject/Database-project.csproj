@@ -22,12 +22,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Neo4j\Enitities\" />
       <Folder Include="Neo4j\CypherScripts\" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Neo4j\Enitities\" />
       <Folder Include="Neo4j\CypherScripts\" />
     </ItemGroup>
 

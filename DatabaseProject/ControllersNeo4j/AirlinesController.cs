@@ -1,4 +1,4 @@
-﻿using Database_project.Core.DTOs;
+﻿using Database_project.Neo4j.Entities;
 using Database_project.Neo4j.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Database_project.Neo4jControllers
 {
-    [Route("neo4j/[controller]")]
+    [Route("api/neo4j/[controller]")]
     [ApiController]
     public class AirlinesController : ControllerBase
     {
@@ -19,7 +19,7 @@ namespace Database_project.Neo4jControllers
         // GET: api/<AirlinesController>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<AirlineDTO>>> Get()
+        public async Task<ActionResult<List<Airline>>> Get()
         {
             var airlines = await _airlineService.GetAllAirlinesAsync();
             return Ok(airlines);
@@ -29,7 +29,7 @@ namespace Database_project.Neo4jControllers
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<ActionResult<AirlineDTO>> Get(long id)
+        public async Task<ActionResult<Airline>> Get(long id)
         {
             var airline = await _airlineService.GetAirlineByIdAsync(id);
             return Ok(airline);
@@ -37,14 +37,14 @@ namespace Database_project.Neo4jControllers
 
         // POST api/<AirlinesController>
         [HttpPost]
-        public async Task Post([FromBody] AirlineDTO airline)
+        public async Task Post([FromBody] Airline airline)
         {
             await _airlineService.AddAirlineAsync(airline);
         }
 
         // PUT api/<AirlinesController>/5
         [HttpPut("{id}")]
-        public async void Put(long id, [FromBody] AirlineDTO value)
+        public async void Put(long id, [FromBody] Airline value)
         {
             await _airlineService.UpdateAirlineAsync(id, value);
         }
