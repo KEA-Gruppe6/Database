@@ -21,6 +21,7 @@ CREATE (p1:Plane {PlaneId: 1, PlaneDisplayName: 'Plane 1'});
 CREATE (p2:Plane {PlaneId: 2, PlaneDisplayName: 'Plane 2'});
 CREATE (p3:Plane {PlaneId: 3, PlaneDisplayName: 'Plane 3'});
 CREATE (p4:Plane {PlaneId: 4, PlaneDisplayName: 'Plane 4'});
+CREATE (p5:Plane {PlaneId: 5, PlaneDisplayName: 'Plane 5'});
 
 // Create Orders
 CREATE (o1:Order {OrderId: 1, AirlineConfirmationNumber: 'CONF12345'});
@@ -99,17 +100,17 @@ CREATE (t5)-[:ASSIGNED_TO]->(c5);
 MATCH (t6:Ticket {TicketId: 106}), (c6:Customer {CustomerId: 6})
 CREATE (t6)-[:ASSIGNED_TO]->(c6);
 
-MATCH (t7:Ticket {TicketId: 107}), (c7:Customer {CustomerId: 7})
-CREATE (t7)-[:ASSIGNED_TO]->(c7);
+MATCH (t7:Ticket {TicketId: 107}), (c1:Customer {CustomerId: 1})
+CREATE (t7)-[:ASSIGNED_TO]->(c1);
 
-MATCH (t8:Ticket {TicketId: 108}), (c8:Customer {CustomerId: 8})
-CREATE (t8)-[:ASSIGNED_TO]->(c8);
+MATCH (t8:Ticket {TicketId: 108}), (c3:Customer {CustomerId: 3})
+CREATE (t8)-[:ASSIGNED_TO]->(c3);
 
-MATCH (t9:Ticket {TicketId: 109}), (c9:Customer {CustomerId: 9})
-CREATE (t9)-[:ASSIGNED_TO]->(c9);
+MATCH (t9:Ticket {TicketId: 109}), (c3:Customer {CustomerId: 3})
+CREATE (t9)-[:ASSIGNED_TO]->(c3);
 
-MATCH (t10:Ticket {TicketId: 110}), (c10:Customer {CustomerId: 10})
-CREATE (t10)-[:ASSIGNED_TO]->(c10);
+MATCH (t10:Ticket {TicketId: 110}), (c6:Customer {CustomerId: 6})
+CREATE (t10)-[:ASSIGNED_TO]->(c6);
 
 // Create relationships between Tickets and Flightroutes
 MATCH (t5:Ticket {TicketId: 105}), (fr3:Flightroute {FlightrouteId: 3})
@@ -188,6 +189,9 @@ CREATE (p3)-[:BELONGS_TO]->(a1);
 MATCH (p4:Plane {PlaneId: 4}), (a1:Airline {AirlineId: 1})
 CREATE (p4)-[:BELONGS_TO]->(a1);
 
+MATCH (p5:Plane {PlaneId: 5}), (a1:Airline {AirlineId: 1})
+CREATE (p5)-[:BELONGS_TO]->(a1);
+
 // Create relationships between Tickets and Customers
 MATCH (t1:Ticket {TicketId: 101}), (c1:Customer {CustomerId: 1})
 CREATE (t1)-[:ASSIGNED_TO]->(c1);
@@ -244,10 +248,10 @@ CREATE (fr4)-[:USES_PLANE]->(p4)
 CREATE (fr4)-[:DEPARTS_FROM]->(ap4)
 CREATE (fr4)-[:ARRIVES_AT]->(ap3);
 
-MATCH (fr5:Flightroute {FlightrouteId: 5}), (p5:Plane {PlaneId: 5}), (ap5:Airport {AirportId: 5}), (ap6:Airport {AirportId: 6})
+MATCH (fr5:Flightroute {FlightrouteId: 5}), (p5:Plane {PlaneId: 5}), (ap4:Airport {AirportId: 4}), (ap1:Airport {AirportId: 1})
 CREATE (fr5)-[:USES_PLANE]->(p5)
-CREATE (fr5)-[:DEPARTS_FROM]->(ap5)
-CREATE (fr5)-[:ARRIVES_AT]->(ap6);
+CREATE (fr5)-[:DEPARTS_FROM]->(ap4)
+CREATE (fr5)-[:ARRIVES_AT]->(ap1);
 
 MATCH (fr6:Flightroute {FlightrouteId: 6}), (p6:Plane {PlaneId: 6}), (ap6:Airport {AirportId: 6}), (ap5:Airport {AirportId: 5})
 CREATE (fr6)-[:USES_PLANE]->(p6)
