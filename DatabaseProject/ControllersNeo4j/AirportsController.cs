@@ -6,10 +6,10 @@ namespace Database_project.Neo4jControllers
 {
     [Route("api/neo4j/[controller]")]
     [ApiController]
-    public class AirportController : ControllerBase
+    public class AirportsController : ControllerBase
     {
         private readonly AirportService _airportService;
-        public AirportController(AirportService airportService)
+        public AirportsController(AirportService airportService)
         {
             _airportService = airportService;
         }

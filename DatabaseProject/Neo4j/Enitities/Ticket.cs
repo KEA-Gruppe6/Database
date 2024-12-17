@@ -14,8 +14,6 @@ public class Ticket
     public Customer Customer { get; set; }
 
     public Flightroute Flightroute { get; set; }
-    [JsonIgnore]
-    public Order Order { get; set; }
 
     public ICollection<Luggage> Luggage { get; set; }
 }
