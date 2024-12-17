@@ -12,4 +12,12 @@ public class Customer
     public int PassportNumber { get; set; }
     [JsonIgnore]
     public bool IsDeleted { get; set; } // Soft delete column
+    [JsonIgnore]
+    public DateTime CreatedDate { get; set; } // Audit column
+    [JsonIgnore]
+    public string CreatedBy { get; set; } // Audit column
+    [JsonIgnore]
+    public DateTime? ModifiedDate { get; set; } // Audit column
+    [JsonIgnore]
+    public string? ModifiedBy { get; set; } // Audit column
 }

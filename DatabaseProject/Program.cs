@@ -149,6 +149,19 @@ using (var scope = app.Services.CreateScope())
     dbContext.Database.ExecuteSqlRaw("IF OBJECT_ID('trg_SoftDeleteCustomer', 'TR') IS NOT NULL DROP TRIGGER trg_SoftDeleteCustomer;");
     dbContext.Database.ExecuteSqlRaw(sqlQuery);
 
+    // Add customer audit trigger
+    sqlFilePath = "SQL_Query/customeraudittrigger.sql";
+    sqlQuery = File.ReadAllText(sqlFilePath);
+    dbContext.Database.ExecuteSqlRaw("IF OBJECT_ID('trgAuditCustomerInsert', 'TR') IS NOT NULL DROP TRIGGER trgAuditCustomerInsert;");
+    dbContext.Database.ExecuteSqlRaw("IF OBJECT_ID('trgAuditCustomerUpdate', 'TR') IS NOT NULL DROP TRIGGER trgAuditCustomerUpdate;");
+    dbContext.Database.ExecuteSqlRaw("IF OBJECT_ID('trgAuditCustomerDelete', 'TR') IS NOT NULL DROP TRIGGER trgAuditCustomerDelete;");
+    var sqlCommands = sqlQuery.Split(new[] { "GO" }, StringSplitOptions.RemoveEmptyEntries);
+
+    foreach (var command in sqlCommands)
+    {
+        dbContext.Database.ExecuteSqlRaw(command);
+    }
+
     // Run seed SQL query
     sqlFilePath = "SQL_Query/populatedb.sql";
     sqlQuery = File.ReadAllText(sqlFilePath);
