@@ -5,6 +5,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Database_project.Core.Services
 {
+    public class LuggageDisplay
+    {
+        public bool IsCarryOn { get; set; }
+        public double Weight { get; set; }
+    }
+    
     public class LuggageService : ILuggageService
     {
         private readonly IDbContextFactory<DatabaseContext> _context;
@@ -80,6 +86,15 @@ namespace Database_project.Core.Services
             await context.SaveChangesAsync();
 
             return returnEntityEntry.Entity;
+        }
+
+        public async Task<List<LuggageDisplay>> GetAllLuggageForDisplayAsync()
+        {
+            await using var context = await _context.CreateDbContextAsync();
+
+            return await context.Luggage
+                .Select(x => new LuggageDisplay {IsCarryOn = x.IsCarryOn, Weight = x.Weight})
+                .ToListAsync();
         }
     }
 }
