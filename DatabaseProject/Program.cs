@@ -117,6 +117,7 @@ builder.Services.AddScoped<Database_project.Core.MongoDB.Services.MaintenanceSer
 builder.Services.AddScoped<MongoDBSeeder>();
 
 // Register Neo4j services
+builder.Services.AddScoped<Database_project.Neo4j.Services.IdGeneratorService>();
 builder.Services.AddScoped<Database_project.Neo4j.Services.AirlineService>();
 builder.Services.AddScoped<Database_project.Neo4j.Services.OrderService>();
 builder.Services.AddScoped<Database_project.Neo4j.Services.TicketService>();
