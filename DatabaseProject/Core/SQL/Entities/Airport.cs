@@ -10,4 +10,6 @@ public class Airport
     public string AirportCity { get; set; }
     public string Municipality { get; set; }
     public string AirportAbbreviation { get; set; }
+    public ICollection<Maintenance> Maintenances { get; set; }
+
 }

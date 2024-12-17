@@ -15,5 +15,6 @@ public class Plane
     [JsonIgnore]
 
     public ICollection<Flightroute> Flightroutes { get; set; }
+    public ICollection<Maintenance> Maintenances { get; set; }
 
 }

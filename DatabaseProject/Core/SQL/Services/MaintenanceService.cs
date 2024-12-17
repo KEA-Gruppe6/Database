@@ -53,7 +53,7 @@ public class MaintenanceService : IMaintenanceService
             MaintenanceId = maintenance.MaintenanceId,
             StartDate = maintenance.StartDate,
             EndDate = maintenance.EndDate,
-            Plane = _planeService.GetPlaneByIdAsync(maintenance.PlaneId).Result,
+            Plane = _planeService.GetPlaneByIdAsync(maintenance?.PlaneId ?? 0).Result,
             Airport = maintenance.Airport
         };
         return maintenanceDTO;

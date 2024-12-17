@@ -37,27 +37,27 @@ namespace Database_project.Core.Services
                 FlightrouteId = flightroute.FlightrouteId,
                 DepartureTime = flightroute.DepartureTime,
                 ArrivalTime = flightroute.ArrivalTime,
-                ArrivalAirport = new Airport()
+                ArrivalAirport = flightroute.ArrivalAirport != null ? new Airport()
                 {
                     AirportId = flightroute.ArrivalAirport.AirportId,
                     AirportName = flightroute.ArrivalAirport.AirportName,
                     AirportCity = flightroute.ArrivalAirport.AirportCity,
                     Municipality = flightroute.ArrivalAirport.Municipality,
                     AirportAbbreviation = flightroute.ArrivalAirport.AirportAbbreviation
-                },
-                DepartureAirport = new Airport()
+                } : null,
+                DepartureAirport = flightroute.DepartureAirport != null ? new Airport()
                 {
                     AirportId = flightroute.DepartureAirport.AirportId,
                     AirportName = flightroute.DepartureAirport.AirportName,
                     AirportCity = flightroute.DepartureAirport.AirportCity,
                     Municipality = flightroute.DepartureAirport.Municipality,
                     AirportAbbreviation = flightroute.DepartureAirport.AirportAbbreviation
-                },
-                Plane = new PlaneDTO()
+                } : null,
+                Plane = flightroute.Plane != null ? new PlaneDTO()
                 {
                     PlaneId = flightroute.Plane.PlaneId,
                     PlaneDisplayName = flightroute.Plane.PlaneDisplayName,
-                }
+                } : null
             };
             return flightrouteDTO;
         }

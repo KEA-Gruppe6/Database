@@ -47,16 +47,45 @@ public class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbCont
             entity.ToTable(tb => tb.UseSqlOutputClause(false));
         });
 
-        modelBuilder.Entity<Plane>()
-            .HasOne(p => p.Airline)
-            .WithMany(a => a.Planes)
-            .HasForeignKey(p => p.AirlineId);
+        modelBuilder.Entity<Airport>(entity =>
+        {
+            entity.HasKey(a => a.AirportId);
+            entity.HasMany(a => a.Maintenances)
+                .WithOne(m => m.Airport)
+                .HasForeignKey(m => m.AirportId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Plane>(entity =>
+        {
+            entity.HasOne(p => p.Airline)
+                .WithMany(a => a.Planes)
+                .HasForeignKey(p => p.AirlineId)
+                .OnDelete(DeleteBehavior.SetNull);
+            entity.HasMany(p => p.Flightroutes)
+                .WithOne(f => f.Plane)
+                .HasForeignKey(f => f.PlaneId)
+                .OnDelete(DeleteBehavior.SetNull);
+            entity.HasMany(p => p.Maintenances)
+                .WithOne(m => m.Plane)
+                .HasForeignKey(m => m.PlaneId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
 
         modelBuilder.Entity<Airline>()
             .HasMany(a => a.Planes)
             .WithOne(p => p.Airline)
             .HasForeignKey(p => p.AirlineId)
             .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<Maintenance>(entity =>
+        {
+            entity.HasKey(m => m.MaintenanceId);
+            entity.HasOne(m => m.Plane)
+                .WithMany(p => p.Maintenances)
+                .HasForeignKey(m => m.PlaneId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
 
         modelBuilder.Entity<Ticket>(entity =>
         {

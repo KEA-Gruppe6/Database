@@ -57,11 +57,11 @@ public class PlaneService : IPlaneService
         {
             PlaneId = plane.PlaneId,
             PlaneDisplayName = plane.PlaneDisplayName,
-            Airline = new AirlineDTO()
+            Airline = plane.Airline != null ? new AirlineDTO()
             {
                 AirlineId = plane.Airline.AirlineId,
                 AirlineName = plane.Airline.AirlineName
-            }
+            } : null
         };
         return planeDTO;
     }
