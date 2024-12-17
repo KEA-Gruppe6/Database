@@ -1,5 +1,7 @@
 using Database_project.Neo4j.Entities;
 using Neo4j.Driver;
+using System.Diagnostics;
+using System.Text.Json;
 
 namespace Database_project.Neo4j.Services
 {
@@ -53,5 +55,38 @@ namespace Database_project.Neo4j.Services
 
             return airports;
         }
+
+        public async Task DeleteAirportAsync(long airportId)
+        {
+            var session = _driver.AsyncSession();
+            try
+            {
+                await session.ExecuteWriteAsync(async tx =>
+                {
+                    var deleteAirportQuery = @"
+                MATCH (a:Airport {AirportId: $airportId})
+                DETACH DELETE a";
+
+                    var parameters = new { airportId };
+
+                    // Log the query and parameters
+                    Debug.WriteLine("Executing query: " + deleteAirportQuery);
+                    Debug.WriteLine("With parameters: " + JsonSerializer.Serialize(parameters));
+
+                    var cursor = await tx.RunAsync(deleteAirportQuery, parameters);
+                    await cursor.ConsumeAsync();
+                });
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("Error: " + e.Message);
+                throw new ArgumentException();
+            }
+            finally
+            {
+                await session.CloseAsync();
+            }
+        }
+
     }
 }

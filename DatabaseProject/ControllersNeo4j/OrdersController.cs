@@ -23,5 +23,12 @@ namespace Database_project.Neo4jControllers
             var order = await _orderService.GetAllOrdersAsync();
             return Ok(order);
         }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteOrder(long id)
+        {
+            await _orderService.DeleteOrderAsync(id);
+            return NoContent();
+        }
     }
 }

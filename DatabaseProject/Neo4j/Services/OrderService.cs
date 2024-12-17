@@ -1,5 +1,7 @@
 ﻿using Database_project.Neo4j.Entities;
 using Neo4j.Driver;
+using System.Diagnostics;
+using System.Text.Json;
 
 namespace Database_project.Neo4j.Services
 {
@@ -63,5 +65,38 @@ namespace Database_project.Neo4j.Services
 
             return order;
         }
+
+        public async Task DeleteOrderAsync(long orderId)
+        {
+            var session = _driver.AsyncSession();
+            try
+            {
+                await session.ExecuteWriteAsync(async tx =>
+                {
+                    var deleteOrderQuery = @"
+                MATCH (o:Order {OrderId: $orderId})
+                DETACH DELETE o";
+
+                    var parameters = new { orderId };
+
+                    // Log the query and parameters
+                    Debug.WriteLine("Executing query: " + deleteOrderQuery);
+                    Debug.WriteLine("With parameters: " + JsonSerializer.Serialize(parameters));
+
+                    var cursor = await tx.RunAsync(deleteOrderQuery, parameters);
+                    await cursor.ConsumeAsync();
+                });
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine("Error: " + e.Message);
+                throw new ArgumentException();
+            }
+            finally
+            {
+                await session.CloseAsync();
+            }
+        }
+
     }
 }
