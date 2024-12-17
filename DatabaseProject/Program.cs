@@ -119,6 +119,12 @@ builder.Services.AddScoped<MongoDBSeeder>();
 // Register Neo4j services
 builder.Services.AddScoped<Database_project.Neo4j.Services.AirlineService>();
 builder.Services.AddScoped<Database_project.Neo4j.Services.OrderService>();
+builder.Services.AddScoped<Database_project.Neo4j.Services.TicketService>();
+builder.Services.AddScoped<Database_project.Neo4j.Services.CustomerService>();
+builder.Services.AddScoped<Database_project.Neo4j.Services.LuggageService>();
+builder.Services.AddScoped<Database_project.Neo4j.Services.FlightrouteService>();
+builder.Services.AddScoped<Database_project.Neo4j.Services.AirportService>();
+builder.Services.AddScoped<Database_project.Neo4j.Services.PlaneService>();
 
 // Register AddUsers as scoped service
 builder.Services.AddScoped<AddUsers>();
