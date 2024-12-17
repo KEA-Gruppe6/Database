@@ -133,6 +133,21 @@ public class CustomerController : ControllerBase
         catch (DbUpdateException e)
         {
             var errorMessage = e.InnerException?.Message ?? e.Message;
+
+            if (errorMessage.Contains("The DELETE statement conflicted with the REFERENCE constraint"))
+            {
+                var regex = new System.Text.RegularExpressions.Regex(@"table ""[^""]+\.(?<table>[^""]+)"", column '(?<column>[^']+)'");
+                var match = regex.Match(errorMessage);
+
+                if (match.Success)
+                {
+
+                    var table = match.Groups["table"].Value;
+                    var column = match.Groups["column"].Value;
+                    return BadRequest($"Failed to delete. Object linked to column '{column}' in table '{table}'.");
+                }
+            }
+
             return BadRequest(errorMessage);
         }
         catch (Exception e)
