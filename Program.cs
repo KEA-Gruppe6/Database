@@ -36,6 +36,7 @@ builder.Services.AddSingleton(GraphDatabase.Driver(
             )
         ));
 builder.Services.AddScoped<Database_project.Neo4j.Services.AirlineService>();
+builder.Services.AddScoped<Database_project.Neo4j.Services.OrderService>();
 
 var app = builder.Build();
 
