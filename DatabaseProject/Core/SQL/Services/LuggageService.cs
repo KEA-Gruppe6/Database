@@ -88,12 +88,16 @@ namespace Database_project.Core.Services
             return returnEntityEntry.Entity;
         }
 
-        public async Task<List<LuggageDisplay>> GetAllLuggageForDisplayAsync()
+        public async Task<List<LuggageDisplay>> GetAllLuggageForDisplayAsync(int pageSize, int page)
         {
             await using var context = await _context.CreateDbContextAsync();
 
+            var skipNumber = pageSize * (page - 1);
+            
             return await context.Luggage
                 .Select(x => new LuggageDisplay {IsCarryOn = x.IsCarryOn, Weight = x.Weight})
+                .Skip(skipNumber)
+                .Take(pageSize)
                 .ToListAsync();
         }
     }
