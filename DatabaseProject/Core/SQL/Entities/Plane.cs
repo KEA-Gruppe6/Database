@@ -7,6 +7,7 @@ public class Plane
 {
     [Key]
     public long PlaneId { get; set; }
+    [MaxLength(255)]
     public string PlaneDisplayName { get; set; }
 
     public long? AirlineId { get; set; }
