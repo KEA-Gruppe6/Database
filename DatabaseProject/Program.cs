@@ -10,6 +10,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using System.Reflection;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Neo4j.Driver;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,6 +41,9 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
     var settings = sp.GetRequiredService<IOptions<MongoDbSettings>>().Value;
     return new MongoClient(settings.ConnectionString);
 });
+
+// Add Neo4j driver
+builder.Services.AddSingleton(GraphDatabase.Driver("bolt://localhost:7687", AuthTokens.Basic("neo4j", "Password123")));
 
 builder.Services.AddControllers();
 // Add Swagger/OpenAPI
@@ -111,6 +115,18 @@ builder.Services.AddScoped<Database_project.Core.MongoDB.Services.LuggageService
 builder.Services.AddScoped<Database_project.Core.MongoDB.Services.PlaneService>();
 builder.Services.AddScoped<Database_project.Core.MongoDB.Services.MaintenanceService>();
 builder.Services.AddScoped<MongoDBSeeder>();
+
+// Register Neo4j services
+builder.Services.AddScoped<Database_project.Neo4j.Services.IdGeneratorService>();
+builder.Services.AddScoped<Database_project.Neo4j.Services.AirlineService>();
+builder.Services.AddScoped<Database_project.Neo4j.Services.OrderService>();
+builder.Services.AddScoped<Database_project.Neo4j.Services.TicketService>();
+builder.Services.AddScoped<Database_project.Neo4j.Services.CustomerService>();
+builder.Services.AddScoped<Database_project.Neo4j.Services.LuggageService>();
+builder.Services.AddScoped<Database_project.Neo4j.Services.FlightrouteService>();
+builder.Services.AddScoped<Database_project.Neo4j.Services.AirportService>();
+builder.Services.AddScoped<Database_project.Neo4j.Services.PlaneService>();
+builder.Services.AddScoped<Database_project.Neo4j.Services.MaintenanceService>();
 
 // Register AddUsers as scoped service
 builder.Services.AddScoped<AddUsers>();
