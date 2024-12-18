@@ -7,7 +7,9 @@ public class Customer
 {
     [Key]
     public long CustomerId { get; set; }
+    [MaxLength(255)]
     public string FirstName { get; set; }
+    [MaxLength(255)]
     public string LastName { get; set; }
     public int PassportNumber { get; set; }
     [JsonIgnore]
