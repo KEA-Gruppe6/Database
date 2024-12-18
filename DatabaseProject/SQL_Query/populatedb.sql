@@ -89,10 +89,8 @@ WHILE @@FETCH_STATUS = 0
             WHERE PassportNumber = @PassportNumber
         )
             BEGIN
-                SET IDENTITY_INSERT Customers ON;
                 INSERT INTO Customers (CustomerId, FirstName, LastName, PassportNumber)
                 VALUES (@CustomerId, @FirstName, @LastName, @PassportNumber);
-                SET IDENTITY_INSERT Customers OFF;
             END
 
         FETCH NEXT FROM customer_cursor INTO @CustomerId, @FirstName, @LastName, @PassportNumber;
