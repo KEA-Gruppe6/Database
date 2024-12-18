@@ -93,9 +93,8 @@ namespace Database_project.Core.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
                 transaction.Rollback();
-                throw new Exception();
+                throw ex;
             }
         }
     }
