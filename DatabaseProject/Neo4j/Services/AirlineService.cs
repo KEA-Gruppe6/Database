@@ -42,7 +42,7 @@ namespace Database_project.Neo4j.Services
         {
             var (queryResults, _) = await _driver
                 .ExecutableQuery(@"
-                    MATCH (a:Airline)-[:OWNS]->(p:Plane)
+                    MATCH (a:Airline)<-[:BELONGS_TO]-(p:Plane)
                     RETURN a.AirlineId AS AirlineId, a.AirlineName AS AirlineName, 
                            collect({PlaneId: p.PlaneId, PlaneDisplayName: p.PlaneDisplayName}) AS Planes")
                 .ExecuteAsync();
@@ -82,7 +82,7 @@ namespace Database_project.Neo4j.Services
                             CREATE (p:Plane {PlaneId: $PlaneId, PlaneDisplayName: $PlaneDisplayName})
                             WITH p
                             MATCH (a:Airline {AirlineId: $AirlineId})
-                            CREATE (a)-[:OWNS]->(p)";
+                            CREATE (a)<-[:BELONGS_TO]-(p)";
 
                         await tx.RunAsync(createPlaneQuery, new { plane.PlaneId, plane.PlaneDisplayName, airline.AirlineId });
                     }
@@ -102,7 +102,7 @@ namespace Database_project.Neo4j.Services
                 await session.ExecuteWriteAsync(async tx =>
                 {
                     var deleteRelationshipsQuery = @"
-                        MATCH (a:Airline)-[r:OWNS]->(p:Plane)
+                        MATCH (a:Airline)<-[:BELONGS_TO]-(p:Plane)
                         WHERE a.AirlineId = $id
                         DELETE r";
 
@@ -138,7 +138,7 @@ namespace Database_project.Neo4j.Services
                     await tx.RunAsync(updateAirlineQuery, new { id, updatedAirline.AirlineName });
 
                     var deleteRelationshipsQuery = @"
-                MATCH (a:Airline)-[r:OWNS]->(p:Plane)
+                MATCH (a:Airline)<-[:BELONGS_TO]-(p:Plane)
                 WHERE a.AirlineId = $id
                 DELETE r";
 
@@ -150,7 +150,7 @@ namespace Database_project.Neo4j.Services
                     MERGE (p:Plane {PlaneId: $PlaneId, PlaneDisplayName: $PlaneDisplayName})
                     WITH p
                     MATCH (a:Airline {AirlineId: $id})
-                    MERGE (a)-[:OWNS]->(p)";
+                    MERGE (a)<-[:BELONGS_TO]-(p)";
 
                         await tx.RunAsync(createPlaneQuery, new { plane.PlaneId, plane.PlaneDisplayName, id });
                     }
