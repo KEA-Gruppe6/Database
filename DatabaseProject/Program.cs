@@ -20,6 +20,7 @@ builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("Mo
 
 // Add Database context
 var connectionString = builder.Configuration.GetConnectionString("MSSQL") ?? Environment.GetEnvironmentVariable("MSSQL");
+var neo4jConnectionString = builder.Configuration.GetConnectionString("Neo4j") ?? Environment.GetEnvironmentVariable("Neo4j");
 var mongoDbConnectionString = builder.Configuration.GetConnectionString("MongoDB") ?? Environment.GetEnvironmentVariable("MongoDB");
 var mongoDbDatabaseName = builder.Configuration.GetConnectionString("DatabaseName");
 builder.Services.AddDbContextFactory<DatabaseContext>(options =>
@@ -43,7 +44,7 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
 });
 
 // Add Neo4j driver
-builder.Services.AddSingleton(GraphDatabase.Driver("bolt://localhost:7687", AuthTokens.Basic("neo4j", "Password123")));
+builder.Services.AddSingleton(GraphDatabase.Driver(neo4jConnectionString, AuthTokens.Basic("neo4j", "Password123")));
 
 builder.Services.AddControllers();
 // Add Swagger/OpenAPI
