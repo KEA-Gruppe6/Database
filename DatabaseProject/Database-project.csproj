@@ -22,11 +22,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Neo4j\CypherScripts\" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Neo4j\CypherScripts\" />
+      <Content Include="Neo4j/CypherScripts/**">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="SQL_Query/**">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
 </Project>

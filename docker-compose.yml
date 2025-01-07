@@ -14,6 +14,13 @@ services:
       context: .
       dockerfile: Dockerfile-api
     container_name: database-api-container
+    environment:
+      - MSSQL=Data Source=host.docker.internal;Database=AirportDB;User ID=adminUser;Password=exampleAdmin0;Trusted_Connection=False;Encrypt=True;TrustServerCertificate=True;
+      - MongoDB=mongodb://root:example@host.docker.internal:27017/AirportDB?authSource=admin
+      - Neo4jUrl=bolt://host.docker.internal:7687
+      - Neo4jUser=neo4j
+      - Neo4jPassword=Password123
+      - DatabaseName=AirportDB
     ports:
       - "8080:8080"
     depends_on:

@@ -15,13 +15,33 @@ using Neo4j.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//Get the connection string from the appsettings.json file or from the environment variable
+string connectionString;
+string neo4jUrl;
+string neo4jUser;
+string neo4jPassword;
+string mongoDbConnectionString;
+string mongoDbDatabaseName;
+if (builder.Environment.IsDevelopment())
+{
+    connectionString = builder.Configuration.GetValue<string>("MSSQL") ?? throw new ArgumentNullException();
+    neo4jUrl = builder.Configuration.GetValue<string>("Neo4jUrl") ?? throw new ArgumentNullException();
+    neo4jUser = builder.Configuration.GetValue<string>("Neo4jUser") ?? throw new ArgumentNullException();
+    neo4jPassword = builder.Configuration.GetValue<string>("Neo4jPassword") ?? throw new ArgumentNullException();
+    mongoDbConnectionString = builder.Configuration.GetValue<string>("MongoDB") ?? throw new ArgumentNullException();
+    mongoDbDatabaseName = builder.Configuration.GetValue<string>("DatabaseName") ?? throw new ArgumentNullException();
+}
+else
+{
+    connectionString = Environment.GetEnvironmentVariable("MSSQL") ?? throw new ArgumentNullException();
+    neo4jUrl = Environment.GetEnvironmentVariable("Neo4jUrl") ?? throw new ArgumentNullException();
+    neo4jUser = Environment.GetEnvironmentVariable("Neo4jUser") ?? throw new ArgumentNullException();
+    neo4jPassword = Environment.GetEnvironmentVariable("Neo4jPassword") ?? throw new ArgumentNullException();
+    mongoDbConnectionString = Environment.GetEnvironmentVariable("MongoDB") ?? throw new ArgumentNullException();
+    mongoDbDatabaseName = Environment.GetEnvironmentVariable("DatabaseName") ?? throw new ArgumentNullException();
+}
+
 // Add Database context
-var connectionString = builder.Configuration.GetConnectionString("MSSQL") ?? Environment.GetEnvironmentVariable("MSSQL");
-var neo4jUrl = builder.Configuration.GetConnectionString("Neo4jUrl") ?? Environment.GetEnvironmentVariable("Neo4jUrl");
-var neo4jUser = builder.Configuration.GetConnectionString("Neo4jUser") ?? Environment.GetEnvironmentVariable("Neo4jUser");
-var neo4jPassword = builder.Configuration.GetConnectionString("Neo4jPassword") ?? Environment.GetEnvironmentVariable("Neo4jPassword");
-var mongoDbConnectionString = builder.Configuration.GetConnectionString("MongoDB") ?? Environment.GetEnvironmentVariable("MongoDB");
-var mongoDbDatabaseName = builder.Configuration.GetConnectionString("DatabaseName") ?? Environment.GetEnvironmentVariable("DatabaseName");
 builder.Services.AddDbContextFactory<DatabaseContext>(options =>
 {
     options.UseSqlServer(connectionString);
@@ -184,8 +204,11 @@ using (var scope = app.Services.CreateScope())
     // SQL Server migration ends
 
     // MongoDB migration starts
-    var addUsersService = scope.ServiceProvider.GetRequiredService<AddUsers>();
-    addUsersService.CreateMongoUsers();  // Run the user creation script
+    if (mongoDbConnectionString.Contains("localhost") || mongoDbConnectionString.Contains("host.docker.internal"))
+    {
+        var addUsersService = scope.ServiceProvider.GetRequiredService<AddUsers>();
+        addUsersService.CreateMongoUsers();  // Run the user creation script
+    }
     var mongodSeeder = scope.ServiceProvider.GetRequiredService<MongoDBSeeder>();
     await mongodSeeder.SeederInitalization();
     // MongoDB migration ends

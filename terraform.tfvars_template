@@ -1,0 +1,8 @@
+subscription_id      = ""
+zip_deploy_file_path = ""
+MSSQL                = ""
+MongoDB              = ""
+Neo4jUrl             = ""
+Neo4jUser            = ""
+Neo4jPassword        = ""
+DatabaseName         = ""
