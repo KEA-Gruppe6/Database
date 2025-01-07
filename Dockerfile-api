@@ -23,6 +23,7 @@ COPY DatabaseProject/SQL_Query/populatedb.sql /app/SQL_Query
 COPY DatabaseProject/SQL_Query/passportlengthtrigger.sql /app/SQL_Query
 COPY DatabaseProject/SQL_Query/addroles.sql /app/SQL_Query
 COPY DatabaseProject/SQL_Query/customeraudittrigger.sql /app/SQL_Query
+COPY DatabaseProject/Neo4j/CypherScripts/populate_orders.cypher /app/Neo4j/CypherScripts/populate_orders.cypher
 
 ENV ASPNETCORE_URLS=http://*:8080
 

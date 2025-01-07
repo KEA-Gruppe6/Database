@@ -189,6 +189,23 @@ using (var scope = app.Services.CreateScope())
     var mongodSeeder = scope.ServiceProvider.GetRequiredService<MongoDBSeeder>();
     await mongodSeeder.SeederInitalization();
     // MongoDB migration ends
+
+    // Neo4j migration starts
+    var neo4jDriver = scope.ServiceProvider.GetRequiredService<Neo4j.Driver.IDriver>();
+    var neo4jSession = neo4jDriver.AsyncSession();
+    var cypherFilePath = "Neo4j/CypherScripts/populate_orders.cypher";
+    var cypherQueries = await File.ReadAllTextAsync(cypherFilePath);
+    var cypherStatements = cypherQueries.Split(';')
+                                        .Select(query => query.Trim())
+                                        .Where(query => !string.IsNullOrEmpty(query));
+
+    foreach (var statement in cypherStatements)
+    {
+        await neo4jSession.RunAsync(statement);
+    }
+
+    await neo4jSession.CloseAsync();
+    // Neo4j migration ends
 }
 
 // Configure the HTTP request pipeline.
