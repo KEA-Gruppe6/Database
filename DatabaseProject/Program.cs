@@ -15,16 +15,13 @@ using Neo4j.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure MongoDbSettings
-builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDbSettings"));
-
 // Add Database context
 var connectionString = builder.Configuration.GetConnectionString("MSSQL") ?? Environment.GetEnvironmentVariable("MSSQL");
 var neo4jUrl = builder.Configuration.GetConnectionString("Neo4jUrl") ?? Environment.GetEnvironmentVariable("Neo4jUrl");
 var neo4jUser = builder.Configuration.GetConnectionString("Neo4jUser") ?? Environment.GetEnvironmentVariable("Neo4jUser");
 var neo4jPassword = builder.Configuration.GetConnectionString("Neo4jPassword") ?? Environment.GetEnvironmentVariable("Neo4jPassword");
 var mongoDbConnectionString = builder.Configuration.GetConnectionString("MongoDB") ?? Environment.GetEnvironmentVariable("MongoDB");
-var mongoDbDatabaseName = builder.Configuration.GetConnectionString("DatabaseName");
+var mongoDbDatabaseName = builder.Configuration.GetConnectionString("DatabaseName") ?? Environment.GetEnvironmentVariable("DatabaseName");
 builder.Services.AddDbContextFactory<DatabaseContext>(options =>
 {
     options.UseSqlServer(connectionString);
