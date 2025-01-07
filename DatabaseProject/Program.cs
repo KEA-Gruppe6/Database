@@ -10,6 +10,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using System.Reflection;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Neo4j.Driver;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +20,9 @@ builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("Mo
 
 // Add Database context
 var connectionString = builder.Configuration.GetConnectionString("MSSQL") ?? Environment.GetEnvironmentVariable("MSSQL");
+var neo4jUrl = builder.Configuration.GetConnectionString("Neo4jUrl") ?? Environment.GetEnvironmentVariable("Neo4jUrl");
+var neo4jUser = builder.Configuration.GetConnectionString("Neo4jUser") ?? Environment.GetEnvironmentVariable("Neo4jUser");
+var neo4jPassword = builder.Configuration.GetConnectionString("Neo4jPassword") ?? Environment.GetEnvironmentVariable("Neo4jPassword");
 var mongoDbConnectionString = builder.Configuration.GetConnectionString("MongoDB") ?? Environment.GetEnvironmentVariable("MongoDB");
 var mongoDbDatabaseName = builder.Configuration.GetConnectionString("DatabaseName");
 builder.Services.AddDbContextFactory<DatabaseContext>(options =>
@@ -40,6 +44,9 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
     var settings = sp.GetRequiredService<IOptions<MongoDbSettings>>().Value;
     return new MongoClient(settings.ConnectionString);
 });
+
+// Add Neo4j driver
+builder.Services.AddSingleton(GraphDatabase.Driver(neo4jUrl, AuthTokens.Basic(neo4jUser, neo4jPassword)));
 
 builder.Services.AddControllers();
 // Add Swagger/OpenAPI
@@ -111,6 +118,18 @@ builder.Services.AddScoped<Database_project.Core.MongoDB.Services.LuggageService
 builder.Services.AddScoped<Database_project.Core.MongoDB.Services.PlaneService>();
 builder.Services.AddScoped<Database_project.Core.MongoDB.Services.MaintenanceService>();
 builder.Services.AddScoped<MongoDBSeeder>();
+
+// Register Neo4j services
+builder.Services.AddScoped<Database_project.Neo4j.Services.IdGeneratorService>();
+builder.Services.AddScoped<Database_project.Neo4j.Services.AirlineService>();
+builder.Services.AddScoped<Database_project.Neo4j.Services.OrderService>();
+builder.Services.AddScoped<Database_project.Neo4j.Services.TicketService>();
+builder.Services.AddScoped<Database_project.Neo4j.Services.CustomerService>();
+builder.Services.AddScoped<Database_project.Neo4j.Services.LuggageService>();
+builder.Services.AddScoped<Database_project.Neo4j.Services.FlightrouteService>();
+builder.Services.AddScoped<Database_project.Neo4j.Services.AirportService>();
+builder.Services.AddScoped<Database_project.Neo4j.Services.PlaneService>();
+builder.Services.AddScoped<Database_project.Neo4j.Services.MaintenanceService>();
 
 // Register AddUsers as scoped service
 builder.Services.AddScoped<AddUsers>();
