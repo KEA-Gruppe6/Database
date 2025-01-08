@@ -217,14 +217,32 @@ using (var scope = app.Services.CreateScope())
     var neo4jDriver = scope.ServiceProvider.GetRequiredService<Neo4j.Driver.IDriver>();
     var neo4jSession = neo4jDriver.AsyncSession();
     var cypherFilePath = "Neo4j/CypherScripts/populate_orders.cypher";
-    var cypherQueries = await File.ReadAllTextAsync(cypherFilePath);
-    var cypherStatements = cypherQueries.Split(';')
-                                        .Select(query => query.Trim())
-                                        .Where(query => !string.IsNullOrEmpty(query));
 
-    foreach (var statement in cypherStatements)
+    bool isNeo4jDatabaseEmpty = true;
+    var (queryResults, _) = await neo4jDriver
+        .ExecutableQuery(@"MATCH (a:Airline {AirlineId: 1})
+                            WITH a
+                            WHERE a IS NOT NULL
+                            RETURN 'Airline with AirlineId 1 already exists' AS message
+                            LIMIT 1;")
+        .ExecuteAsync();
+
+    if (queryResults.Select(record => record["message"].As<string>()).FirstOrDefault() == "Airline with AirlineId 1 already exists")
     {
-        await neo4jSession.RunAsync(statement);
+        isNeo4jDatabaseEmpty = false;
+    }
+
+    if (isNeo4jDatabaseEmpty)
+    {
+        var cypherQueries = await File.ReadAllTextAsync(cypherFilePath);
+        var cypherStatements = cypherQueries.Split(';')
+                                            .Select(query => query.Trim())
+                                            .Where(query => !string.IsNullOrEmpty(query));
+
+        foreach (var statement in cypherStatements)
+        {
+            await neo4jSession.RunAsync(statement);
+        }
     }
 
     await neo4jSession.CloseAsync();
